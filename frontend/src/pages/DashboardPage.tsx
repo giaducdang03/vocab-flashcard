@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { BookOpenText, Plus, Search, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { BookOpenText, Plus, Search, Trash2, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,11 @@ export default function DashboardPage() {
     setSessions((current) => current.filter((session) => session.id !== sessionId));
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div className="page-shell">
       <header className="topbar">
@@ -58,7 +64,12 @@ export default function DashboardPage() {
             <Search size={16} />
             Browse
           </button>
-          <div className="user-pill">{user?.display_name || user?.email}</div>
+          <div className="user-pill">
+            <span>{user?.display_name || user?.email}</span>
+          </div>
+          <button type="button" className="btn btn-secondary" onClick={handleLogout}>
+            <LogOut size={16} />
+          </button>
         </nav>
       </header>
 
@@ -98,30 +109,37 @@ export default function DashboardPage() {
         ) : (
           <div className="session-grid">
             {sessions.map((session) => (
-              <article key={session.id} className="session-card">
-                <div className="session-card-header">
-                  <span className="badge">Session</span>
-                  <button type="button" className="icon-button" onClick={() => handleDeleteSession(session.id)}>
+              <article key={session.id} className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center justify-center px-2 py-1 bg-orange-100/20 text-ink text-xs font-bold uppercase rounded-full">
+                    Session
+                  </span>
+                  <button
+                    type="button"
+                    className="w-9 h-9 border border-hairline rounded-xl bg-white text-ink hover:border-primary hover:text-primary transition-all flex items-center justify-center"
+                    onClick={() => handleDeleteSession(session.id)}
+                    title="Delete session"
+                  >
                     <Trash2 size={15} />
                   </button>
                 </div>
 
-                <Link to={`/sessions/${session.id}`} className="session-card-title">
+                <Link to={`/sessions/${session.id}`} className="text-xl font-light letter-spacing-tight text-ink hover:text-primary transition-colors">
                   {session.title}
                 </Link>
 
-                <div className="session-meta">
+                <div className="flex justify-between gap-2 text-sm text-body">
                   <span>{new Date(session.created_at).toLocaleDateString()}</span>
                   <span>Updated {new Date(session.updated_at).toLocaleDateString()}</span>
                 </div>
 
-                <div className="mini-progress">
-                  <div className="mini-progress-bar" style={{ width: '42%' }} />
+                <div className="w-full h-2 bg-hairline rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full" style={{ width: '42%' }} />
                 </div>
 
-                <div className="session-card-actions">
-                  <span>42% mastered</span>
-                  <Link to={`/sessions/${session.id}`} className="btn btn-secondary small">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm text-body font-semibold">42% mastered</span>
+                  <Link to={`/sessions/${session.id}`} className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold text-sm transition-all">
                     Open
                   </Link>
                 </div>

@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
+from io import BytesIO
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,6 +21,8 @@ async def create_card(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> CardOut:
+    from sqlalchemy.orm import selectinload
+
     session = await db.get(Session, session_id)
     if not session or session.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
@@ -40,7 +44,7 @@ async def create_card(
         db.add(Synonym(card_id=card.id, word=synonym_payload.word, phonetic=synonym_payload.phonetic))
 
     await db.commit()
-    await db.refresh(card)
+    await db.refresh(card, attribute_names=["synonyms"])
     return CardOut.model_validate(card)
 
 
@@ -51,10 +55,13 @@ async def update_card(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> CardOut:
+    from sqlalchemy.orm import selectinload
+
     result = await db.execute(
         select(Card)
         .join(Session, Card.session_id == Session.id)
         .where(Card.id == card_id, Session.user_id == current_user.id)
+        .options(selectinload(Card.synonyms))
     )
     card = result.scalar_one_or_none()
     if not card:
@@ -71,7 +78,7 @@ async def update_card(
             card.synonyms.append(Synonym(word=synonym_payload.word, phonetic=synonym_payload.phonetic))
 
     await db.commit()
-    await db.refresh(card)
+    await db.refresh(card, attribute_names=["synonyms"])
     return CardOut.model_validate(card)
 
 
@@ -82,10 +89,13 @@ async def toggle_card_learned(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> CardOut:
+    from sqlalchemy.orm import selectinload
+
     result = await db.execute(
         select(Card)
         .join(Session, Card.session_id == Session.id)
         .where(Card.id == card_id, Session.user_id == current_user.id)
+        .options(selectinload(Card.synonyms))
     )
     card = result.scalar_one_or_none()
     if not card:
@@ -93,7 +103,7 @@ async def toggle_card_learned(
 
     card.is_learned = payload.is_learned
     await db.commit()
-    await db.refresh(card)
+    await db.refresh(card, attribute_names=["is_learned"])
     return CardOut.model_validate(card)
 
 
@@ -114,3 +124,18 @@ async def delete_card(
 
     await db.delete(card)
     await db.commit()
+
+
+@router.get("/cards/template/download")
+async def download_template():
+    template_content = """front_text,phonetic,back_text,example,synonyms
+abundant,/əˈbʌndənt/,"dồi dào, phong phú",The region has abundant natural resources.,plentiful /ˈplentɪfəl/; copious /ˈkoʊpiəs/; ample /ˈæmpəl/
+make a decision,,"đưa ra quyết định",We need to make a decision before the deadline.,
+"""
+
+    csv_bytes = template_content.encode("utf-8")
+    return StreamingResponse(
+        BytesIO(csv_bytes),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=vocab_template.csv"}
+    )

@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/api/client.ts","./src/contexts/authcontext.tsx","./src/pages/authpage.tsx","./src/pages/dashboardpage.tsx","./src/pages/sessiondetailpage.tsx","./src/types/index.ts"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/api/client.ts","./src/components/importmodal.tsx","./src/contexts/authcontext.tsx","./src/pages/authpage.tsx","./src/pages/dashboardpage.tsx","./src/pages/sessiondetailpage.tsx","./src/pages/studypage.tsx","./src/types/index.ts"],"version":"5.9.3"}

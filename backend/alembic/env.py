@@ -14,7 +14,9 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("+asyncpg", ""))
+# Convert asyncpg URL to psycopg for Alembic migrations (sync operations)
+db_url = settings.DATABASE_URL.replace("+asyncpg", "+psycopg")
+config.set_main_option("sqlalchemy.url", db_url)
 
 target_metadata = Base.metadata
 

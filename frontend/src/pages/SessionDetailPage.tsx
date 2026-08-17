@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, CheckCircle2, Plus, RotateCcw } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Plus, RotateCcw, BookOpen, Upload, Trash2 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import ImportModal from '../components/ImportModal';
 import type { Card, SessionDetailResponse } from '../types';
 
 const defaultCard = {
@@ -22,6 +23,7 @@ export default function SessionDetailPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [draft, setDraft] = useState(defaultCard);
 
   const fetchDetail = async () => {
@@ -72,6 +74,15 @@ export default function SessionDetailPage() {
     setCards((current) => current.map((card) => (card.id === cardId ? response.data : card)));
   };
 
+  const deleteCard = async (cardId: string) => {
+    if (!confirm('Delete this card?')) {
+      return;
+    }
+
+    await api.delete(`/cards/${cardId}`);
+    setCards((current) => current.filter((card) => card.id !== cardId));
+  };
+
   const updateSynonymField = (index: number, field: 'word' | 'phonetic', value: string) => {
     setDraft((current) => ({
       ...current,
@@ -99,10 +110,22 @@ export default function SessionDetailPage() {
             Dashboard
           </Link>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
-          <Plus size={16} />
-          Add card
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {cards.length > 0 && (
+            <Link to={`/sessions/${id}/study`} className="btn btn-secondary">
+              <BookOpen size={16} />
+              Study
+            </Link>
+          )}
+          <button type="button" className="btn btn-secondary" onClick={() => setShowImport(true)}>
+            <Upload size={16} />
+            Import
+          </button>
+          <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
+            <Plus size={16} />
+            Add card
+          </button>
+        </div>
       </header>
 
       <main className="page-container compact">
@@ -211,14 +234,24 @@ export default function SessionDetailPage() {
               <article key={card.id} className={`card-row ${card.is_learned ? 'is-learned' : ''}`}>
                 <div className="card-row-top">
                   <span className="badge tone-dark">{card.card_type}</span>
-                  <button
-                    type="button"
-                    className={`learn-toggle ${card.is_learned ? 'active' : ''}`}
-                    onClick={() => toggleLearned(card.id, !card.is_learned)}
-                  >
-                    <CheckCircle2 size={15} />
-                    {card.is_learned ? 'Learned' : 'Mark learned'}
-                  </button>
+                  <div className="flex gap-2 items-center">
+                    <button
+                      type="button"
+                      className={`learn-toggle ${card.is_learned ? 'active' : ''}`}
+                      onClick={() => toggleLearned(card.id, !card.is_learned)}
+                    >
+                      <CheckCircle2 size={15} />
+                      {card.is_learned ? 'Learned' : 'Mark learned'}
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-button"
+                      onClick={() => deleteCard(card.id)}
+                      title="Delete card"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="card-preview-grid">
@@ -248,6 +281,17 @@ export default function SessionDetailPage() {
           )}
         </section>
       </main>
+
+      {showImport && id && (
+        <ImportModal
+          sessionId={id}
+          onSuccess={() => {
+            setShowImport(false);
+            void fetchDetail();
+          }}
+          onClose={() => setShowImport(false)}
+        />
+      )}
     </div>
   );
 }
