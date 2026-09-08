@@ -1,10 +1,32 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Filter } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Filter, Settings, Shuffle } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { Card, SessionDetailResponse } from '../types';
 
 type FilterMode = 'all' | 'unlearned' | 'learned';
+
+type DisplayConfig = {
+  phonetic: boolean;
+  synonyms: boolean;
+  example: boolean;
+};
+
+const DISPLAY_CONFIG_KEY = 'studyCardDisplayConfig';
+const defaultDisplayConfig: DisplayConfig = { phonetic: true, synonyms: true, example: true };
+
+const loadDisplayConfig = (): DisplayConfig => {
+  try {
+    const raw = localStorage.getItem(DISPLAY_CONFIG_KEY);
+    if (!raw) {
+      return defaultDisplayConfig;
+    }
+
+    return { ...defaultDisplayConfig, ...JSON.parse(raw) };
+  } catch {
+    return defaultDisplayConfig;
+  }
+};
 
 export default function StudyPage() {
   const { id } = useParams();
@@ -15,6 +37,34 @@ export default function StudyPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [filter, setFilter] = useState<FilterMode>('all');
+  const [displayConfig, setDisplayConfig] = useState<DisplayConfig>(loadDisplayConfig);
+  const [showDisplaySettings, setShowDisplaySettings] = useState(false);
+  const [shuffleEnabled, setShuffleEnabled] = useState(false);
+  const [shuffleSeed, setShuffleSeed] = useState(0);
+  const displaySettingsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem(DISPLAY_CONFIG_KEY, JSON.stringify(displayConfig));
+  }, [displayConfig]);
+
+  useEffect(() => {
+    if (!showDisplaySettings) {
+      return;
+    }
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (displaySettingsRef.current && !displaySettingsRef.current.contains(e.target as Node)) {
+        setShowDisplaySettings(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDisplaySettings]);
+
+  const toggleDisplayField = useCallback((field: keyof DisplayConfig) => {
+    setDisplayConfig((prev) => ({ ...prev, [field]: !prev[field] }));
+  }, []);
 
   const fetchDetail = async () => {
     if (!id) {
@@ -45,7 +95,29 @@ export default function StudyPage() {
     return cardList;
   }, [cards, filter]);
 
-  const currentCard = filteredCards[currentIndex] || null;
+  const displayedCards = useMemo(() => {
+    if (!shuffleEnabled) {
+      return filteredCards;
+    }
+
+    const shuffled = [...filteredCards];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredCards, shuffleEnabled, shuffleSeed]);
+
+  const handleToggleShuffle = useCallback(() => {
+    setShuffleEnabled((prev) => !prev);
+    setShuffleSeed((prev) => prev + 1);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+  }, []);
+
+  const currentCard = displayedCards[currentIndex] || null;
   const learnedCount = useMemo(() => cards.filter((card) => card.is_learned).length, [cards]);
 
   const handlePrev = useCallback(() => {
@@ -56,11 +128,11 @@ export default function StudyPage() {
   }, [currentIndex]);
 
   const handleNext = useCallback(() => {
-    if (currentIndex < filteredCards.length - 1) {
+    if (currentIndex < displayedCards.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setIsFlipped(false);
     }
-  }, [currentIndex, filteredCards.length]);
+  }, [currentIndex, displayedCards.length]);
 
   const toggleLearned = async (cardId: string, value: boolean) => {
     try {
@@ -168,6 +240,65 @@ export default function StudyPage() {
           ↻ Start
         </button>
 
+        <button
+          type="button"
+          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all flex-shrink-0 ${
+            shuffleEnabled ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
+          }`}
+          onClick={handleToggleShuffle}
+          title={shuffleEnabled ? 'Turn off shuffle' : 'Shuffle card order'}
+        >
+          <Shuffle size={16} />
+          Shuffle
+        </button>
+
+        <div className="relative flex-shrink-0" ref={displaySettingsRef}>
+          <button
+            type="button"
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
+              showDisplaySettings ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
+            }`}
+            onClick={() => setShowDisplaySettings((current) => !current)}
+            title="Configure card fields"
+          >
+            <Settings size={16} />
+            Display
+          </button>
+
+          {showDisplaySettings && (
+            <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-muted mb-1">Show on card</p>
+              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 accent-primary"
+                  checked={displayConfig.phonetic}
+                  onChange={() => toggleDisplayField('phonetic')}
+                />
+                Phonetic
+              </label>
+              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 accent-primary"
+                  checked={displayConfig.synonyms}
+                  onChange={() => toggleDisplayField('synonyms')}
+                />
+                Synonyms
+              </label>
+              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 accent-primary"
+                  checked={displayConfig.example}
+                  onChange={() => toggleDisplayField('example')}
+                />
+                Example
+              </label>
+            </div>
+          )}
+        </div>
+
         <div className="text-xs font-semibold text-body flex-shrink-0">
           {learnedCount}/{cards.length}
         </div>
@@ -246,7 +377,7 @@ export default function StudyPage() {
                     <h2 className="text-4xl md:text-5xl font-light leading-tight tracking-tight text-ink break-words">
                       {currentCard.front_text}
                     </h2>
-                    {currentCard.front_phonetic && (
+                    {displayConfig.phonetic && currentCard.front_phonetic && (
                       <p className="text-lg text-body font-mono">{currentCard.front_phonetic}</p>
                     )}
                   </div>
@@ -289,7 +420,7 @@ export default function StudyPage() {
                       {currentCard.back_text}
                     </h2>
 
-                    {currentCard.synonyms.length > 0 && (
+                    {displayConfig.synonyms && currentCard.synonyms.length > 0 && (
                       <div className="w-full bg-white/60 border border-hairline rounded-2xl p-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">Synonyms</p>
                         <div className="grid grid-cols-2 gap-2">
@@ -307,7 +438,7 @@ export default function StudyPage() {
                       </div>
                     )}
 
-                    {currentCard.example && (
+                    {displayConfig.example && currentCard.example && (
                       <div className="w-full bg-white/60 border border-hairline rounded-2xl p-4">
                         <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">Example</p>
                         <p className="text-sm leading-relaxed text-ink italic">{currentCard.example}</p>

@@ -1,10 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Upload, X, ChevronDown, Copy, Check, Download } from 'lucide-react';
 import { api } from '../api/client';
 
 type FileData = {
   file: File;
   preview: string[][];
+  totalRows: number;
 };
 
 type ImportModalProps = {
@@ -13,6 +14,41 @@ type ImportModalProps = {
   onClose: () => void;
 };
 
+const MAX_IMPORT_ROWS = 100;
+
+function parseDelimitedLine(line: string, delimiter: string): string[] {
+  const cells: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+
+    if (inQuotes) {
+      if (char === '"') {
+        if (line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += char;
+      }
+    } else if (char === '"') {
+      inQuotes = true;
+    } else if (char === delimiter) {
+      cells.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  cells.push(current.trim());
+  return cells;
+}
+
 export default function ImportModal({ sessionId, onSuccess, onClose }: ImportModalProps) {
   const [fileData, setFileData] = useState<FileData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,47 +56,137 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
   const [dragActive, setDragActive] = useState(false);
   const [showFormat, setShowFormat] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [includeVocab, setIncludeVocab] = useState(true);
+  const [includeSynonyms, setIncludeSynonyms] = useState(true);
+  const [includeCollocation, setIncludeCollocation] = useState(true);
 
-  const csvPrompt = `Tạo cho tôi một file CSV học từ vựng tiếng Anh theo đúng format sau:
+  const toggleVocab = useCallback(() => {
+    setIncludeVocab((prev) => {
+      if (prev && !includeCollocation) {
+        return prev;
+      }
 
-**Cấu trúc CSV:**
-- Encoding: UTF-8
-- Dấu phân cách: dấu phẩy \`,\`
-- Header bắt buộc (dòng đầu tiên): \`front_text,phonetic,back_text,example,synonyms\`
+      return !prev;
+    });
+  }, [includeCollocation]);
 
-**Quy tắc từng cột:**
-1. \`front_text\` — từ vựng hoặc collocation tiếng Anh
-2. \`phonetic\` — phiên âm IPA đặt trong \`/.../\`. Bắt buộc với từ vựng đơn lẻ, để trống với collocation
-3. \`back_text\` — nghĩa tiếng Việt. Nếu có nhiều nghĩa thì phân cách bằng dấu phẩy, bọc trong dấu ngoặc kép \`"nghĩa 1, nghĩa 2"\`
-4. \`example\` — một câu ví dụ tiếng Anh sử dụng từ đó. Nếu câu chứa dấu phẩy thì bọc trong \`"..."\`
-5. \`synonyms\` — danh sách từ đồng nghĩa, mỗi từ kèm phiên âm, phân cách bằng \`; \`. Format: \`word1 /phiên âm/; word2 /phiên âm/\`. Để trống nếu là collocation
+  const toggleCollocation = useCallback(() => {
+    setIncludeCollocation((prev) => {
+      if (prev && !includeVocab) {
+        return prev;
+      }
 
-**Phân biệt vocab vs collocation:**
-- Vocab: có phonetic + có synonyms → ví dụ: \`abundant,/əˈbʌndənt/,"dồi dào, phong phú",The region has abundant natural resources.,plentiful /ˈplentɪfəl/; copious /ˈkoʊpiəs/\`
-- Collocation: phonetic trống + synonyms trống → ví dụ: \`make a decision,,"đưa ra quyết định",We need to make a decision before the deadline.,\`
+      return !prev;
+    });
+  }, [includeVocab]);
 
-**Ví dụ hoàn chỉnh 3 dòng (1 header + 1 vocab + 1 collocation):**
-\`\`\`csv
-front_text,phonetic,back_text,example,synonyms
-resilient,/rɪˈzɪliənt/,"kiên cường, có sức bật",She proved to be remarkably resilient after the setback.,tough /tʌf/; hardy /ˈhɑːrdi/; adaptable /əˈdæptəbəl/
-take into account,,"xem xét, tính đến",You should take into account all the risks involved.,
-\`\`\`
+  const toggleSynonyms = useCallback(() => {
+    setIncludeSynonyms((prev) => !prev);
+  }, []);
 
-**Yêu cầu:**
-- Chủ đề: [ĐIỀN CHỦ ĐỀ CỦA BẠN VÀO ĐÂY]
-- Số lượng: [ĐIỀN SỐ LƯỢNG] từ vocab + [ĐIỀN SỐ LƯỢNG] collocation
-- Mỗi vocab phải có ít nhất 2 synonym kèm phiên âm IPA chính xác
-- Nghĩa tiếng Việt phải tự nhiên, dễ hiểu
-- Câu ví dụ phải thực tế, đúng ngữ cảnh
-- Output: chỉ trả về nội dung CSV, không giải thích thêm`;
+  const csvPrompt = useMemo(() => {
+    const typeLabel = includeVocab && includeCollocation ? 'từ vựng hoặc collocation' : includeVocab ? 'từ vựng' : 'collocation';
+    const withSynonyms = includeVocab && includeSynonyms;
+
+    const lines: string[] = [
+      'Tạo cho tôi một file CSV học từ vựng tiếng Anh theo đúng format sau:',
+      '',
+      '**Cấu trúc CSV:**',
+      '- Encoding: UTF-8',
+      '- Dấu phân cách: dấu phẩy `,`',
+      '- Header bắt buộc (dòng đầu tiên): `front_text,phonetic,back_text,example,synonyms`',
+      '',
+      '**Quy tắc từng cột:**',
+      `1. \`front_text\` — ${typeLabel} tiếng Anh`,
+    ];
+
+    if (includeVocab && includeCollocation) {
+      lines.push('2. `phonetic` — phiên âm IPA đặt trong `/.../`. Bắt buộc với từ vựng đơn lẻ, để trống với collocation');
+    } else if (includeVocab) {
+      lines.push('2. `phonetic` — phiên âm IPA đặt trong `/.../`. Bắt buộc với mọi từ vựng');
+    } else {
+      lines.push('2. `phonetic` — luôn để trống (collocation không cần phiên âm)');
+    }
+
+    lines.push('3. `back_text` — nghĩa tiếng Việt. Nếu có nhiều nghĩa thì phân cách bằng dấu phẩy, bọc trong dấu ngoặc kép `"nghĩa 1, nghĩa 2"`');
+    lines.push('4. `example` — một câu ví dụ tiếng Anh sử dụng từ đó. Nếu câu chứa dấu phẩy thì bọc trong `"..."`');
+
+    if (withSynonyms) {
+      lines.push('5. `synonyms` — danh sách từ đồng nghĩa, mỗi từ kèm phiên âm, phân cách bằng `; `. Format: `word1 /phiên âm/; word2 /phiên âm/`. Để trống nếu là collocation');
+    } else {
+      lines.push('5. `synonyms` — luôn để trống (không cần điền)');
+    }
+
+    lines.push('');
+
+    if (includeVocab && includeCollocation) {
+      lines.push('**Phân biệt vocab vs collocation:**');
+      lines.push(`- Vocab: có phonetic${withSynonyms ? ' + có synonyms' : ''} → ví dụ: \`abundant,/əˈbʌndənt/,"dồi dào, phong phú",The region has abundant natural resources.,${withSynonyms ? 'plentiful /ˈplentɪfəl/; copious /ˈkoʊpiəs/' : ''}\``);
+      lines.push('- Collocation: phonetic trống' + (withSynonyms ? ' + synonyms trống' : '') + ' → ví dụ: `make a decision,,"đưa ra quyết định",We need to make a decision before the deadline.,`');
+      lines.push('');
+    }
+
+    lines.push('**Ví dụ hoàn chỉnh:**');
+    lines.push('```csv');
+    lines.push('front_text,phonetic,back_text,example,synonyms');
+
+    if (includeVocab) {
+      lines.push(`resilient,/rɪˈzɪliənt/,"kiên cường, có sức bật",She proved to be remarkably resilient after the setback.,${withSynonyms ? 'tough /tʌf/; hardy /ˈhɑːrdi/; adaptable /əˈdæptəbəl/' : ''}`);
+    }
+
+    if (includeCollocation) {
+      lines.push('take into account,,"xem xét, tính đến",You should take into account all the risks involved.,');
+    }
+
+    lines.push('```');
+    lines.push('');
+    lines.push('**Yêu cầu:**');
+    lines.push('- Chủ đề: [ĐIỀN CHỦ ĐỀ CỦA BẠN VÀO ĐÂY]');
+
+    const countParts: string[] = [];
+    if (includeVocab) {
+      countParts.push('[ĐIỀN SỐ LƯỢNG] từ vocab');
+    }
+    if (includeCollocation) {
+      countParts.push('[ĐIỀN SỐ LƯỢNG] collocation');
+    }
+    lines.push(`- Số lượng: ${countParts.join(' + ')}`);
+
+    if (withSynonyms) {
+      lines.push('- Mỗi vocab phải có ít nhất 2 synonym kèm phiên âm IPA chính xác');
+    }
+
+    lines.push('- Nghĩa tiếng Việt phải tự nhiên, dễ hiểu');
+    lines.push('- Câu ví dụ phải thực tế, đúng ngữ cảnh');
+    lines.push('- Output: chỉ trả về nội dung CSV, không giải thích thêm');
+
+    return lines.join('\n');
+  }, [includeVocab, includeSynonyms, includeCollocation]);
 
   const handleCopyPrompt = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(csvPrompt);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(csvPrompt);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = csvPrompt;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (!ok) {
+          throw new Error('execCommand copy failed');
+        }
+      }
+
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      setError('Failed to copy prompt to clipboard');
     }
   }, [csvPrompt]);
 
@@ -86,21 +212,23 @@ take into account,,"xem xét, tính đến",You should take into account all the
 
     reader.onload = (e) => {
       const content = e.target?.result as string;
-      const lines = content.split('\n');
-      const preview = lines.slice(0, 6).map((line) => {
-        if (file.name.endsWith('.csv')) {
-          return line.split(',').map((cell) => cell.trim());
-        }
-
-        return line.split('\t').map((cell) => cell.trim());
-      });
+      const delimiter = file.name.endsWith('.csv') ? ',' : '\t';
+      const rows = content
+        .split('\n')
+        .map((line) => parseDelimitedLine(line, delimiter))
+        .filter((row) => row.some((cell) => cell));
 
       setFileData({
         file,
-        preview: preview.filter((row) => row.some((cell) => cell)),
+        preview: rows,
+        totalRows: rows.length,
       });
 
-      setError('');
+      setError(
+        rows.length - 1 > MAX_IMPORT_ROWS
+          ? `File has ${rows.length - 1} rows, which exceeds the ${MAX_IMPORT_ROWS}-row limit per import. Please split it into smaller files.`
+          : '',
+      );
     };
 
     reader.onerror = () => {
@@ -158,6 +286,11 @@ take into account,,"xem xét, tính đến",You should take into account all the
       return;
     }
 
+    if (fileData.totalRows - 1 > MAX_IMPORT_ROWS) {
+      setError(`File has ${fileData.totalRows - 1} rows, which exceeds the ${MAX_IMPORT_ROWS}-row limit per import. Please split it into smaller files.`);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -206,6 +339,42 @@ take into account,,"xem xét, tính đến",You should take into account all the
 
           {showFormat && (
             <div className="px-4 py-3 bg-gray-50 border border-hairline rounded-lg text-xs space-y-3 overflow-auto max-h-96">
+              <div>
+                <p className="font-semibold text-ink mb-2">⚙️ Tuỳ chỉnh nội dung prompt:</p>
+                <div className="flex gap-4 flex-wrap">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={includeVocab}
+                      onChange={toggleVocab}
+                      className="w-4 h-4 accent-primary"
+                    />
+                    <span className="text-body">Vocab</span>
+                  </label>
+
+                  <label className={`flex items-center gap-2 select-none ${includeVocab ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+                    <input
+                      type="checkbox"
+                      checked={includeSynonyms}
+                      onChange={toggleSynonyms}
+                      disabled={!includeVocab}
+                      className="w-4 h-4 accent-primary"
+                    />
+                    <span className="text-body">Synonyms</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={includeCollocation}
+                      onChange={toggleCollocation}
+                      className="w-4 h-4 accent-primary"
+                    />
+                    <span className="text-body">Collocation</span>
+                  </label>
+                </div>
+              </div>
+
               <div className="flex gap-2 flex-wrap">
                 <button
                   type="button"
@@ -313,7 +482,7 @@ take into account,,"xem xét, tính đến",You should take into account all the
                 <div>
                   <p className="font-semibold text-ink m-0 mb-1">{fileData.file.name}</p>
                   <p className="text-sm text-body m-0">
-                    {fileData.preview.length} rows (preview showing first 5 + header)
+                    {fileData.totalRows} rows
                   </p>
                 </div>
                 <button
@@ -329,27 +498,32 @@ take into account,,"xem xét, tính đến",You should take into account all the
               </div>
 
               <div className="border border-hairline rounded-2xl overflow-hidden">
-                <div className="grid gap-0 bg-surface-strong" style={{ gridTemplateColumns: `repeat(${fileData.preview[0]?.length || 5}, 1fr)` }}>
-                  {fileData.preview[0]?.map((cell, index) => (
-                    <div key={index} className="px-3 py-2 text-xs font-semibold text-ink border-b border-r border-hairline last:border-r-0">
-                      {cell || `Column ${index + 1}`}
-                    </div>
-                  ))}
-                </div>
-
-                {fileData.preview.slice(1).map((row, rowIndex) => (
-                  <div key={rowIndex} className="grid gap-0" style={{ gridTemplateColumns: `repeat(${row.length}, 1fr)` }}>
-                    {row.map((cell, colIndex) => (
-                      <div key={colIndex} className="px-3 py-2 text-xs text-ink border-b border-r border-hairline last:border-r-0">
-                        {cell}
+                <div className="max-h-80 overflow-y-auto">
+                  <div
+                    className="grid gap-0 bg-surface-strong sticky top-0 z-10"
+                    style={{ gridTemplateColumns: `repeat(${fileData.preview[0]?.length || 5}, 1fr)` }}
+                  >
+                    {fileData.preview[0]?.map((cell, index) => (
+                      <div key={index} className="px-3 py-2 text-xs font-semibold text-ink border-b border-r border-hairline last:border-r-0">
+                        {cell || `Column ${index + 1}`}
                       </div>
                     ))}
                   </div>
-                ))}
+
+                  {fileData.preview.slice(1).map((row, rowIndex) => (
+                    <div key={rowIndex} className="grid gap-0" style={{ gridTemplateColumns: `repeat(${fileData.preview[0]?.length || 5}, 1fr)` }}>
+                      {row.map((cell, colIndex) => (
+                        <div key={colIndex} className="px-3 py-2 text-xs text-ink border-b border-r border-hairline last:border-r-0">
+                          {cell}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <p className="text-sm text-body text-center px-4 py-3 bg-green-50/50 border border-green-200 rounded-lg m-0">
-                This will import {Math.max(0, fileData.preview.length - 1)} cards into this session.
+                This will import {Math.max(0, fileData.totalRows - 1)} cards into this session.
               </p>
             </div>
           )}
@@ -371,7 +545,7 @@ take into account,,"xem xét, tính đến",You should take into account all the
               type="button"
               className="px-4 py-2 bg-primary text-on-primary border border-primary rounded-lg hover:bg-primary-active font-semibold transition-all disabled:opacity-50"
               onClick={handleImport}
-              disabled={loading}
+              disabled={loading || fileData.totalRows - 1 > MAX_IMPORT_ROWS}
             >
               {loading ? 'Importing...' : 'Confirm import'}
             </button>
