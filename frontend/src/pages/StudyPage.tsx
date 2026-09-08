@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Filter, Settings, Shuffle } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Filter, Settings, Shuffle, Volume2 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { Card, SessionDetailResponse } from '../types';
@@ -28,6 +28,49 @@ const loadDisplayConfig = (): DisplayConfig => {
   }
 };
 
+type VoiceGender = 'male' | 'female';
+
+const VOICE_GENDER_KEY = 'studyVoiceGender';
+
+const loadVoiceGender = (): VoiceGender => {
+  try {
+    const raw = localStorage.getItem(VOICE_GENDER_KEY);
+    return raw === 'male' ? 'male' : 'female';
+  } catch {
+    return 'female';
+  }
+};
+
+const FEMALE_VOICE_HINTS = ['female', 'zira', 'susan', 'samantha', 'victoria', 'karen', 'moira', 'tessa', 'fiona', 'catherine', 'aria', 'jenny', 'hazel'];
+const MALE_VOICE_HINTS = ['male', 'david', 'mark', 'daniel', 'alex', 'fred', 'george', 'james', 'ryan', 'guy', 'tom', 'eric'];
+
+type VoiceAccent = 'en-US' | 'en-GB';
+
+const VOICE_ACCENT_KEY = 'studyVoiceAccent';
+
+const loadVoiceAccent = (): VoiceAccent => {
+  try {
+    const raw = localStorage.getItem(VOICE_ACCENT_KEY);
+    return raw === 'en-GB' ? 'en-GB' : 'en-US';
+  } catch {
+    return 'en-US';
+  }
+};
+
+function pickVoice(voices: SpeechSynthesisVoice[], gender: VoiceGender, accent: VoiceAccent): SpeechSynthesisVoice | null {
+  const englishVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('en'));
+  const accentVoices = englishVoices.filter((v) => v.lang.toLowerCase() === accent.toLowerCase());
+  const pool = accentVoices.length > 0 ? accentVoices : englishVoices;
+  const hints = gender === 'female' ? FEMALE_VOICE_HINTS : MALE_VOICE_HINTS;
+
+  const match = pool.find((v) => hints.some((hint) => v.name.toLowerCase().includes(hint)));
+  if (match) {
+    return match;
+  }
+
+  return pool[0] || voices[0] || null;
+}
+
 export default function StudyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -41,7 +84,31 @@ export default function StudyPage() {
   const [showDisplaySettings, setShowDisplaySettings] = useState(false);
   const [shuffleEnabled, setShuffleEnabled] = useState(false);
   const [shuffleSeed, setShuffleSeed] = useState(0);
+  const [voiceGender, setVoiceGender] = useState<VoiceGender>(loadVoiceGender);
+  const [voiceAccent, setVoiceAccent] = useState<VoiceAccent>(loadVoiceAccent);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [showSpeakerSettings, setShowSpeakerSettings] = useState(false);
   const displaySettingsRef = useRef<HTMLDivElement>(null);
+  const speakerSettingsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem(VOICE_GENDER_KEY, voiceGender);
+  }, [voiceGender]);
+
+  useEffect(() => {
+    localStorage.setItem(VOICE_ACCENT_KEY, voiceAccent);
+  }, [voiceAccent]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      return;
+    }
+
+    const loadVoices = () => setVoices(window.speechSynthesis.getVoices());
+    loadVoices();
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(DISPLAY_CONFIG_KEY, JSON.stringify(displayConfig));
@@ -62,6 +129,21 @@ export default function StudyPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showDisplaySettings]);
 
+  useEffect(() => {
+    if (!showSpeakerSettings) {
+      return;
+    }
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (speakerSettingsRef.current && !speakerSettingsRef.current.contains(e.target as Node)) {
+        setShowSpeakerSettings(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showSpeakerSettings]);
+
   const toggleDisplayField = useCallback((field: keyof DisplayConfig) => {
     setDisplayConfig((prev) => ({ ...prev, [field]: !prev[field] }));
   }, []);
@@ -80,6 +162,30 @@ export default function StudyPage() {
   useEffect(() => {
     void fetchDetail();
   }, [id]);
+
+  const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+  const handleSpeak = useCallback((text: string) => {
+    if (!speechSupported || !text) {
+      return;
+    }
+
+    const spokenText = text.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    if (!spokenText) {
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(spokenText);
+    utterance.lang = voiceAccent;
+
+    const voice = pickVoice(voices, voiceGender, voiceAccent);
+    if (voice) {
+      utterance.voice = voice;
+    }
+
+    window.speechSynthesis.speak(utterance);
+  }, [speechSupported, voices, voiceGender, voiceAccent]);
 
   const filteredCards = useMemo(() => {
     const cardList = cards || [];
@@ -252,6 +358,78 @@ export default function StudyPage() {
           Shuffle
         </button>
 
+        {speechSupported && (
+          <div className="relative flex-shrink-0" ref={speakerSettingsRef}>
+            <button
+              type="button"
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
+                showSpeakerSettings ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
+              }`}
+              onClick={() => setShowSpeakerSettings((current) => !current)}
+              title="Configure pronunciation voice"
+            >
+              <Volume2 size={16} />
+              Speaker
+            </button>
+
+            {showSpeakerSettings && (
+              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Voice</p>
+                  <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
+                    <button
+                      type="button"
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        voiceGender === 'female' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                      }`}
+                      onClick={() => setVoiceGender('female')}
+                      title="Female voice"
+                    >
+                      Nữ
+                    </button>
+                    <button
+                      type="button"
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        voiceGender === 'male' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                      }`}
+                      onClick={() => setVoiceGender('male')}
+                      title="Male voice"
+                    >
+                      Nam
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Accent</p>
+                  <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
+                    <button
+                      type="button"
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        voiceAccent === 'en-US' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                      }`}
+                      onClick={() => setVoiceAccent('en-US')}
+                      title="US pronunciation"
+                    >
+                      US
+                    </button>
+                    <button
+                      type="button"
+                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        voiceAccent === 'en-GB' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                      }`}
+                      onClick={() => setVoiceAccent('en-GB')}
+                      title="UK pronunciation"
+                    >
+                      UK
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="relative flex-shrink-0" ref={displaySettingsRef}>
           <button
             type="button"
@@ -374,9 +552,24 @@ export default function StudyPage() {
                     </button>
                   </div>
                   <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
-                    <h2 className="text-4xl md:text-5xl font-light leading-tight tracking-tight text-ink break-words">
-                      {currentCard.front_text}
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-4xl md:text-5xl font-light leading-tight tracking-tight text-ink break-words">
+                        {currentCard.front_text}
+                      </h2>
+                      {speechSupported && (
+                        <button
+                          type="button"
+                          className="w-10 h-10 shrink-0 rounded-full border border-hairline bg-white/70 text-ink hover:border-primary hover:text-primary transition-all flex items-center justify-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSpeak(currentCard.front_text);
+                          }}
+                          title="Play pronunciation"
+                        >
+                          <Volume2 size={18} />
+                        </button>
+                      )}
+                    </div>
                     {displayConfig.phonetic && currentCard.front_phonetic && (
                       <p className="text-lg text-body font-mono">{currentCard.front_phonetic}</p>
                     )}
