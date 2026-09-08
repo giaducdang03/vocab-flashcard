@@ -57,18 +57,36 @@ const loadVoiceAccent = (): VoiceAccent => {
   }
 };
 
-function pickVoice(voices: SpeechSynthesisVoice[], gender: VoiceGender, accent: VoiceAccent): SpeechSynthesisVoice | null {
+type VoicePick = {
+  voice: SpeechSynthesisVoice | null;
+  exactMatch: boolean;
+};
+
+function pickVoice(voices: SpeechSynthesisVoice[], gender: VoiceGender, accent: VoiceAccent): VoicePick {
   const englishVoices = voices.filter((v) => v.lang.toLowerCase().startsWith('en'));
   const accentVoices = englishVoices.filter((v) => v.lang.toLowerCase() === accent.toLowerCase());
-  const pool = accentVoices.length > 0 ? accentVoices : englishVoices;
   const hints = gender === 'female' ? FEMALE_VOICE_HINTS : MALE_VOICE_HINTS;
+  const matchesGender = (v: SpeechSynthesisVoice) => hints.some((hint) => new RegExp(`\\b${hint}\\b`, 'i').test(v.name));
 
-  const match = pool.find((v) => hints.some((hint) => v.name.toLowerCase().includes(hint)));
-  if (match) {
-    return match;
+  // Best case: right accent AND right gender.
+  const exactMatch = accentVoices.find(matchesGender);
+  if (exactMatch) {
+    return { voice: exactMatch, exactMatch: true };
   }
 
-  return pool[0] || voices[0] || null;
+  // No voice for this accent has the requested gender — keep the accent
+  // (e.g. fall back to a UK female voice rather than switch to a US male one).
+  if (accentVoices.length > 0) {
+    return { voice: accentVoices[0], exactMatch: false };
+  }
+
+  // No voice at all for this accent — try to at least keep the gender.
+  const genderMatch = englishVoices.find(matchesGender);
+  if (genderMatch) {
+    return { voice: genderMatch, exactMatch: false };
+  }
+
+  return { voice: englishVoices[0] || voices[0] || null, exactMatch: false };
 }
 
 export default function StudyPage() {
@@ -88,8 +106,18 @@ export default function StudyPage() {
   const [voiceAccent, setVoiceAccent] = useState<VoiceAccent>(loadVoiceAccent);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [showSpeakerSettings, setShowSpeakerSettings] = useState(false);
+  const [voiceToast, setVoiceToast] = useState<string | null>(null);
   const displaySettingsRef = useRef<HTMLDivElement>(null);
   const speakerSettingsRef = useRef<HTMLDivElement>(null);
+  const voiceToastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (voiceToastTimeoutRef.current) {
+        clearTimeout(voiceToastTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(VOICE_GENDER_KEY, voiceGender);
@@ -165,6 +193,15 @@ export default function StudyPage() {
 
   const speechSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
+  const showVoiceToast = useCallback((message: string) => {
+    if (voiceToastTimeoutRef.current) {
+      clearTimeout(voiceToastTimeoutRef.current);
+    }
+
+    setVoiceToast(message);
+    voiceToastTimeoutRef.current = setTimeout(() => setVoiceToast(null), 3500);
+  }, []);
+
   const handleSpeak = useCallback((text: string) => {
     if (!speechSupported || !text) {
       return;
@@ -175,17 +212,24 @@ export default function StudyPage() {
       return;
     }
 
+    const { voice, exactMatch } = pickVoice(voices, voiceGender, voiceAccent);
+
+    if (!exactMatch) {
+      const genderLabel = voiceGender === 'female' ? 'nữ' : 'nam';
+      const accentLabel = voiceAccent === 'en-GB' ? 'UK' : 'US';
+      showVoiceToast(`Không tìm thấy giọng ${genderLabel} cho accent ${accentLabel}, đang dùng giọng thay thế.`);
+    }
+
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(spokenText);
     utterance.lang = voiceAccent;
 
-    const voice = pickVoice(voices, voiceGender, voiceAccent);
     if (voice) {
       utterance.voice = voice;
     }
 
     window.speechSynthesis.speak(utterance);
-  }, [speechSupported, voices, voiceGender, voiceAccent]);
+  }, [speechSupported, voices, voiceGender, voiceAccent, showVoiceToast]);
 
   const filteredCards = useMemo(() => {
     const cardList = cards || [];
@@ -277,6 +321,12 @@ export default function StudyPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-canvas to-amber-100/20 py-6 px-5">
+      {voiceToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-ink text-white text-sm font-semibold rounded-xl shadow-lg animate-fadeIn">
+          {voiceToast}
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto flex flex-col gap-4 h-[calc(100vh-48px)]">
       {/* Top Bar */}
       <header className="flex items-center justify-between gap-4 border-b border-hairline pb-4 flex-shrink-0">
