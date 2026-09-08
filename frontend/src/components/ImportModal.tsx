@@ -326,19 +326,19 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
           </button>
         </div>
 
-        <div className="px-7 py-7 flex-1 overflow-y-auto flex flex-col gap-4">
+        <div className="px-7 py-7 flex-1 min-h-0 overflow-y-auto flex flex-col gap-4">
           {/* Format Guide */}
           <button
             type="button"
             onClick={() => setShowFormat(!showFormat)}
-            className="flex items-center justify-between px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+            className="flex items-center justify-between px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shrink-0"
           >
             <span className="text-sm font-semibold text-ink">📋 CSV Format & Prompt</span>
             <ChevronDown size={18} className={`transition-transform ${showFormat ? 'rotate-180' : ''}`} />
           </button>
 
           {showFormat && (
-            <div className="px-4 py-3 bg-gray-50 border border-hairline rounded-lg text-xs space-y-3 overflow-auto max-h-96">
+            <div className="px-4 py-3 bg-gray-50 border border-hairline rounded-lg text-xs space-y-3 overflow-auto max-h-96 shrink-0">
               <div>
                 <p className="font-semibold text-ink mb-2">⚙️ Tuỳ chỉnh nội dung prompt:</p>
                 <div className="flex gap-4 flex-wrap">
@@ -446,9 +446,9 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
             </div>
           )}
 
-          {!fileData ? (
+          {!showFormat && (!fileData ? (
             <div
-              className={`grid place-items-center gap-4 min-h-72 border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+              className={`grid place-items-center gap-2 min-h-40 shrink-0 border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer transition-all ${
                 dragActive
                   ? 'border-primary bg-orange-50/50 text-primary'
                   : 'border-hairline bg-white/60 text-body'
@@ -458,9 +458,9 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <Upload size={36} />
-              <h3 className="text-lg font-semibold text-ink m-0">Drag and drop your file</h3>
-              <p className="text-body m-0">or click to browse</p>
+              <Upload size={24} />
+              <h3 className="text-base font-semibold text-ink m-0">Drag and drop your file</h3>
+              <p className="text-body text-sm m-0">or click to browse</p>
 
               <input
                 type="file"
@@ -470,14 +470,14 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                 id="file-input"
               />
 
-              <label htmlFor="file-input" className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold cursor-pointer transition-all">
+              <label htmlFor="file-input" className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold cursor-pointer transition-all text-sm">
                 Choose file
               </label>
 
-              <p className="text-xs text-muted m-0 mt-2">Supported: .xlsx, .csv</p>
+              <p className="text-xs text-muted m-0">Supported: .xlsx, .csv</p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 shrink-0">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="font-semibold text-ink m-0 mb-1">{fileData.file.name}</p>
@@ -526,10 +526,10 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                 This will import {Math.max(0, fileData.totalRows - 1)} cards into this session.
               </p>
             </div>
-          )}
+          ))}
 
           {error && (
-            <div className="px-3 py-2 bg-error/8 text-error border border-error/20 rounded-lg text-sm">
+            <div className="px-3 py-2 bg-error/8 text-error border border-error/20 rounded-lg text-sm shrink-0">
               {error}
             </div>
           )}
