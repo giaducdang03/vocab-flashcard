@@ -17,6 +17,8 @@ class SessionOut(BaseModel):
     title: str
     created_at: datetime
     updated_at: datetime
+    total_cards: int = 0
+    learned_cards: int = 0
 
     class Config:
         from_attributes = True

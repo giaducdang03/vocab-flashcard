@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { BookOpenText, Plus, Search, Trash2, LogOut } from 'lucide-react';
+import { BookOpenText, Plus, Search, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
+import StatsSection from '../components/dashboard/StatsSection';
+import UserMenu from '../components/UserMenu';
+import SessionCreateModal from '../components/SessionCreateModal';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -12,6 +15,7 @@ export default function DashboardPage() {
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const fetchSessions = async () => {
     setLoading(true);
@@ -35,6 +39,7 @@ export default function DashboardPage() {
     try {
       await api.post('/sessions', { title: title.trim() });
       setTitle('');
+      setShowCreateModal(false);
       await fetchSessions();
     } finally {
       setCreating(false);
@@ -64,38 +69,34 @@ export default function DashboardPage() {
             <Search size={16} />
             Browse
           </button>
-          <div className="user-pill">
-            <span>{user?.display_name || user?.email}</span>
-          </div>
-          <button type="button" className="btn btn-secondary" onClick={handleLogout}>
-            <LogOut size={16} />
-          </button>
+          {user && <UserMenu user={user} onLogout={handleLogout} />}
         </nav>
       </header>
 
       <main className="page-container">
         <section className="hero-card">
           <div>
-            <p className="eyebrow">Dashboard</p>
-            <h1 className="display-title">Study sessions built for focus.</h1>
+            <p className="eyebrow">Welcome back</p>
+            <h1 className="text-2xl font-light letter-spacing-tight">Great to see you, {user?.display_name}! Let's master something new today.</h1>
           </div>
-
-          <form onSubmit={handleCreateSession} className="session-create-form">
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="New session name"
-            />
-            <button type="submit" className="btn btn-primary" disabled={creating}>
-              <Plus size={16} />
-              {creating ? 'Creating...' : 'New session'}
-            </button>
-          </form>
         </section>
 
         <section className="section-header">
-          <h2>Your sessions</h2>
-          <p>{sessions.length} total</p>
+          <h2>Dashboard</h2>
+        </section>
+
+        <StatsSection sessions={sessions} />
+
+        <section className="section-header">
+          <h2>Your sessions ({sessions.length})</h2>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setShowCreateModal(true)}
+          >
+            <Plus size={16} />
+            Add session
+          </button>
         </section>
 
         {loading ? (
@@ -108,7 +109,12 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="session-grid">
-            {sessions.map((session) => (
+            {sessions.map((session) => {
+              const masteredPercent = session.total_cards > 0
+                ? Math.round((session.learned_cards / session.total_cards) * 100)
+                : 0;
+
+              return (
               <article key={session.id} className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
                 <div className="flex items-center justify-between gap-3">
                   <span className="inline-flex items-center justify-center px-2 py-1 bg-orange-100/20 text-ink text-xs font-bold uppercase rounded-full">
@@ -134,20 +140,32 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="w-full h-2 bg-hairline rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full" style={{ width: '42%' }} />
+                  <div className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full" style={{ width: `${masteredPercent}%` }} />
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm text-body font-semibold">42% mastered</span>
+                  <span className="text-sm text-body font-semibold">
+                    {session.total_cards > 0 ? `${masteredPercent}% mastered` : 'No cards yet'}
+                  </span>
                   <Link to={`/sessions/${session.id}`} className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold text-sm transition-all">
                     Open
                   </Link>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
+
+      <SessionCreateModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title={title}
+        onTitleChange={setTitle}
+        onSubmit={handleCreateSession}
+        isCreating={creating}
+      />
     </div>
   );
 }

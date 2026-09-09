@@ -10,6 +10,7 @@ from app.models.card import Card, Synonym
 from app.models.session import Session
 from app.models.user import User
 from app.schemas.card import CardCreate, CardOut, CardUpdate, LearnedToggleRequest
+from app.services.learning import apply_learned_state
 
 router = APIRouter()
 
@@ -34,11 +35,13 @@ async def create_card(
         front_phonetic=payload.front_phonetic,
         back_text=payload.back_text,
         example=payload.example,
-        is_learned=payload.is_learned,
+        is_learned=False,
         position=payload.position,
     )
     db.add(card)
     await db.flush()
+
+    apply_learned_state(db, card, payload.is_learned)
 
     for synonym_payload in payload.synonyms:
         db.add(Synonym(card_id=card.id, word=synonym_payload.word, phonetic=synonym_payload.phonetic))
@@ -67,8 +70,12 @@ async def update_card(
     if not card:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found")
 
-    for field, value in payload.model_dump(exclude_none=True, exclude={"synonyms"}).items():
+    updates = payload.model_dump(exclude_none=True, exclude={"synonyms", "is_learned"})
+    for field, value in updates.items():
         setattr(card, field, value)
+
+    if payload.is_learned is not None:
+        apply_learned_state(db, card, payload.is_learned)
 
     if payload.synonyms is not None:
         for existing in list(card.synonyms):
@@ -101,7 +108,7 @@ async def toggle_card_learned(
     if not card:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found")
 
-    card.is_learned = payload.is_learned
+    apply_learned_state(db, card, payload.is_learned)
     await db.commit()
     await db.refresh(card, attribute_names=["is_learned"])
     return CardOut.model_validate(card)

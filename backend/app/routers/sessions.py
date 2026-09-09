@@ -17,10 +17,21 @@ router = APIRouter()
 @router.get("", response_model=list[SessionOut])
 async def list_sessions(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)) -> list[SessionOut]:
     result = await db.execute(
-        select(Session).where(Session.user_id == current_user.id).order_by(Session.created_at.desc())
+        select(Session)
+        .options(selectinload(Session.cards))
+        .where(Session.user_id == current_user.id)
+        .order_by(Session.created_at.desc())
     )
     sessions = result.scalars().all()
-    return [SessionOut.model_validate(session) for session in sessions]
+
+    session_outs = []
+    for session in sessions:
+        session_out = SessionOut.model_validate(session)
+        session_out.total_cards = len(session.cards)
+        session_out.learned_cards = sum(1 for card in session.cards if card.is_learned)
+        session_outs.append(session_out)
+
+    return session_outs
 
 
 @router.post("", response_model=SessionOut)
@@ -45,8 +56,12 @@ async def get_session(session_id: str, current_user: User = Depends(get_current_
 
     cards = sorted(session.cards, key=lambda c: (c.position, c.created_at))
 
+    session_out = SessionOut.model_validate(session)
+    session_out.total_cards = len(cards)
+    session_out.learned_cards = sum(1 for card in cards if card.is_learned)
+
     return {
-        "session": SessionOut.model_validate(session),
+        "session": session_out,
         "cards": [CardOut.model_validate(card) for card in cards],
     }
 

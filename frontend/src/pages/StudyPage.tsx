@@ -188,6 +188,7 @@ export default function StudyPage() {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     void fetchDetail();
   }, [id]);
 

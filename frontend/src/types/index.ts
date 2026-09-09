@@ -10,6 +10,8 @@ export type Session = {
   title: string;
   created_at: string;
   updated_at: string;
+  total_cards: number;
+  learned_cards: number;
 };
 
 export type Synonym = {
@@ -36,4 +38,15 @@ export type Card = {
 export type SessionDetailResponse = {
   session: Session;
   cards: Card[];
+};
+
+export type DailyPoint = {
+  date: string;
+  learned_count: number;
+};
+
+export type DailyStats = {
+  days: number;
+  daily: DailyPoint[];
+  current_streak: number;
 };
