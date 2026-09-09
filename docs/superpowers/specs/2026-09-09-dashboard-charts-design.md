@@ -14,14 +14,14 @@ Thêm khu vực thống kê tiến độ học vào Dashboard, và tách UI thà
 - KPI tiles: tổng số từ, số từ đã học, tỉ lệ %, streak (chuỗi ngày học liên tiếp)
 - Biểu đồ số từ học theo ngày (chọn cửa sổ 7 hoặc 30 ngày)
 - Biểu đồ bar so sánh tiến độ giữa các session
-- Cột `learned_at` trên `cards` + migration, để có dữ liệu theo thời gian
+- Bảng `card_learn_events` + migration, làm lịch sử học bất biến
 
 ### Ngoài phạm vi
 
 - Donut/pie tổng quan đã học vs chưa học (đã cân nhắc và loại)
-- Bảng lịch sử học bất biến (`card_learn_events`) — xem mục 4.2
 - Thống kê theo `card_type` (vocab vs collocation)
 - Heatmap hoạt động kiểu GitHub
+- Màn hình xem lịch sử chi tiết từng từ (dữ liệu có sẵn trong bảng event, nhưng chưa làm UI)
 
 ---
 
@@ -29,13 +29,14 @@ Thêm khu vực thống kê tiến độ học vào Dashboard, và tách UI thà
 
 | # | Quyết định | Lựa chọn |
 |---|------------|----------|
-| 1 | Phạm vi dữ liệu | Snapshot **+** chuỗi thời gian → bắt buộc thêm `learned_at` |
+| 1 | Phạm vi dữ liệu | Snapshot **+** chuỗi thời gian → cần lưu mốc thời gian học |
 | 2 | Thành phần hiển thị | KPI tiles + chart theo ngày + bar theo session (**không** donut) |
 | 3 | Layout | 2 section xếp dọc trong cùng 1 trang, không thêm route |
-| 4 | Backfill dữ liệu cũ | `learned_at = created_at` cho card đang `is_learned = true` |
+| 4 | Backfill dữ liệu cũ | Sinh 1 event `learned` với `occurred_at = cards.created_at` cho mỗi card đang `is_learned = true` |
 | 5 | Thư viện chart | `chart.js` + `react-chartjs-2`, register thủ công từng thành phần |
 | 6 | Định nghĩa streak | Số ngày liên tiếp có ≥1 từ được học, đếm ngược từ hôm nay; nếu hôm nay chưa học thì bắt đầu từ hôm qua |
-| 7 | Lịch sử khi bỏ đánh dấu | Chấp nhận xoá `learned_at` (không dựng bảng event) |
+| 7 | Lưu lịch sử | Bảng `card_learn_events` bất biến — bỏ đánh dấu **không** xoá lịch sử |
+| 8 | Cột `learned_at` | **Không thêm.** Có bảng event rồi thì cột này là dữ liệu thừa phải đồng bộ 2 nơi |
 
 **Lưu ý về quyết định #4:** backfill bằng `created_at` nghĩa là ngày *import file* bị coi là ngày *học thuộc*. Dữ liệu lịch sử trước thời điểm migration sẽ không phản ánh đúng thực tế. Đây là đánh đổi có ý thức để chart có sẵn dữ liệu ngay.
 
@@ -43,34 +44,62 @@ Thêm khu vực thống kê tiến độ học vào Dashboard, và tách UI thà
 
 ## 3. Data model & migration
 
-### 3.1 Model
+### 3.1 Model mới
 
-`backend/app/models/card.py` — thêm 1 cột vào `Card`:
+`backend/app/models/card.py` — thêm class mới:
 
 ```python
-learned_at: Mapped[datetime | None] = mapped_column(
-    DateTime(timezone=True), nullable=True, index=True
+class CardLearnEvent(Base):
+    __tablename__ = "card_learn_events"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    card_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("cards.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    event_type: Mapped[str] = mapped_column(String(20), nullable=False)  # 'learned' | 'unlearned'
+    occurred_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False, index=True
+    )
+
+    card: Mapped["Card"] = relationship(back_populates="learn_events")
+```
+
+Và trên `Card` thêm quan hệ:
+
+```python
+learn_events: Mapped[list["CardLearnEvent"]] = relationship(
+    back_populates="card", cascade="all, delete-orphan"
 )
 ```
+
+`cards.is_learned` **giữ nguyên** làm trạng thái hiện tại (dùng cho filter trong study mode và đếm `learned_cards`). Bảng event là lịch sử. Hai thứ được cập nhật cùng lúc trong một transaction bởi helper ở mục 4.2.
+
+Chuỗi cascade khi xoá: xoá session → cascade xuống cards → cascade xuống events.
 
 ### 3.2 Migration
 
 Revision thứ 2 của project, `down_revision = "20260817_initial_schema"`.
 
 **upgrade():**
-1. `op.add_column("cards", sa.Column("learned_at", sa.DateTime(timezone=True), nullable=True))`
-2. `op.create_index("ix_cards_learned_at", "cards", ["learned_at"])`
-3. Backfill: `UPDATE cards SET learned_at = created_at WHERE is_learned = true`
+1. `op.create_table("card_learn_events", ...)` với FK `card_id → cards.id` (`ondelete="CASCADE"`)
+2. `op.create_index("ix_card_learn_events_card_id", ...)` và `op.create_index("ix_card_learn_events_occurred_at", ...)`
+3. Backfill:
+   ```sql
+   INSERT INTO card_learn_events (id, card_id, event_type, occurred_at)
+   SELECT gen_random_uuid()::text, id, 'learned', created_at
+   FROM cards WHERE is_learned = true
+   ```
+   `gen_random_uuid()` là hàm built-in từ Postgres 13+ (image đang dùng là `postgres:16-alpine`), không cần extension. Cast `::text` cho khớp kiểu `String(36)` của các bảng khác.
 
-**downgrade():** drop index → drop column.
+**downgrade():** drop table (index đi theo).
 
 ---
 
-## 4. Backend — giữ `learned_at` luôn nhất quán
+## 4. Backend — ghi trạng thái và lịch sử
 
 ### 4.1 Ba đường ghi `is_learned`
 
-Khảo sát code cho thấy có **3** nơi thay đổi `is_learned`, không phải 1. Bỏ sót bất kỳ nơi nào sẽ làm số liệu lệch:
+Khảo sát code cho thấy có **3** nơi thay đổi `is_learned`, không phải 1. Bỏ sót bất kỳ nơi nào sẽ làm lịch sử thủng:
 
 | Nơi | File | Ghi chú |
 |-----|------|---------|
@@ -78,38 +107,33 @@ Khảo sát code cho thấy có **3** nơi thay đổi `is_learned`, không ph�
 | `update_card` | `routers/cards.py` | Vòng `setattr`; `CardUpdate` có field `is_learned` |
 | `toggle_card_learned` | `routers/cards.py` | `PATCH /cards/{id}/learned` |
 
-Import hàng loạt (`routers/imports.py`) luôn tạo card với `is_learned = False` → `learned_at` NULL, không cần đụng tới.
+Import hàng loạt (`routers/imports.py`) luôn tạo card với `is_learned = False` → không sinh event, không cần đụng tới.
 
 ### 4.2 Helper dùng chung
 
 File mới `backend/app/services/learning.py`:
 
 ```python
-from datetime import datetime, timezone
-from app.models.card import Card
-
-
 def apply_learned_state(card: Card, is_learned: bool) -> None:
-    """Đặt trạng thái đã học và giữ learned_at đồng bộ.
+    """Đổi trạng thái đã học và ghi lại lịch sử.
 
-    - false → true: ghi mốc thời gian hiện tại
-    - true  → true: giữ nguyên mốc cũ (không ghi đè)
-    - * → false:    xoá mốc
+    Chỉ sinh event khi trạng thái thực sự thay đổi — PATCH cùng một giá trị
+    nhiều lần sẽ không tạo event rác.
     """
-    if is_learned and not card.is_learned:
-        card.learned_at = datetime.now(timezone.utc)
-    elif not is_learned:
-        card.learned_at = None
+    if card.is_learned == is_learned:
+        return
+
     card.is_learned = is_learned
+    card.learn_events.append(
+        CardLearnEvent(event_type="learned" if is_learned else "unlearned")
+    )
 ```
+
+Dùng `card.learn_events.append(...)` thay vì `db.add(CardLearnEvent(card_id=card.id, ...))` để không phải `flush()` lấy `card.id` trước — quan trọng ở `create_card` khi card còn chưa có id.
 
 Cả 3 đường ghi ở 4.1 gọi hàm này thay vì gán `is_learned` trực tiếp. Riêng `update_card` phải **loại `is_learned` khỏi vòng `setattr`** rồi xử lý riêng qua helper.
 
-**Đánh đổi đã chấp nhận:** bỏ đánh dấu "đã học" sẽ xoá vĩnh viễn mốc thời gian cũ, nên biểu đồ quá khứ thay đổi theo. Muốn lịch sử bất biến cần bảng `card_learn_events` riêng — để dành cho sau.
-
-### 4.3 Schema
-
-`backend/app/schemas/card.py` — `CardOut` thêm `learned_at: datetime | None = None`.
+Ở `create_card` phải **bỏ `is_learned=payload.is_learned` khỏi constructor `Card(...)`** rồi gọi helper sau đó. Nếu vẫn gán trong constructor, `card.is_learned` đã bằng giá trị đích khi helper chạy → helper early-return → **không sinh event nào**, card đã học mà lịch sử trống.
 
 ---
 
@@ -148,19 +172,21 @@ Backend lưu UTC. Frontend gửi `tz_offset_minutes = -new Date().getTimezoneOff
 
 ```python
 offset = timedelta(minutes=tz_offset_minutes)
-local_date = func.date(Card.learned_at + offset)
+local_date = func.date(CardLearnEvent.occurred_at + offset)
 ```
 
 SQLAlchemy render `timedelta` thành tham số `INTERVAL` của Postgres. Nếu không làm bước này, học lúc 0–7h sáng (giờ VN) sẽ bị tính sang ngày hôm trước.
 
 ### 5.3 Truy vấn
 
-Hai query, đều join `sessions` để lọc theo `user_id` và bỏ qua `learned_at IS NULL`:
+Hai query, đều join `cards → sessions` để lọc theo `user_id`, và chỉ lấy `event_type = 'learned'`:
 
-1. **Chuỗi ngày** — lọc `local_date >= start_date`, `GROUP BY local_date`, `COUNT(*)`
+1. **Chuỗi ngày** — lọc `local_date >= start_date`, `GROUP BY local_date`, giá trị là **`COUNT(DISTINCT card_id)`**
 2. **Streak** — `SELECT DISTINCT local_date` trên **toàn bộ lịch sử** (không giới hạn cửa sổ `days`, để streak dài hơn 30 ngày vẫn đếm đúng)
 
 Sau đó Python dựng chuỗi dense từ dict `{date: count}`.
+
+**Vì sao `COUNT(DISTINCT card_id)`:** nếu trong cùng một ngày bạn bật → tắt → bật lại một từ, sẽ có 2 event `learned`. Đếm distinct để ngày đó chỉ tính 1 từ. Cùng một từ học lại ở ngày khác thì vẫn tính cho từng ngày — đúng với ý nghĩa "hôm đó học được bao nhiêu từ".
 
 ### 5.4 Hàm tính streak
 
@@ -211,7 +237,7 @@ Mỗi component một nhiệm vụ, nhận dữ liệu qua props; chỉ `StatsSe
 
 ### 6.3 Luồng dữ liệu
 
-`DashboardPage` đã fetch `/sessions` (đã có `total_cards` / `learned_cards` từ task trước). Truyền xuống `StatsSection`:
+`DashboardPage` đã fetch `/sessions` (đã có `total_cards` / `learned_cards`). Truyền xuống `StatsSection`:
 
 | Số liệu | Nguồn |
 |---------|-------|
@@ -257,7 +283,7 @@ export type DailyPoint = { date: string; learned_count: number };
 export type DailyStats = { days: number; daily: DailyPoint[]; current_streak: number };
 ```
 
-và `Card` thêm `learned_at?: string | null`.
+`Card` và `CardOut` **không đổi** — không có cột `learned_at`.
 
 ---
 
@@ -279,25 +305,27 @@ Nguyên tắc: hỏng phần thống kê không được làm hỏng danh sách 
 
 Project hiện **chưa có test infra** (chỉ có test của thư viện trong `.venv`). Không dựng harness DB đầy đủ trong phạm vi này.
 
-**Có test tự động:**
-- Thêm `pytest` vào `requirements.txt`
-- Test `calculate_streak` (pure function, không cần DB): tập rỗng; đúng 1 ngày; chuỗi liên tiếp; chuỗi đứt quãng; hôm nay chưa học nhưng hôm qua có; hôm nay và hôm qua đều không có
+**Có test tự động** — thêm `pytest` vào `requirements.txt`:
+
+- `calculate_streak` (pure function, không cần DB): tập rỗng; đúng 1 ngày; chuỗi liên tiếp; chuỗi đứt quãng; hôm nay chưa học nhưng hôm qua có; hôm nay và hôm qua đều không có
+- `apply_learned_state` (chỉ cần object `Card` trong bộ nhớ, không cần DB): `False → True` sinh 1 event `learned`; `True → False` sinh 1 event `unlearned`; gọi lại cùng giá trị **không** sinh event nào; trạng thái `is_learned` đổi đúng
 
 **Verification thủ công:**
-1. Chạy migration → kiểm tra card cũ đã học có `learned_at = created_at`
+1. Chạy migration → mỗi card đang đã học có đúng 1 event `learned` với `occurred_at = created_at`
 2. Đánh dấu 1 từ đã học → chart hôm nay tăng 1, streak cập nhật
-3. Bỏ đánh dấu → chart giảm lại
-4. Đổi toggle 7 ↔ 30 ngày → số cột đổi đúng
-5. Tài khoản chưa có session → thấy empty state, không lỗi console
-6. Tắt backend → KPI/session bar vẫn render, chỉ vùng chart báo lỗi
+3. Bỏ đánh dấu → KPI "đã học" giảm, **nhưng cột chart của ngày học vẫn giữ nguyên** (đây là điểm khác biệt chính so với phương án cột `learned_at`)
+4. Bật → tắt → bật cùng 1 từ trong 1 ngày → chart ngày đó vẫn chỉ tính 1
+5. Đổi toggle 7 ↔ 30 ngày → số cột đổi đúng
+6. Xoá 1 session có card đã học → events bị xoá theo, không còn mồ côi
+7. Tài khoản chưa có session → thấy empty state, không lỗi console
+8. Tắt backend → KPI/session bar vẫn render, chỉ vùng chart báo lỗi
 
 ---
 
 ## 9. Files touched
 
 **Backend**
-- `app/models/card.py` — thêm `learned_at`
-- `app/schemas/card.py` — `CardOut.learned_at`
+- `app/models/card.py` — thêm `CardLearnEvent` + quan hệ `Card.learn_events`
 - `app/schemas/stats.py` — **mới**
 - `app/services/learning.py` — **mới** (`apply_learned_state`, `calculate_streak`)
 - `app/routers/cards.py` — 3 đường ghi dùng helper
@@ -324,7 +352,8 @@ Project hiện **chưa có test infra** (chỉ có test của thư viện trong 
 | Rủi ro | Giảm thiểu |
 |--------|------------|
 | Backfill `created_at` làm lịch sử sai lệch | Đã chấp nhận có ý thức; chỉ ảnh hưởng dữ liệu trước migration |
-| Bỏ đánh dấu xoá mất lịch sử | Đã chấp nhận; nâng cấp sau bằng bảng event nếu cần |
-| Query `func.date(...)` không dùng được index | Dữ liệu ở quy mô cá nhân nên không đáng kể; nếu cần, thêm điều kiện chặn theo `learned_at` UTC để sargable |
+| `is_learned` và bảng event lệch nhau | Chỉ đổi trạng thái qua `apply_learned_state`, cùng 1 transaction; có test cho helper |
+| Bảng event phình theo thời gian | Mỗi lần toggle 1 dòng, quy mô cá nhân không đáng kể; có index `occurred_at` |
+| Query `func.date(...)` không dùng được index | Quy mô cá nhân nên không đáng kể; nếu cần, thêm điều kiện chặn theo `occurred_at` UTC để sargable |
 | Quá nhiều session làm vỡ bar chart | Cắt còn 10 session, sắp xếp tăng dần theo % |
 | Bundle phình vì Chart.js | Register thủ công từng controller thay vì `registerables` |
