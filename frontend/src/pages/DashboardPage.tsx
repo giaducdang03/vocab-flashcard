@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
 import StatsSection from '../components/dashboard/StatsSection';
 import UserMenu from '../components/UserMenu';
+import SessionCreateModal from '../components/SessionCreateModal';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function DashboardPage() {
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const fetchSessions = async () => {
     setLoading(true);
@@ -37,6 +39,7 @@ export default function DashboardPage() {
     try {
       await api.post('/sessions', { title: title.trim() });
       setTitle('');
+      setShowCreateModal(false);
       await fetchSessions();
     } finally {
       setCreating(false);
@@ -76,18 +79,6 @@ export default function DashboardPage() {
             <p className="eyebrow">Dashboard</p>
             <h1 className="display-title">Study sessions built for focus.</h1>
           </div>
-
-          <form onSubmit={handleCreateSession} className="session-create-form">
-            <input
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder="New session name"
-            />
-            <button type="submit" className="btn btn-primary" disabled={creating}>
-              <Plus size={16} />
-              {creating ? 'Creating...' : 'New session'}
-            </button>
-          </form>
         </section>
 
         <section className="section-header">
@@ -97,8 +88,15 @@ export default function DashboardPage() {
         <StatsSection sessions={sessions} />
 
         <section className="section-header">
-          <h2>Your sessions</h2>
-          <p>{sessions.length} total</p>
+          <h2>Your sessions ({sessions.length})</h2>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setShowCreateModal(true)}
+          >
+            <Plus size={16} />
+            Add session
+          </button>
         </section>
 
         {loading ? (
@@ -159,6 +157,15 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+
+      <SessionCreateModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title={title}
+        onTitleChange={setTitle}
+        onSubmit={handleCreateSession}
+        isCreating={creating}
+      />
     </div>
   );
 }

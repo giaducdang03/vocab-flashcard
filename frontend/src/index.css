@@ -672,6 +672,7 @@ textarea {
   justify-content: space-between;
   padding: 22px 28px;
   border-bottom: 1px solid var(--hairline);
+  gap: 16px;
 }
 
 .modal-header h2 {
@@ -679,11 +680,16 @@ textarea {
   font-size: 1.4rem;
   letter-spacing: -0.04em;
   font-weight: 400;
+  flex: 1;
 }
 
 .modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
+  flex-shrink: 0;
   border: 1px solid var(--hairline);
   background: transparent;
   border-radius: 10px;
@@ -694,6 +700,7 @@ textarea {
 
 .modal-close:hover {
   background: var(--surface-strong);
+  border-color: var(--primary);
 }
 
 .modal-body {
