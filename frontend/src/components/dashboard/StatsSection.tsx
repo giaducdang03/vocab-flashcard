@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../api/client';
 import type { DailyStats, Session } from '../../types';
+import DailyLearnedChart from './DailyLearnedChart';
 import KpiTile from './KpiTile';
 
 type StatsSectionProps = {
@@ -75,6 +76,10 @@ export default function StatsSection({ sessions }: StatsSectionProps) {
 
       {statsLoading && !stats && (
         <div className="bg-white border border-hairline rounded-2xl p-5 h-72 animate-pulse" />
+      )}
+
+      {!statsError && stats && (
+        <DailyLearnedChart daily={stats.daily} days={days} onDaysChange={setDays} />
       )}
 
       {statsError && (
