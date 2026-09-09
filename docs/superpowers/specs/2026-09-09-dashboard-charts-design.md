@@ -190,7 +190,7 @@ Sau đó Python dựng chuỗi dense từ dict `{date: count}`.
 
 ### 5.4 Hàm tính streak
 
-Tách thành pure function trong `backend/app/services/learning.py` để test được không cần DB:
+Tách thành pure function trong `backend/app/services/learning.py` — không phụ thuộc DB, dễ đọc và dễ soi lại logic đếm ngược:
 
 ```python
 def calculate_streak(learned_dates: set[date], today: date) -> int:
@@ -301,24 +301,20 @@ Nguyên tắc: hỏng phần thống kê không được làm hỏng danh sách 
 
 ---
 
-## 8. Testing
+## 8. Verification
 
-Project hiện **chưa có test infra** (chỉ có test của thư viện trong `.venv`). Không dựng harness DB đầy đủ trong phạm vi này.
+**Không viết test tự động** trong phạm vi này (project cũng chưa có test infra sẵn). Toàn bộ kiểm chứng làm thủ công theo checklist dưới đây — đây là lưới an toàn duy nhất, nên cần chạy đủ, đặc biệt mục 3–6 vì chúng bắt đúng các lỗi mà `apply_learned_state` dễ mắc:
 
-**Có test tự động** — thêm `pytest` vào `requirements.txt`:
-
-- `calculate_streak` (pure function, không cần DB): tập rỗng; đúng 1 ngày; chuỗi liên tiếp; chuỗi đứt quãng; hôm nay chưa học nhưng hôm qua có; hôm nay và hôm qua đều không có
-- `apply_learned_state` (chỉ cần object `Card` trong bộ nhớ, không cần DB): `False → True` sinh 1 event `learned`; `True → False` sinh 1 event `unlearned`; gọi lại cùng giá trị **không** sinh event nào; trạng thái `is_learned` đổi đúng
-
-**Verification thủ công:**
 1. Chạy migration → mỗi card đang đã học có đúng 1 event `learned` với `occurred_at = created_at`
 2. Đánh dấu 1 từ đã học → chart hôm nay tăng 1, streak cập nhật
 3. Bỏ đánh dấu → KPI "đã học" giảm, **nhưng cột chart của ngày học vẫn giữ nguyên** (đây là điểm khác biệt chính so với phương án cột `learned_at`)
 4. Bật → tắt → bật cùng 1 từ trong 1 ngày → chart ngày đó vẫn chỉ tính 1
-5. Đổi toggle 7 ↔ 30 ngày → số cột đổi đúng
-6. Xoá 1 session có card đã học → events bị xoá theo, không còn mồ côi
-7. Tài khoản chưa có session → thấy empty state, không lỗi console
-8. Tắt backend → KPI/session bar vẫn render, chỉ vùng chart báo lỗi
+5. Tạo card mới với `is_learned = true` ngay từ đầu → có sinh event `learned` (bắt lỗi bẫy ở mục 4.2)
+6. Gọi `PATCH /cards/{id}/learned` hai lần cùng một giá trị → chỉ có 1 event, không sinh event rác
+7. Đổi toggle 7 ↔ 30 ngày → số cột đổi đúng
+8. Xoá 1 session có card đã học → events bị xoá theo, không còn mồ côi
+9. Tài khoản chưa có session → thấy empty state, không lỗi console
+10. Tắt backend → KPI/session bar vẫn render, chỉ vùng chart báo lỗi
 
 ---
 
@@ -332,8 +328,6 @@ Project hiện **chưa có test infra** (chỉ có test của thư viện trong 
 - `app/routers/stats.py` — **mới**
 - `app/main.py` — đăng ký router
 - `alembic/versions/<new>.py` — **mới**
-- `requirements.txt` — thêm `pytest`
-- `tests/test_learning.py` — **mới**
 
 **Frontend**
 - `package.json` — `chart.js`, `react-chartjs-2`
@@ -352,7 +346,7 @@ Project hiện **chưa có test infra** (chỉ có test của thư viện trong 
 | Rủi ro | Giảm thiểu |
 |--------|------------|
 | Backfill `created_at` làm lịch sử sai lệch | Đã chấp nhận có ý thức; chỉ ảnh hưởng dữ liệu trước migration |
-| `is_learned` và bảng event lệch nhau | Chỉ đổi trạng thái qua `apply_learned_state`, cùng 1 transaction; có test cho helper |
+| `is_learned` và bảng event lệch nhau | Chỉ đổi trạng thái qua `apply_learned_state`, cùng 1 transaction. Không có test tự động → phụ thuộc hoàn toàn vào checklist mục 8 (đặc biệt case 4, 5, 6) |
 | Bảng event phình theo thời gian | Mỗi lần toggle 1 dòng, quy mô cá nhân không đáng kể; có index `occurred_at` |
 | Query `func.date(...)` không dùng được index | Quy mô cá nhân nên không đáng kể; nếu cần, thêm điều kiện chặn theo `occurred_at` UTC để sargable |
 | Quá nhiều session làm vỡ bar chart | Cắt còn 10 session, sắp xếp tăng dần theo % |
