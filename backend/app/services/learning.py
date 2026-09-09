@@ -6,16 +6,15 @@ from app.models.card import Card, CardLearnEvent
 
 
 def apply_learned_state(db: AsyncSession, card: Card, is_learned: bool) -> None:
-    """Đổi trạng thái đã học của card và ghi lại lịch sử.
+    """Change the card's learned status and record event history.
 
-    Chỉ sinh event khi trạng thái thực sự thay đổi, nên gọi nhiều lần với
-    cùng một giá trị sẽ không tạo event rác.
+    Only creates an event when the status actually changes, so calling multiple
+    times with the same value will not generate duplicate events.
 
-    Dùng db.add(...) chứ không phải card.learn_events.append(...): trong async
-    SQLAlchemy, chạm vào collection của object đã persistent sẽ kích hoạt lazy
-    load và ném MissingGreenlet.
+    Uses db.add(...) instead of card.learn_events.append(...): in async SQLAlchemy,
+    touching a persistent object's collection triggers lazy load and raises MissingGreenlet.
 
-    Lưu ý: card phải đã có `id` (tức là đã flush) trước khi gọi hàm này.
+    Note: card must have an `id` (i.e., already flushed) before calling this function.
     """
     if card.is_learned == is_learned:
         return
@@ -30,10 +29,10 @@ def apply_learned_state(db: AsyncSession, card: Card, is_learned: bool) -> None:
 
 
 def calculate_streak(learned_dates: set[date], today: date) -> int:
-    """Đếm số ngày liên tiếp có ít nhất 1 từ được học, tính ngược từ today.
+    """Count consecutive days with at least one learned word, counting backward from today.
 
-    Nếu hôm nay chưa học từ nào thì bắt đầu đếm từ hôm qua, để streak không
-    bị mất khi ngày còn chưa kết thúc.
+    If no words were learned today, starts counting from yesterday to prevent the
+    streak from breaking mid-day.
     """
     cursor = today if today in learned_dates else today - timedelta(days=1)
     streak = 0
