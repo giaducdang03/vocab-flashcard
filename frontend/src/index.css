@@ -254,12 +254,21 @@ textarea {
 }
 
 .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
   border: 1px solid var(--hairline);
   border-radius: 10px;
   background: var(--surface-card);
   color: var(--ink);
+  transition: all 0.2s ease;
+}
+
+.icon-button:hover {
+  background: var(--surface-strong);
+  border-color: var(--primary);
 }
 
 .session-card-title {
