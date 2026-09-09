@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { BookOpenText, Plus, Search, Trash2, LogOut } from 'lucide-react';
+import { BookOpenText, Plus, Search, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
 import StatsSection from '../components/dashboard/StatsSection';
+import UserMenu from '../components/UserMenu';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -65,12 +66,7 @@ export default function DashboardPage() {
             <Search size={16} />
             Browse
           </button>
-          <div className="user-pill">
-            <span>{user?.display_name || user?.email}</span>
-          </div>
-          <button type="button" className="btn btn-secondary" onClick={handleLogout}>
-            <LogOut size={16} />
-          </button>
+          {user && <UserMenu user={user} onLogout={handleLogout} />}
         </nav>
       </header>
 
