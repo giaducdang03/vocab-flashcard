@@ -68,9 +68,11 @@ Và trên `Card` thêm quan hệ:
 
 ```python
 learn_events: Mapped[list["CardLearnEvent"]] = relationship(
-    back_populates="card", cascade="all, delete-orphan"
+    back_populates="card", cascade="all, delete-orphan", passive_deletes=True
 )
 ```
+
+`passive_deletes=True` để khi xoá card, SQLAlchemy **không** load collection event ra rồi xoá từng dòng (lazy load trong async rất dễ nổ) mà giao hẳn cho `ON DELETE CASCADE` ở tầng DB.
 
 `cards.is_learned` **giữ nguyên** làm trạng thái hiện tại (dùng cho filter trong study mode và đếm `learned_cards`). Bảng event là lịch sử. Hai thứ được cập nhật cùng lúc trong một transaction bởi helper ở mục 4.2.
 
@@ -114,7 +116,7 @@ Import hàng loạt (`routers/imports.py`) luôn tạo card với `is_learned = 
 File mới `backend/app/services/learning.py`:
 
 ```python
-def apply_learned_state(card: Card, is_learned: bool) -> None:
+def apply_learned_state(db: AsyncSession, card: Card, is_learned: bool) -> None:
     """Đổi trạng thái đã học và ghi lại lịch sử.
 
     Chỉ sinh event khi trạng thái thực sự thay đổi — PATCH cùng một giá trị
@@ -124,16 +126,20 @@ def apply_learned_state(card: Card, is_learned: bool) -> None:
         return
 
     card.is_learned = is_learned
-    card.learn_events.append(
-        CardLearnEvent(event_type="learned" if is_learned else "unlearned")
-    )
+    db.add(CardLearnEvent(
+        card_id=card.id,
+        event_type="learned" if is_learned else "unlearned",
+    ))
 ```
 
-Dùng `card.learn_events.append(...)` thay vì `db.add(CardLearnEvent(card_id=card.id, ...))` để không phải `flush()` lấy `card.id` trước — quan trọng ở `create_card` khi card còn chưa có id.
+**Vì sao `db.add(...)` chứ không phải `card.learn_events.append(...)`:** trong async SQLAlchemy, chạm vào collection của một object đã persistent sẽ kích hoạt lazy load và ném `MissingGreenlet`. Dùng `db.add` không đụng tới relationship nên an toàn.
 
 Cả 3 đường ghi ở 4.1 gọi hàm này thay vì gán `is_learned` trực tiếp. Riêng `update_card` phải **loại `is_learned` khỏi vòng `setattr`** rồi xử lý riêng qua helper.
 
-Ở `create_card` phải **bỏ `is_learned=payload.is_learned` khỏi constructor `Card(...)`** rồi gọi helper sau đó. Nếu vẫn gán trong constructor, `card.is_learned` đã bằng giá trị đích khi helper chạy → helper early-return → **không sinh event nào**, card đã học mà lịch sử trống.
+Ở `create_card` có **hai** điểm bắt buộc:
+
+1. Constructor `Card(...)` phải gán **`is_learned=False`** (không phải `payload.is_learned`). Cột có `default=False` ở mức DB, nhưng default đó chỉ áp lúc INSERT — object Python mới tạo mà không gán sẽ có `card.is_learned = None`, khiến so sánh trong helper sai và sinh event `unlearned` cho card mới toanh.
+2. Gọi helper **sau `await db.flush()`**, vì `card.id` do Python sinh lúc INSERT nên trước flush vẫn là `None` → event sẽ có `card_id = None`.
 
 ---
 
