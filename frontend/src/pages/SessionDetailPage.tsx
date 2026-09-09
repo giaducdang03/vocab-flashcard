@@ -38,6 +38,7 @@ export default function SessionDetailPage() {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     void fetchDetail();
   }, [id]);
 
