@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api } from '../../api/client';
 import type { DailyStats, Session } from '../../types';
 import DailyLearnedChart from './DailyLearnedChart';
+import SessionProgressChart from './SessionProgressChart';
 import KpiTile from './KpiTile';
 
 type StatsSectionProps = {
@@ -78,9 +79,12 @@ export default function StatsSection({ sessions }: StatsSectionProps) {
         <div className="bg-white border border-hairline rounded-2xl p-5 h-72 animate-pulse" />
       )}
 
-      {!statsError && stats && (
-        <DailyLearnedChart daily={stats.daily} days={days} onDaysChange={setDays} />
-      )}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {!statsError && stats && (
+          <DailyLearnedChart daily={stats.daily} days={days} onDaysChange={setDays} />
+        )}
+        <SessionProgressChart sessions={sessions} />
+      </div>
 
       {statsError && (
         <p className="text-sm text-error m-0">
