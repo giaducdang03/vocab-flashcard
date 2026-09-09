@@ -1,3 +1,5 @@
+from datetime import date, timedelta
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.card import Card, CardLearnEvent
@@ -25,3 +27,17 @@ def apply_learned_state(db: AsyncSession, card: Card, is_learned: bool) -> None:
             event_type="learned" if is_learned else "unlearned",
         )
     )
+
+
+def calculate_streak(learned_dates: set[date], today: date) -> int:
+    """Đếm số ngày liên tiếp có ít nhất 1 từ được học, tính ngược từ today.
+
+    Nếu hôm nay chưa học từ nào thì bắt đầu đếm từ hôm qua, để streak không
+    bị mất khi ngày còn chưa kết thúc.
+    """
+    cursor = today if today in learned_dates else today - timedelta(days=1)
+    streak = 0
+    while cursor in learned_dates:
+        streak += 1
+        cursor -= timedelta(days=1)
+    return streak
