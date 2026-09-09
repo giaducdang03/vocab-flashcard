@@ -10,6 +10,8 @@ export type Session = {
   title: string;
   created_at: string;
   updated_at: string;
+  total_cards: number;
+  learned_cards: number;
 };
 
 export type Synonym = {

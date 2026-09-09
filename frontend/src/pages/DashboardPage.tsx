@@ -108,7 +108,12 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="session-grid">
-            {sessions.map((session) => (
+            {sessions.map((session) => {
+              const masteredPercent = session.total_cards > 0
+                ? Math.round((session.learned_cards / session.total_cards) * 100)
+                : 0;
+
+              return (
               <article key={session.id} className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
                 <div className="flex items-center justify-between gap-3">
                   <span className="inline-flex items-center justify-center px-2 py-1 bg-orange-100/20 text-ink text-xs font-bold uppercase rounded-full">
@@ -134,17 +139,20 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="w-full h-2 bg-hairline rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full" style={{ width: '42%' }} />
+                  <div className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full" style={{ width: `${masteredPercent}%` }} />
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm text-body font-semibold">42% mastered</span>
+                  <span className="text-sm text-body font-semibold">
+                    {session.total_cards > 0 ? `${masteredPercent}% mastered` : 'No cards yet'}
+                  </span>
                   <Link to={`/sessions/${session.id}`} className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold text-sm transition-all">
                     Open
                   </Link>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
