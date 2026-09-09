@@ -4,6 +4,12 @@ import '../../lib/chartSetup';
 import type { Session } from '../../types';
 
 const MAX_BARS = 10;
+const MAX_LABEL_LENGTH = 40;
+
+const truncateLabel = (label: string, maxLength: number) => {
+  if (label.length <= maxLength) return label;
+  return label.slice(0, maxLength - 1) + '…';
+};
 
 type SessionProgressChartProps = {
   sessions: Session[];
@@ -15,6 +21,7 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
   const ranked = withCards
     .map((session) => ({
       title: session.title,
+      displayTitle: truncateLabel(session.title, MAX_LABEL_LENGTH),
       learned: session.learned_cards,
       total: session.total_cards,
       percent: Math.round((session.learned_cards / session.total_cards) * 100),
@@ -32,7 +39,7 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
   }
 
   const data = {
-    labels: ranked.map((item) => item.title),
+    labels: ranked.map((item) => item.displayTitle),
     datasets: [
       {
         label: 'Progress',
@@ -50,6 +57,10 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
     plugins: {
       tooltip: {
         callbacks: {
+          title: (context) => {
+            const item = ranked[context[0].dataIndex];
+            return item.title;
+          },
           label: (context) => {
             const item = ranked[context.dataIndex];
             return `${item.learned}/${item.total} words (${item.percent}%)`;
