@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import StudyPage from './pages/StudyPage';
+import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -56,7 +57,12 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-1">
+          <AppRoutes />
+        </div>
+        <Footer />
+      </div>
     </AuthProvider>
   );
 }
