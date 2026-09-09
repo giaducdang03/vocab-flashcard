@@ -76,8 +76,8 @@ export default function DashboardPage() {
       <main className="page-container">
         <section className="hero-card">
           <div>
-            <p className="eyebrow">Dashboard</p>
-            <h1 className="display-title">Study sessions built for focus.</h1>
+            <p className="eyebrow">Welcome back</p>
+            <h1 className="text-2xl font-light letter-spacing-tight">Great to see you, {user?.display_name}! Let's master something new today.</h1>
           </div>
         </section>
 
