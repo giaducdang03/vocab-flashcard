@@ -4,7 +4,7 @@ import '../../lib/chartSetup';
 import type { Session } from '../../types';
 
 const MAX_BARS = 10;
-const MAX_LABEL_LENGTH = 40;
+const MAX_LABEL_LENGTH = 25;
 
 const truncateLabel = (label: string, maxLength: number) => {
   if (label.length <= maxLength) return label;
