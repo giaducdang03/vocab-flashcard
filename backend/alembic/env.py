@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from app.config import settings
 from app.models.base import Base
-from app.models.card import Card, Synonym
+from app.models.card import Card, CardLearnEvent, Synonym
 from app.models.session import Session
 from app.models.user import User
 
