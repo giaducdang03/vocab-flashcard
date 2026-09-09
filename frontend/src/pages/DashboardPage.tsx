@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
+import StatsSection from '../components/dashboard/StatsSection';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -92,6 +93,12 @@ export default function DashboardPage() {
             </button>
           </form>
         </section>
+
+        <section className="section-header">
+          <h2>Dashboard</h2>
+        </section>
+
+        <StatsSection sessions={sessions} />
 
         <section className="section-header">
           <h2>Your sessions</h2>

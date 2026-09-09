@@ -39,3 +39,14 @@ export type SessionDetailResponse = {
   session: Session;
   cards: Card[];
 };
+
+export type DailyPoint = {
+  date: string;
+  learned_count: number;
+};
+
+export type DailyStats = {
+  days: number;
+  daily: DailyPoint[];
+  current_streak: number;
+};
