@@ -18,7 +18,7 @@
 - `cards.is_learned` giữ nguyên vai trò trạng thái hiện tại, chỉ được đổi qua `apply_learned_state`.
 - Màu dùng token có sẵn: primary `#f54e00`, hairline `#e6e5e0`, muted `#807d72`, ink `#26251e`.
 - Backend chạy ở `http://localhost:8000` khi dev, hoặc qua nginx `/api` khi chạy Docker.
-- Toàn bộ text hiển thị cho người dùng viết bằng tiếng Việt, khớp với phần còn lại của app.
+- **Toàn bộ text hiển thị cho người dùng viết bằng tiếng Anh**, khớp với phần còn lại của app ("Your sessions", "No sessions yet", "Show on card"…). Dùng sentence case, câu ngắn gọn như copy sẵn có.
 
 ---
 
@@ -656,7 +656,7 @@ export default function StatsSection({ sessions }: StatsSectionProps) {
   if (sessions.length === 0) {
     return (
       <div className="empty-state">
-        <p>Chưa có dữ liệu học. Tạo session đầu tiên để bắt đầu theo dõi tiến độ.</p>
+        <p>No study data yet. Create your first session to start tracking progress.</p>
       </div>
     );
   }
@@ -666,15 +666,15 @@ export default function StatsSection({ sessions }: StatsSectionProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
-        <KpiTile label="Tổng số từ" value={totals.total} />
-        <KpiTile label="Đã học" value={totals.learned} />
-        <KpiTile label="Tỉ lệ" value={totals.percent} suffix="%" />
-        <KpiTile label="Streak" value={streakValue} suffix="ngày" />
+        <KpiTile label="Total words" value={totals.total} />
+        <KpiTile label="Learned" value={totals.learned} />
+        <KpiTile label="Mastery" value={totals.percent} suffix="%" />
+        <KpiTile label="Streak" value={streakValue} suffix="days" />
       </div>
 
       {statsError && (
         <p className="text-sm text-error m-0">
-          Không tải được dữ liệu thống kê theo ngày. Các số liệu tổng vẫn chính xác.
+          Couldn't load daily stats. Your totals are still accurate.
         </p>
       )}
     </div>
@@ -801,7 +801,7 @@ export default function DailyLearnedChart({ daily, days, onDaysChange }: DailyLe
     labels: daily.map((point) => formatLabel(point.date)),
     datasets: [
       {
-        label: 'Từ đã học',
+        label: 'Words learned',
         data: daily.map((point) => point.learned_count),
         backgroundColor: '#f54e00',
         borderRadius: 4,
@@ -815,7 +815,7 @@ export default function DailyLearnedChart({ daily, days, onDaysChange }: DailyLe
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context) => `${context.parsed.y} từ`,
+          label: (context) => `${context.parsed.y} ${context.parsed.y === 1 ? 'word' : 'words'}`,
         },
       },
     },
@@ -835,7 +835,7 @@ export default function DailyLearnedChart({ daily, days, onDaysChange }: DailyLe
   return (
     <div className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-base font-semibold text-ink m-0">Từ học theo ngày</h3>
+        <h3 className="text-base font-semibold text-ink m-0">Words learned per day</h3>
 
         <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
           {[7, 30].map((option) => (
@@ -847,7 +847,7 @@ export default function DailyLearnedChart({ daily, days, onDaysChange }: DailyLe
               }`}
               onClick={() => onDaysChange(option)}
             >
-              {option} ngày
+              {option} days
             </button>
           ))}
         </div>
@@ -859,7 +859,7 @@ export default function DailyLearnedChart({ daily, days, onDaysChange }: DailyLe
 
       {isEmpty && (
         <p className="text-sm text-body m-0">
-          Chưa có từ nào được đánh dấu đã học trong {days} ngày qua.
+          No words marked as learned in the last {days} days.
         </p>
       )}
     </div>
@@ -896,9 +896,9 @@ Khối skeleton giữ chỗ đúng chiều cao của chart để trang không nh
 Mở lại Dashboard.
 
 Expected:
-- Thấy card "Từ học theo ngày" với biểu đồ cột màu cam
-- Mặc định 30 cột; bấm "7 ngày" → còn 7 cột, bấm "30 ngày" → về 30
-- Hover một cột có tooltip dạng `N từ`
+- Thấy card "Words learned per day" với biểu đồ cột màu cam
+- Mặc định 30 cột; bấm "7 days" → còn 7 cột, bấm "30 days" → về 30
+- Hover một cột có tooltip dạng `N words`
 - Nhãn trục X đúng ngày hôm nay ở cột cuối cùng
 
 - [ ] **Step 6: Verify chart cập nhật khi học từ mới**
@@ -958,8 +958,8 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
   if (ranked.length === 0) {
     return (
       <div className="bg-white border border-hairline rounded-2xl p-5">
-        <h3 className="text-base font-semibold text-ink m-0 mb-2">Tiến độ theo session</h3>
-        <p className="text-sm text-body m-0">Chưa có session nào có thẻ để thống kê.</p>
+        <h3 className="text-base font-semibold text-ink m-0 mb-2">Progress by session</h3>
+        <p className="text-sm text-body m-0">No sessions with cards yet.</p>
       </div>
     );
   }
@@ -968,7 +968,7 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
     labels: ranked.map((item) => item.title),
     datasets: [
       {
-        label: 'Tiến độ',
+        label: 'Progress',
         data: ranked.map((item) => item.percent),
         backgroundColor: '#f54e00',
         borderRadius: 4,
@@ -985,7 +985,7 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
         callbacks: {
           label: (context) => {
             const item = ranked[context.dataIndex];
-            return `${item.learned}/${item.total} từ (${item.percent}%)`;
+            return `${item.learned}/${item.total} words (${item.percent}%)`;
           },
         },
       },
@@ -1007,10 +1007,10 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
   return (
     <div className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-base font-semibold text-ink m-0">Tiến độ theo session</h3>
+        <h3 className="text-base font-semibold text-ink m-0">Progress by session</h3>
         {withCards.length > MAX_BARS && (
           <span className="text-xs text-muted">
-            {MAX_BARS}/{withCards.length} session
+            {MAX_BARS} of {withCards.length} sessions
           </span>
         )}
       </div>
@@ -1019,7 +1019,7 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
         <Bar data={data} options={options} />
       </div>
 
-      <p className="text-xs text-muted m-0">Sắp xếp từ session còn dang dở nhiều nhất.</p>
+      <p className="text-xs text-muted m-0">Sorted by least complete first.</p>
     </div>
   );
 }
@@ -1050,14 +1050,14 @@ Expected:
 - Hai biểu đồ nằm cạnh nhau trên màn hình rộng, xếp dọc trên màn hình hẹp
 - Bar theo session nằm ngang, trục X là `0%`–`100%`
 - Session có tỉ lệ thấp nhất nằm **trên cùng**
-- Hover một thanh → tooltip dạng `12/40 từ (30%)`
+- Hover một thanh → tooltip dạng `12/40 words (30%)`
 - Session chưa có thẻ nào **không** xuất hiện trong biểu đồ
 
 - [ ] **Step 4: Verify khi có nhiều session**
 
-Nếu tài khoản có hơn 10 session có thẻ: Expected chỉ vẽ 10 thanh và góc phải hiện `10/N session`.
+Nếu tài khoản có hơn 10 session có thẻ: Expected chỉ vẽ 10 thanh và góc phải hiện `10 of N sessions`.
 
-Nếu chưa đủ 10 session để thử, tạm đổi `const MAX_BARS = 10;` thành `const MAX_BARS = 2;`, reload để xác nhận chú thích `2/N session` hiện đúng, rồi đổi lại thành `10`.
+Nếu chưa đủ 10 session để thử, tạm đổi `const MAX_BARS = 10;` thành `const MAX_BARS = 2;`, reload để xác nhận chú thích `2 of N sessions` hiện đúng, rồi đổi lại thành `10`.
 
 - [ ] **Step 5: Kiểm tra build production**
 

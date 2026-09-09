@@ -298,8 +298,10 @@ export type DailyStats = { days: number; daily: DailyPoint[]; current_streak: nu
 | Tình huống | Hành vi |
 |------------|---------|
 | Chưa có session nào | `StatsSection` hiện 1 empty state gọn, không render chart |
-| Có session nhưng 0 card | KPI = 0, chart hiện "Chưa có dữ liệu" |
-| `daily` toàn số 0 | Vẫn vẽ trục, kèm chú thích "Chưa có từ nào được đánh dấu đã học trong N ngày qua" |
+| Có session nhưng 0 card | KPI = 0, chart hiện "No sessions with cards yet." |
+| `daily` toàn số 0 | Vẫn vẽ trục, kèm chú thích "No words marked as learned in the last N days." |
+
+**Ngôn ngữ:** toàn bộ text hiển thị viết **tiếng Anh**, khớp với phần còn lại của app ("Your sessions", "No sessions yet", "Show on card"…).
 | `/stats/daily` lỗi | **Chỉ** chart theo ngày + tile streak báo lỗi; KPI và bar theo session vẫn chạy bình thường (vì lấy từ `/sessions`) |
 | Đang tải | Skeleton cho vùng stats; `session-grid` hiển thị độc lập, không chờ stats |
 
