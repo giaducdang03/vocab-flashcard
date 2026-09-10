@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { QuizAttemptSummary } from '../../types';
 
 type AttemptHistoryProps = {
@@ -23,6 +24,8 @@ const formatDate = (dateString: string) => {
 };
 
 export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
+  const navigate = useNavigate();
+
   if (attempts.length === 0) {
     return (
       <div className="empty-state sofa">
@@ -59,6 +62,7 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
                   <button
                     type="button"
                     className="text-xs px-3 py-1 bg-primary text-white rounded border border-primary hover:bg-primary-dark transition-colors"
+                    onClick={() => navigate(`/attempts/${attempt.id}`)}
                   >
                     Review
                   </button>
