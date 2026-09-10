@@ -4,6 +4,10 @@ import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import StudyPage from './pages/StudyPage';
+import QuizzesPage from './pages/QuizzesPage';
+import QuizDetailPage from './pages/QuizDetailPage';
+import TakeQuizPage from './pages/TakeQuizPage';
+import AttemptReviewPage from './pages/AttemptReviewPage';
 import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -47,6 +51,38 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <StudyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quizzes"
+        element={
+          <ProtectedRoute>
+            <QuizzesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quizzes/:id"
+        element={
+          <ProtectedRoute>
+            <QuizDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quizzes/:id/take"
+        element={
+          <ProtectedRoute>
+            <TakeQuizPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/attempts/:id"
+        element={
+          <ProtectedRoute>
+            <AttemptReviewPage />
           </ProtectedRoute>
         }
       />

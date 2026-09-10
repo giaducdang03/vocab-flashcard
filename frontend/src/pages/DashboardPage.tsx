@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { BookOpenText, Plus, Search, Trash2 } from 'lucide-react';
+import { BookOpenText, ClipboardList, Plus, Search, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
 import StatsSection from '../components/dashboard/StatsSection';
-import UserMenu from '../components/UserMenu';
+import PageHeader from '../components/PageHeader';
 import SessionCreateModal from '../components/SessionCreateModal';
 
 export default function DashboardPage() {
@@ -58,20 +58,7 @@ export default function DashboardPage() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div className="brand-row">
-          <div className="brand-mark small">VF</div>
-          <span>VocabFlash</span>
-        </div>
-
-        <nav className="top-actions">
-          <button type="button" className="btn btn-secondary">
-            <Search size={16} />
-            Browse
-          </button>
-          {user && <UserMenu user={user} onLogout={handleLogout} />}
-        </nav>
-      </header>
+      <PageHeader user={user} onLogout={handleLogout} />
 
       <main className="page-container">
         <section className="hero-card">
@@ -89,14 +76,23 @@ export default function DashboardPage() {
 
         <section className="section-header">
           <h2>Your sessions ({sessions.length})</h2>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <Plus size={16} />
-            Add session
-          </button>
+          <div className="flex gap-3">
+            <div className="relative">
+              <Link to="/quizzes" className="btn btn-secondary">
+                <ClipboardList size={16} />
+                Quizzes
+              </Link>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">NEW</span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowCreateModal(true)}
+            >
+              <Plus size={16} />
+              Add session
+            </button>
+          </div>
         </section>
 
         {loading ? (
