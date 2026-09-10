@@ -830,6 +830,73 @@ textarea {
   border-top: 1px solid var(--hairline);
 }
 
+/* Wizard Styles */
+
+.wizard-steps {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.wizard-step {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-weight: 600;
+  min-width: 28px;
+  text-align: center;
+}
+
+.wizard-step.active {
+  background: #111827;
+  color: #fff;
+}
+
+/* Choice List & Row Styles */
+
+.choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.choice-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--surface-card);
+  transition: all 0.2s ease;
+}
+
+.choice-row:hover {
+  border-color: #d1d5db;
+}
+
+.choice-row.selected {
+  border-color: #111827;
+  background: #f9fafb;
+}
+
+.choice-row input {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.choice-row-meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: #6b7280;
+}
+
 @media (max-width: 900px) {
 
   .auth-shell {
