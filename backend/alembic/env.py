@@ -8,6 +8,7 @@ from app.models.base import Base
 from app.models.card import Card, CardLearnEvent, Synonym
 from app.models.session import Session
 from app.models.user import User
+from app.models.quiz import Quiz, QuizAnswer, QuizAttempt, QuizQuestion, QuizSourceSession  # noqa: F401
 
 config = context.config
 
