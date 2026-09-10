@@ -13,7 +13,7 @@ export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
     <article className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
       {/* Header: title + delete icon-button */}
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xl font-light letter-spacing-tight text-ink flex-1">
+        <h3 className="text-lg font-light letter-spacing-tight text-ink flex-1">
           {quiz.title}
         </h3>
         <button
