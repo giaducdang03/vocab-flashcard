@@ -93,7 +93,7 @@ export default function DashboardPage() {
             <Link to="/quizzes" className="btn btn-secondary relative">
               <ClipboardList size={16} />
               Quizzes
-              <span className="badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5">new</span>
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">NEW</span>
             </Link>
             <button
               type="button"
