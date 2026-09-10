@@ -91,7 +91,9 @@ export default function QuizDetailPage() {
         <section className="hero-card">
           <div>
             <p className="eyebrow">Quiz</p>
-            <h1 className="display-title font-bold">{quiz.title}</h1>
+            <h1 className="display-title font-bold" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+              {quiz.title}
+            </h1>
             <div className="mt-3">
               <p className="text-xs text-body mb-2">{quiz.question_count} questions</p>
               <QuestionTypeBadges types={quiz.question_types} />
