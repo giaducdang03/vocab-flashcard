@@ -159,7 +159,9 @@ Validate:
 - `session_ids` ≥ 1 phần tử, tất cả phải thuộc user hiện tại (nếu không → 404)
 - `question_types` ≥ 1 phần tử, mỗi phần tử thuộc 3 giá trị hợp lệ
 - `question_count` trong khoảng 1–100
-- Pool card của các session đã chọn phải ≥ 4 card, nếu không → 400 `"Cần ít nhất 4 thẻ để tạo bài kiểm tra"`
+- Pool card của các session đã chọn phải ≥ 4 card, nếu không → 400 `"Need at least 4 cards to create a quiz"`
+
+> Copy hiển thị cho user (UI labels và `detail` của HTTPException) viết bằng tiếng Anh, khớp với UI hiện tại ("Your sessions", "Session not found").
 
 Sinh câu hỏi ngay, lưu `quizzes` + `quiz_source_sessions` + `quiz_questions` trong một transaction. Response là `QuizListItem` (mục 5.3). Nếu capacity thực tế nhỏ hơn `question_count`, đề được sinh với số câu bằng capacity — `question_count` trong response phản ánh số thực tế.
 
@@ -315,7 +317,7 @@ Tất cả bọc trong `ProtectedRoute` như route hiện có. Áp dụng scroll
 | `QuizCreateModal.tsx` | Wizard 4 bước: chọn session (checkbox, ≥1) → số câu (input, hiện max từ `/quizzes/capacity`) → dạng câu hỏi (checkbox, ≥1) → tên đề + xác nhận. Gọi `capacity` khi sang bước 2. |
 | `QuizCard.tsx` | Thẻ đề trong danh sách: tên, số câu, badge dạng, số lượt làm, điểm cao nhất, nút xoá |
 | `QuizQuestionView.tsx` | Một câu: prompt (+ phiên âm), 4 nút lựa chọn. Chọn xong → khoá lựa chọn, tô xanh đáp án đúng / đỏ đáp án sai đã chọn → nút "Câu tiếp" (câu cuối: "Nộp bài") |
-| `AttemptResultView.tsx` | Điểm, phần trăm, thời lượng, danh sách review từng câu |
+| `AttemptReviewPage.tsx` | Điểm, phần trăm, thời lượng, danh sách review từng câu |
 | `AttemptHistory.tsx` | Bảng lịch sử: thời điểm, điểm, thời lượng, link tới review |
 
 ### 7.3 Types
