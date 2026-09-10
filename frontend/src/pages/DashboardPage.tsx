@@ -90,9 +90,10 @@ export default function DashboardPage() {
         <section className="section-header">
           <h2>Your sessions ({sessions.length})</h2>
           <div className="flex gap-3">
-            <Link to="/quizzes" className="btn btn-secondary">
+            <Link to="/quizzes" className="btn btn-secondary relative">
               <ClipboardList size={16} />
               Quizzes
+              <span className="badge absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5">new</span>
             </Link>
             <button
               type="button"
