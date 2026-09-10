@@ -1,6 +1,6 @@
 import { Trash2 } from 'lucide-react';
-import type { Quiz, QUESTION_TYPE_LABELS } from '../../types';
-import { QUESTION_TYPE_LABELS as LABELS } from '../../types';
+import type { Quiz } from '../../types';
+import QuestionTypeBadges from '../QuestionTypeBadges';
 
 type QuizCardProps = {
   quiz: Quiz;
@@ -27,18 +27,7 @@ export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
       </div>
 
       {/* Badges: question types */}
-      <div className="flex flex-wrap gap-2">
-        {quiz.question_types.map((type) => (
-          <span
-            key={type}
-            className="inline-flex items-center justify-center px-2 py-1 bg-orange-100/20 text-ink text-xs font-bold uppercase rounded-full"
-          >
-            {type === 'en_to_vi' && 'EN→VI'}
-            {type === 'vi_to_en' && 'VI→EN'}
-            {type === 'synonym' && 'Synonym'}
-          </span>
-        ))}
-      </div>
+      <QuestionTypeBadges types={quiz.question_types} />
 
       {/* Meta row: question count, attempts, best score */}
       <div className="flex justify-between gap-2 text-sm text-body">

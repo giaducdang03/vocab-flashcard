@@ -5,7 +5,7 @@ import { api } from '../api/client';
 import type { QuizDetail } from '../types';
 import AttemptHistory from '../components/quiz/AttemptHistory';
 import PageHeader from '../components/PageHeader';
-import { QUESTION_TYPE_LABELS } from '../types';
+import QuestionTypeBadges from '../components/QuestionTypeBadges';
 
 export default function QuizDetailPage() {
   const { id } = useParams();
@@ -58,9 +58,6 @@ export default function QuizDetailPage() {
   }
 
   const { quiz, attempts } = detail;
-  const questionTypesList = quiz.question_types
-    .map((type) => QUESTION_TYPE_LABELS[type])
-    .join(', ');
   const sessionsList = quiz.source_session_titles.join(', ') || 'No sessions';
   const hasAttempts = attempts.length > 0;
   const buttonText = hasAttempts ? 'Retake quiz' : 'Start quiz';
@@ -80,9 +77,11 @@ export default function QuizDetailPage() {
           <div>
             <p className="eyebrow">Quiz</p>
             <h1 className="display-title">{quiz.title}</h1>
-            <p className="text-sm text-body mt-2">
-              {quiz.question_count} questions · {questionTypesList} · from {sessionsList}
-            </p>
+            <div className="mt-3">
+              <p className="text-sm text-body mb-2">{quiz.question_count} questions</p>
+              <QuestionTypeBadges types={quiz.question_types} />
+              <p className="text-sm text-body mt-3">from {sessionsList}</p>
+            </div>
           </div>
 
           <Link to={`/quizzes/${id}/take`} className="btn btn-primary">
