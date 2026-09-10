@@ -90,11 +90,13 @@ export default function DashboardPage() {
         <section className="section-header">
           <h2>Your sessions ({sessions.length})</h2>
           <div className="flex gap-3">
-            <Link to="/quizzes" className="btn btn-secondary relative">
-              <ClipboardList size={16} />
-              Quizzes
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">NEW</span>
-            </Link>
+            <div className="relative">
+              <Link to="/quizzes" className="btn btn-secondary">
+                <ClipboardList size={16} />
+                Quizzes
+              </Link>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">NEW</span>
+            </div>
             <button
               type="button"
               className="btn btn-primary"
