@@ -6,6 +6,7 @@ import SessionDetailPage from './pages/SessionDetailPage';
 import StudyPage from './pages/StudyPage';
 import QuizzesPage from './pages/QuizzesPage';
 import QuizDetailPage from './pages/QuizDetailPage';
+import TakeQuizPage from './pages/TakeQuizPage';
 import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -65,6 +66,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <QuizDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quizzes/:id/take"
+        element={
+          <ProtectedRoute>
+            <TakeQuizPage />
           </ProtectedRoute>
         }
       />
