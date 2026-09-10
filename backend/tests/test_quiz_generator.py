@@ -1,9 +1,10 @@
 import random
+from collections import Counter
 
 import pytest
 
 from app.services import quiz_generator as qg
-from tests.factories import make_card, make_pool
+from tests.factories import FakeSynonym, make_card, make_pool
 
 
 class TestComputeCapacity:
@@ -105,3 +106,76 @@ class TestGenerateTranslationQuestions:
         )
         for question in questions:
             assert len({option.lower() for option in question.options}) == 4
+
+
+class TestGenerateSynonymQuestions:
+    def test_correct_answer_is_a_synonym_of_the_prompt_card(self):
+        cards = make_pool(8, synonyms_for={0, 1, 2, 3})
+        by_id = {card.id: card for card in cards}
+
+        questions = qg.generate_questions(
+            cards, ["synonym"], 4, rng=random.Random(11)
+        )
+
+        assert len(questions) == 4
+        for question in questions:
+            card = by_id[question.card_id]
+            assert question.prompt_text == card.front_text
+            answer = question.options[question.correct_index]
+            assert answer in {synonym.word for synonym in card.synonyms}
+
+    def test_distractors_are_never_synonyms_of_the_same_card(self):
+        cards = make_pool(8)
+        cards[0].synonyms = [
+            FakeSynonym(word="alpha"),
+            FakeSynonym(word="beta"),
+            FakeSynonym(word="gamma"),
+        ]
+
+        questions = qg.generate_questions(
+            cards, ["synonym"], 1, rng=random.Random(12)
+        )
+
+        question = questions[0]
+        wrong = [
+            option
+            for index, option in enumerate(question.options)
+            if index != question.correct_index
+        ]
+        assert not ({"alpha", "beta", "gamma"} & set(wrong))
+        assert cards[0].front_text not in wrong
+
+    def test_cards_without_synonyms_are_skipped(self):
+        cards = make_pool(8, synonyms_for={0, 1})
+
+        questions = qg.generate_questions(
+            cards, ["synonym"], 8, rng=random.Random(13)
+        )
+
+        assert len(questions) == 2
+        assert {question.card_id for question in questions} == {"card-0", "card-1"}
+
+
+class TestMixingQuestionTypes:
+    def test_question_count_is_split_across_selected_types(self):
+        cards = make_pool(12, synonyms_for=set(range(12)))
+
+        questions = qg.generate_questions(
+            cards, ["en_to_vi", "vi_to_en", "synonym"], 9, rng=random.Random(21)
+        )
+
+        assert len(questions) == 9
+        counts = Counter(question.question_type for question in questions)
+        assert counts == {"en_to_vi": 3, "vi_to_en": 3, "synonym": 3}
+
+    def test_a_starved_type_spills_over_to_the_others(self):
+        cards = make_pool(12, synonyms_for={0, 1})
+
+        questions = qg.generate_questions(
+            cards, ["en_to_vi", "vi_to_en", "synonym"], 9, rng=random.Random(22)
+        )
+
+        assert len(questions) == 9
+        counts = Counter(question.question_type for question in questions)
+        assert counts["synonym"] == 2
+        assert counts["en_to_vi"] + counts["vi_to_en"] == 7

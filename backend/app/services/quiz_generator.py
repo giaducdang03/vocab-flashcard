@@ -55,12 +55,16 @@ def _distractor_field(question_type: str) -> str:
     return "front_text"
 
 
-def _answer_of(card: Any, question_type: str) -> str:
+def _answer_of(card: Any, question_type: str, rng: Random | None = None) -> str:
     """Get the correct answer for a card based on question type."""
     if question_type == "en_to_vi":
         return card.back_text
     elif question_type == "vi_to_en":
         return card.front_text
+    elif question_type == "synonym":
+        if rng is None:
+            rng = Random()
+        return rng.choice([syn.word for syn in card.synonyms])
     raise ValueError(f"Unknown question type: {question_type}")
 
 
@@ -79,8 +83,15 @@ def _build_options(
 
     Returns: (options, correct_index)
     """
-    correct_answer = _answer_of(card, question_type)
+    correct_answer = _answer_of(card, question_type, rng)
     distractor_field_name = _distractor_field(question_type)
+
+    # Build set of banned values (values to exclude from distractors)
+    banned = {_normalize(correct_answer), _normalize(card.front_text)}
+    if question_type == "synonym":
+        # For synonym questions, also ban all other synonyms of this card
+        for syn in card.synonyms:
+            banned.add(_normalize(syn.word))
 
     # Collect distractors from other cards
     distractors = []
@@ -88,8 +99,8 @@ def _build_options(
         if other_card.id == card.id:
             continue
         distractor = getattr(other_card, distractor_field_name)
-        # Ensure distractor is distinct from correct answer (case-insensitive)
-        if _normalize(distractor) != _normalize(correct_answer):
+        # Ensure distractor is not in banned set (case-insensitive)
+        if _normalize(distractor) not in banned:
             distractors.append(distractor)
 
     # Remove duplicate distractors (case-insensitive)
@@ -205,7 +216,9 @@ def generate_questions(
 
         # Generate questions
         for card in eligible_cards[:num_to_generate]:
-            options_result = _build_options(card, question_type, eligible_cards, rng)
+            # For synonym questions, use all cards as distractor pool; for translation, use eligible cards
+            distractor_pool = cards if question_type == "synonym" else eligible_cards
+            options_result = _build_options(card, question_type, distractor_pool, rng)
 
             if options_result is None:
                 continue
