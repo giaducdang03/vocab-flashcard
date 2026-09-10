@@ -107,9 +107,7 @@ export default function QuizzesPage() {
               <QuizCard
                 key={quiz.id}
                 quiz={quiz}
-                onOpen={() => {
-                  /* TODO: Navigate to quiz page when ready */
-                }}
+                onOpen={() => navigate(`/quizzes/${quiz.id}`)}
                 onDelete={() => handleDeleteQuiz(quiz.id)}
               />
             ))}
