@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, Plus, RotateCcw, BookOpen, Upload, Trash2 } fr
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import ImportModal from '../components/ImportModal';
+import PageHeader from '../components/PageHeader';
 import type { Card, SessionDetailResponse } from '../types';
 
 const defaultCard = {
@@ -104,13 +105,12 @@ export default function SessionDetailPage() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div className="brand-row">
-          <Link to="/" className="inline-link">
-            <ArrowLeft size={16} />
-            Dashboard
-          </Link>
-        </div>
+      <PageHeader />
+      <div style={{ padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--hairline)' }}>
+        <Link to="/" className="inline-link">
+          <ArrowLeft size={16} />
+          Dashboard
+        </Link>
         <div style={{ display: 'flex', gap: '12px' }}>
           {cards.length > 0 && (
             <Link to={`/sessions/${id}/study`} className="btn btn-secondary">
@@ -127,7 +127,7 @@ export default function SessionDetailPage() {
             Add card
           </button>
         </div>
-      </header>
+      </div>
 
       <main className="page-container compact">
         <section className="hero-card session-hero">

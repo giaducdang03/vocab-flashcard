@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { QuizDetail } from '../types';
 import AttemptHistory from '../components/quiz/AttemptHistory';
+import PageHeader from '../components/PageHeader';
 import { QUESTION_TYPE_LABELS } from '../types';
 
 export default function QuizDetailPage() {
@@ -38,14 +39,13 @@ export default function QuizDetailPage() {
   if (!detail) {
     return (
       <div className="page-shell">
-        <header className="topbar">
-          <div className="brand-row">
-            <Link to="/quizzes" className="inline-link">
-              <ArrowLeft size={16} />
-              Back to quizzes
-            </Link>
-          </div>
-        </header>
+        <PageHeader />
+        <div style={{ padding: '12px 20px' }}>
+          <Link to="/quizzes" className="inline-link">
+            <ArrowLeft size={16} />
+            Back to quizzes
+          </Link>
+        </div>
 
         <main className="page-container">
           <div className="empty-state">
@@ -67,14 +67,13 @@ export default function QuizDetailPage() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div className="brand-row">
-          <Link to="/quizzes" className="inline-link">
-            <ArrowLeft size={16} />
-            Back to quizzes
-          </Link>
-        </div>
-      </header>
+      <PageHeader />
+      <div style={{ padding: '12px 20px' }}>
+        <Link to="/quizzes" className="inline-link">
+          <ArrowLeft size={16} />
+          Back to quizzes
+        </Link>
+      </div>
 
       <main className="page-container">
         <section className="hero-card">

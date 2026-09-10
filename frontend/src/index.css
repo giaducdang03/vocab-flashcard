@@ -91,13 +91,17 @@ textarea {
 }
 
 .brand-row {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  padding: 8px 12px;
+  border-radius: 6px;
+  user-select: none;
+  z-index: 10;
 }
 
 .brand-mark {

@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import QuizQuestionView from '../components/quiz/QuizQuestionView';
+import PageHeader from '../components/PageHeader';
 import type { AnswerResult, AttemptStart } from '../types';
 
 export default function TakeQuizPage() {
@@ -99,14 +100,13 @@ export default function TakeQuizPage() {
   if (!attempt || error) {
     return (
       <div className="page-shell">
-        <header className="topbar">
-          <div className="brand-row">
-            <Link to="/quizzes" className="inline-link">
-              <ArrowLeft size={16} />
-              Back to quizzes
-            </Link>
-          </div>
-        </header>
+        <PageHeader />
+        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
+          <Link to="/quizzes" className="inline-link">
+            <ArrowLeft size={16} />
+            Back to quizzes
+          </Link>
+        </div>
 
         <main className="page-container">
           <div className="empty-state">
@@ -127,14 +127,15 @@ export default function TakeQuizPage() {
 
   return (
     <>
-      <header className="topbar" style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--canvas)' }}>
-        <div className="brand-row">
+      <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--canvas)' }}>
+        <PageHeader />
+        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
           <Link to={`/quizzes/${id}`} className="inline-link">
             <ArrowLeft size={16} />
             {attempt.quiz_title}
           </Link>
         </div>
-      </header>
+      </div>
 
       <QuizQuestionView
         question={question}

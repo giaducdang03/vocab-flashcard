@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Quiz, Session } from '../types';
 import QuizCard from '../components/quiz/QuizCard';
 import QuizCreateModal from '../components/quiz/QuizCreateModal';
-import UserMenu from '../components/UserMenu';
+import PageHeader from '../components/PageHeader';
 import { useNavigate } from 'react-router-dom';
 
 export default function QuizzesPage() {
@@ -60,16 +60,7 @@ export default function QuizzesPage() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div className="brand-row">
-          <div className="brand-mark small">VF</div>
-          <span>VocabFlash</span>
-        </div>
-
-        <nav className="top-actions">
-          {user && <UserMenu user={user} onLogout={handleLogout} />}
-        </nav>
-      </header>
+      <PageHeader user={user} onLogout={handleLogout} />
 
       <main className="page-container">
         <section className="hero-card">

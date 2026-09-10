@@ -5,7 +5,7 @@ import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
 import StatsSection from '../components/dashboard/StatsSection';
-import UserMenu from '../components/UserMenu';
+import PageHeader from '../components/PageHeader';
 import SessionCreateModal from '../components/SessionCreateModal';
 
 export default function DashboardPage() {
@@ -58,26 +58,7 @@ export default function DashboardPage() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div
-          className="brand-row hover:opacity-70 transition-opacity"
-          onClick={() => navigate('/')}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && navigate('/')}
-        >
-          <div className="brand-mark small">VF</div>
-          <span>VocabFlash</span>
-        </div>
-
-        <nav className="top-actions">
-          <button type="button" className="btn btn-secondary">
-            <Search size={16} />
-            Browse
-          </button>
-          {user && <UserMenu user={user} onLogout={handleLogout} />}
-        </nav>
-      </header>
+      <PageHeader user={user} onLogout={handleLogout} />
 
       <main className="page-container">
         <section className="hero-card">

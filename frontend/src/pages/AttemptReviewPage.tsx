@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import PageHeader from '../components/PageHeader';
 import type { AttemptReview } from '../types';
 
 const formatDuration = (seconds: number | null) => {
@@ -47,14 +48,13 @@ export default function AttemptReviewPage() {
   if (!review || error) {
     return (
       <div className="page-shell">
-        <header className="topbar">
-          <div className="brand-row">
-            <Link to="/quizzes" className="inline-link">
-              <ArrowLeft size={16} />
-              Back to quizzes
-            </Link>
-          </div>
-        </header>
+        <PageHeader />
+        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
+          <Link to="/quizzes" className="inline-link">
+            <ArrowLeft size={16} />
+            Back to quizzes
+          </Link>
+        </div>
 
         <main className="page-container">
           <div className="empty-state">
@@ -81,14 +81,13 @@ export default function AttemptReviewPage() {
 
   return (
     <div className="page-shell">
-      <header className="topbar">
-        <div className="brand-row">
-          <Link to={`/quizzes/${review.quiz_id}`} className="inline-link">
-            <ArrowLeft size={16} />
-            Back to quiz
-          </Link>
-        </div>
-      </header>
+      <PageHeader />
+      <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
+        <Link to={`/quizzes/${review.quiz_id}`} className="inline-link">
+          <ArrowLeft size={16} />
+          Back to quiz
+        </Link>
+      </div>
 
       <main className="page-container">
         <section className="hero-card">
