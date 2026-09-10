@@ -13,7 +13,7 @@ export default function PageHeader({ user, onLogout }: PageHeaderProps) {
   return (
     <header className="topbar">
       <div
-        className="brand-row hover:opacity-70 transition-opacity cursor-pointer"
+        className="brand-row cursor-pointer"
         onClick={() => navigate('/')}
         role="button"
         tabIndex={0}
