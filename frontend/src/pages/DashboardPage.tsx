@@ -59,10 +59,10 @@ export default function DashboardPage() {
   return (
     <div className="page-shell">
       <header className="topbar">
-        <div className="brand-row">
+        <Link to="/" className="brand-row hover:opacity-70 transition-opacity">
           <div className="brand-mark small">VF</div>
           <span>VocabFlash</span>
-        </div>
+        </Link>
 
         <nav className="top-actions">
           <button type="button" className="btn btn-secondary">
