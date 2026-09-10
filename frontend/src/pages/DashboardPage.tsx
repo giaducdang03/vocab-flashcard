@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BookOpenText, Plus, Search, Trash2 } from 'lucide-react';
+import { BookOpenText, ClipboardList, Plus, Search, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -89,14 +89,20 @@ export default function DashboardPage() {
 
         <section className="section-header">
           <h2>Your sessions ({sessions.length})</h2>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <Plus size={16} />
-            Add session
-          </button>
+          <div className="flex gap-3">
+            <Link to="/quizzes" className="btn btn-secondary">
+              <ClipboardList size={16} />
+              Quizzes
+            </Link>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setShowCreateModal(true)}
+            >
+              <Plus size={16} />
+              Add session
+            </button>
+          </div>
         </section>
 
         {loading ? (

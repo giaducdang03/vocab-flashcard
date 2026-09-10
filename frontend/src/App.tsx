@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage';
 import DashboardPage from './pages/DashboardPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import StudyPage from './pages/StudyPage';
+import QuizzesPage from './pages/QuizzesPage';
 import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -47,6 +48,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <StudyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quizzes"
+        element={
+          <ProtectedRoute>
+            <QuizzesPage />
           </ProtectedRoute>
         }
       />
