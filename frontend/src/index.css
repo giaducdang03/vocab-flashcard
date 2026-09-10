@@ -95,6 +95,9 @@ textarea {
   align-items: center;
   gap: 10px;
   font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 
 .brand-mark {
