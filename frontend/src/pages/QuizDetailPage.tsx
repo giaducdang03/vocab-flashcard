@@ -93,9 +93,9 @@ export default function QuizDetailPage() {
             <p className="eyebrow">Quiz</p>
             <h1 className="display-title font-bold">{quiz.title}</h1>
             <div className="mt-3">
-              <p className="text-sm text-body mb-2">{quiz.question_count} questions</p>
+              <p className="text-xs text-body mb-2">{quiz.question_count} questions</p>
               <QuestionTypeBadges types={quiz.question_types} />
-              <p className="text-sm text-body mt-3">
+              <p className="text-xs text-body mt-3">
                 from{' '}
                 {quiz.source_session_titles.map((title, idx) => (
                   <span key={title}>
