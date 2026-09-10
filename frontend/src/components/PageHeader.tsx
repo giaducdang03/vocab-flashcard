@@ -24,7 +24,7 @@ export default function PageHeader({ user, onLogout }: PageHeaderProps) {
       </div>
 
       <nav className="top-actions">
-        {user && <UserMenu user={user} onLogout={onLogout} />}
+        {user && <UserMenu user={user} onLogout={onLogout || (() => {})} />}
       </nav>
     </header>
   );
