@@ -10,6 +10,7 @@ import QuestionTypeBadges from '../components/QuestionTypeBadges';
 export default function QuizDetailPage() {
   const { id } = useParams();
   const [detail, setDetail] = useState<QuizDetail | null>(null);
+  const [sessions, setSessions] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const fetchDetail = async () => {
@@ -27,9 +28,23 @@ export default function QuizDetailPage() {
     }
   };
 
+  const fetchSessions = async () => {
+    try {
+      const response = await api.get('/sessions');
+      const sessionMap: Record<string, string> = {};
+      response.data.forEach((session: { id: string; title: string }) => {
+        sessionMap[session.title] = session.id;
+      });
+      setSessions(sessionMap);
+    } catch (err) {
+      console.error('Failed to fetch sessions:', err);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
     void fetchDetail();
+    void fetchSessions();
   }, [id]);
 
   if (loading) {
@@ -76,11 +91,25 @@ export default function QuizDetailPage() {
         <section className="hero-card">
           <div>
             <p className="eyebrow">Quiz</p>
-            <h1 className="display-title">{quiz.title}</h1>
+            <h1 className="display-title font-bold">{quiz.title}</h1>
             <div className="mt-3">
               <p className="text-sm text-body mb-2">{quiz.question_count} questions</p>
               <QuestionTypeBadges types={quiz.question_types} />
-              <p className="text-sm text-body mt-3">from {sessionsList}</p>
+              <p className="text-sm text-body mt-3">
+                from{' '}
+                {quiz.source_session_titles.map((title, idx) => (
+                  <span key={title}>
+                    {idx > 0 && ', '}
+                    {sessions[title] ? (
+                      <Link to={`/sessions/${sessions[title]}`} className="inline-link">
+                        {title}
+                      </Link>
+                    ) : (
+                      title
+                    )}
+                  </span>
+                ))}
+              </p>
             </div>
           </div>
 
