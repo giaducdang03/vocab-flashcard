@@ -93,10 +93,37 @@ export default function AttemptReviewPage() {
         <section className="hero-card">
           <div>
             <p className="eyebrow">{review.quiz_title}</p>
-            <h1 className="display-title">
-              {review.score}/{review.total_questions} correct · {percent}%
-            </h1>
-            <p className="text-sm text-body mt-2">
+            <div className="mt-3">
+              <p className="text-lg font-semibold">
+                {review.score} / {review.total_questions} correct · {percent}%
+              </p>
+              <div style={{ marginTop: '12px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    height: '8px',
+                    borderRadius: '4px',
+                    overflow: 'hidden',
+                    backgroundColor: 'var(--hairline)',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${percent}%`,
+                      backgroundColor: '#10b981',
+                      transition: 'width 0.3s ease',
+                    }}
+                  />
+                  <div
+                    style={{
+                      width: `${100 - percent}%`,
+                      backgroundColor: '#ef4444',
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-body mt-3">
               Finished in {formatDuration(review.duration_seconds)} · {submittedDate}
             </p>
           </div>
