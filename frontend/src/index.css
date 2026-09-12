@@ -20,6 +20,9 @@
   --timeline-done: #c08532;
   --success: #1f8a65;
   --error: #cf2d56;
+  --hairline-soft: #efeee8;
+  --hairline-strong: #cfcdc4;
+  --secondary: #006c4c;
 }
 
 html {
@@ -32,7 +35,7 @@ body {
   min-height: 100vh;
   background: var(--canvas);
   color: var(--ink);
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 #root {
