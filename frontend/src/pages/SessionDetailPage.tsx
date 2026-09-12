@@ -106,7 +106,7 @@ export default function SessionDetailPage() {
   return (
     <div className="page-shell">
       <PageHeader />
-      <div style={{ padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--hairline)' }}>
+      <div className="page-toolbar flex items-center justify-between border-b border-hairline">
         <Link to="/" className="inline-link">
           <ArrowLeft size={16} />
           Dashboard
