@@ -116,9 +116,14 @@ export default function SessionsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-gutter md:grid-cols-2 xl:grid-cols-3">
+          <div className="flex flex-col gap-space-sm">
             {visibleSessions.map((session) => (
-              <SessionCard key={session.id} session={session} onDelete={handleDeleteSession} />
+              <SessionCard
+                key={session.id}
+                session={session}
+                onDelete={handleDeleteSession}
+                variant="row"
+              />
             ))}
           </div>
         )}

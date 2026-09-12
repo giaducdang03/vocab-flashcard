@@ -23,7 +23,7 @@ export default function DailyLearnedChart({ daily, days, onDaysChange }: DailyLe
       {
         label: 'Words learned',
         data: daily.map((point) => point.learned_count),
-        backgroundColor: '#f54e00',
+        backgroundColor: '#a83300',
         borderRadius: 4,
       },
     ],
