@@ -1,15 +1,7 @@
-import type { ChartOptions } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import '../../lib/chartSetup';
 import type { Session } from '../../types';
 
-const MAX_BARS = 10;
-const MAX_LABEL_LENGTH = 25;
-
-const truncateLabel = (label: string, maxLength: number) => {
-  if (label.length <= maxLength) return label;
-  return label.slice(0, maxLength - 1) + '…';
-};
+const MAX_ROWS = 6;
+const STRONG_RETENTION = 50;
 
 type SessionProgressChartProps = {
   sessions: Session[];
@@ -20,84 +12,73 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
 
   const ranked = withCards
     .map((session) => ({
+      id: session.id,
       title: session.title,
-      displayTitle: truncateLabel(session.title, MAX_LABEL_LENGTH),
       learned: session.learned_cards,
       total: session.total_cards,
       percent: Math.round((session.learned_cards / session.total_cards) * 100),
     }))
     .sort((a, b) => a.percent - b.percent)
-    .slice(0, MAX_BARS);
-
-  if (ranked.length === 0) {
-    return (
-      <div className="bg-white border border-hairline rounded-2xl p-5">
-        <h3 className="text-base font-semibold text-ink m-0 mb-2">Progress by session</h3>
-        <p className="text-sm text-body m-0">No sessions with cards yet.</p>
-      </div>
-    );
-  }
-
-  const data = {
-    labels: ranked.map((item) => item.displayTitle),
-    datasets: [
-      {
-        label: 'Progress',
-        data: ranked.map((item) => item.percent),
-        backgroundColor: '#f54e00',
-        borderRadius: 4,
-      },
-    ],
-  };
-
-  const options: ChartOptions<'bar'> = {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          title: (context) => {
-            const item = ranked[context[0].dataIndex];
-            return item.title;
-          },
-          label: (context) => {
-            const item = ranked[context.dataIndex];
-            return `${item.learned}/${item.total} words (${item.percent}%)`;
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        beginAtZero: true,
-        max: 100,
-        ticks: { color: '#807d72', callback: (value) => `${value}%` },
-        grid: { color: '#e6e5e0' },
-      },
-      y: {
-        grid: { display: false },
-        ticks: { color: '#26251e' },
-      },
-    },
-  };
+    .slice(0, MAX_ROWS);
 
   return (
-    <div className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-base font-semibold text-ink m-0">Progress by session</h3>
-        {withCards.length > MAX_BARS && (
-          <span className="text-xs text-muted">
-            {MAX_BARS} of {withCards.length} sessions
+    <div className="flex flex-col justify-between rounded-xl border border-hairline bg-surface-card p-space-lg">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="m-0 text-title-md text-ink">Progress by session</h2>
+          <p className="m-0 text-body-sm text-muted">Sorted by lowest completion rate</p>
+        </div>
+        {withCards.length > 0 && (
+          <span className="shrink-0 rounded bg-surface-container px-2 py-0.5 text-caption-uppercase text-tertiary">
+            {withCards.length} {withCards.length === 1 ? 'Module' : 'Modules'}
           </span>
         )}
       </div>
 
-      <div style={{ height: `${Math.max(160, ranked.length * 36)}px` }}>
-        <Bar data={data} options={options} />
-      </div>
+      {ranked.length === 0 ? (
+        <p className="m-0 text-body-sm text-body">No sessions with cards yet.</p>
+      ) : (
+        <>
+          <div className="my-auto space-y-4 pt-2">
+            {ranked.map((item) => {
+              const strong = item.percent >= STRONG_RETENTION;
 
-      <p className="text-xs text-muted m-0">Sorted by least complete first.</p>
+              return (
+                <div key={item.id} className="space-y-1.5">
+                  <div className="flex items-center justify-between gap-3 text-body-sm">
+                    <span className="truncate font-medium text-ink">{item.title}</span>
+                    <span className="shrink-0 font-mono text-code-sm text-muted">
+                      {item.learned} / {item.total}
+                      <span
+                        className={`ml-1 font-medium ${strong ? 'text-secondary' : 'text-ink'}`}
+                      >
+                        {item.percent}%
+                      </span>
+                    </span>
+                  </div>
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-hairline-soft">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        strong ? 'bg-secondary' : 'bg-primary'
+                      }`}
+                      style={{ width: `${item.percent}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 flex items-center justify-between pt-3 font-mono text-code-sm text-muted">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-primary" /> Needs attention (&lt;50%)
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-secondary" /> Strong retention (≥50%)
+            </span>
+          </div>
+        </>
+      )}
     </div>
   );
 }

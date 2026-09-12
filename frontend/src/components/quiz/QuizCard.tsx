@@ -50,7 +50,7 @@ export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
       <button
         type="button"
         onClick={onOpen}
-        className="w-full px-4 py-2 bg-primary text-white border border-primary rounded-lg hover:bg-primary-dark font-semibold text-sm transition-all"
+        className="w-full px-4 py-2 bg-primary text-white border border-primary rounded-lg hover:bg-primary-active font-semibold text-sm transition-all"
       >
         Open quiz
       </button>

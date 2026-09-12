@@ -61,7 +61,7 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
                 <td className="py-3 px-4">
                   <button
                     type="button"
-                    className="text-xs px-3 py-1 bg-primary text-white rounded border border-primary hover:bg-primary-dark transition-colors"
+                    className="text-xs px-3 py-1 bg-primary text-white rounded border border-primary hover:bg-primary-active transition-colors"
                     onClick={() => navigate(`/attempts/${attempt.id}`)}
                   >
                     Review
