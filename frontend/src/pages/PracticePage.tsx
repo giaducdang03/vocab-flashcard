@@ -188,7 +188,7 @@ export default function PracticePage() {
         <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
           <Link to={`/sessions/${id}`} className="inline-link">
             <ArrowLeft size={16} />
-            {deck.session_title}
+            Exit | {deck.session_title}
           </Link>
         </div>
       </div>

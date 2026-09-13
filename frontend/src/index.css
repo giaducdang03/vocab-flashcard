@@ -20,9 +20,7 @@
   --timeline-done: #c08532;
   --success: #1f8a65;
   --error: #cf2d56;
-  --hairline-soft: #efeee8;
   --hairline-strong: #cfcdc4;
-  --secondary: #006c4c;
 }
 
 html {
@@ -894,7 +892,7 @@ textarea {
 .option-button {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 16px 14px;
   border: 2px solid var(--hairline);
   border-radius: 14px;
@@ -902,16 +900,17 @@ textarea {
   color: var(--ink);
   font-size: 16px;
   font-weight: 500;
-  text-align: center;
+  text-align: left;
   line-height: 1.4;
   cursor: pointer;
   transition: all 0.2s ease;
   min-height: 72px;
+  gap: 12px;
 }
 
 .option-button:hover:not(:disabled) {
   border-color: var(--primary);
-  background: rgba(245, 78, 0, 0.04);
+  background: rgba(168, 51, 0, 0.04);
 }
 
 .option-button:disabled {
@@ -921,7 +920,7 @@ textarea {
 
 .option-button.checked {
   border-color: var(--primary);
-  background: rgba(245, 78, 0, 0.08);
+  background: rgba(168, 51, 0, 0.08);
 }
 
 .option-button.correct {
@@ -934,12 +933,6 @@ textarea {
   border-color: var(--error);
   background: rgba(207, 45, 86, 0.08);
   color: var(--error);
-}
-
-.option-button {
-  justify-content: flex-start;
-  text-align: left;
-  gap: 12px;
 }
 
 .option-letter {
