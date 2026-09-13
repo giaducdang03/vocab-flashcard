@@ -529,18 +529,21 @@ export default function StudyPage() {
       </header>
 
           {/* Progress Bar */}
-        <div className="flex flex-col gap-2 mb-4 flex-shrink-0">
-          <div className="flex items-baseline gap-3">
-            <span className="text-sm font-bold text-ink">
+        <div className="flex flex-col gap-space-sm flex-shrink-0">
+          <div className="flex items-baseline gap-space-sm">
+            <span className="font-mono text-title-sm text-ink">
               {filteredCards.length === 0 ? 0 : currentIndex + 1} / {filteredCards.length}
             </span>
-            <span className="text-sm text-body">{detail.session.title}</span>
+            <span className="text-body-sm text-muted">{detail.session.title}</span>
           </div>
-          <div className="w-full h-3 bg-hairline rounded-full overflow-hidden">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-hairline-soft">
             <div
-              className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all"
+              className="h-full rounded-full bg-primary transition-all duration-300"
               style={{
-                width: filteredCards.length === 0 ? '0%' : `${((currentIndex + 1) / filteredCards.length) * 100}%`,
+                width:
+                  filteredCards.length === 0
+                    ? '0%'
+                    : `${((currentIndex + 1) / filteredCards.length) * 100}%`,
               }}
             />
           </div>
