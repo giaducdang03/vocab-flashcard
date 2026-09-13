@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, Play } from 'lucide-react';
+import { ArrowLeft, FolderOpen, Play } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { QuizDetail } from '../types';
+import { QUESTION_TYPE_LABELS } from '../types';
 import AttemptHistory from '../components/quiz/AttemptHistory';
+import MasteryTrajectory from '../components/quiz/MasteryTrajectory';
 import PageHeader from '../components/PageHeader';
-import QuestionTypeBadges from '../components/QuestionTypeBadges';
+import QuizStatCards from '../components/quiz/QuizStatCards';
+
+const BACK_LINK_CLASS =
+  'group inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink';
 
 export default function QuizDetailPage() {
   const { id } = useParams();
@@ -53,19 +58,16 @@ export default function QuizDetailPage() {
 
   if (!detail) {
     return (
-      <div className="page-shell">
+      <div className="page-shell bg-canvas">
         <PageHeader />
-        <div style={{ padding: '12px 20px' }}>
-          <Link to="/quizzes" className="inline-link">
-            <ArrowLeft size={16} />
-            Back to quizzes
+        <main className="mx-auto w-full max-w-5xl px-margin py-space-xl max-sm:px-space-md">
+          <Link to="/quizzes" className={BACK_LINK_CLASS}>
+            <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
+            Back to Quizzes
           </Link>
-        </div>
-
-        <main className="page-container">
-          <div className="empty-state">
-            <h3>Quiz not found</h3>
-            <p>The quiz you're looking for doesn't exist.</p>
+          <div className="mt-space-lg grid min-h-[180px] place-items-center gap-2 rounded-xl border border-dashed border-hairline-strong bg-canvas-soft p-space-xl text-center">
+            <h3 className="text-title-md text-ink">Quiz not found</h3>
+            <p className="text-body-sm text-body">The quiz you're looking for doesn't exist.</p>
           </div>
         </main>
       </div>
@@ -73,59 +75,92 @@ export default function QuizDetailPage() {
   }
 
   const { quiz, attempts } = detail;
-  const sessionsList = quiz.source_session_titles.join(', ') || 'No sessions';
   const hasAttempts = attempts.length > 0;
   const buttonText = hasAttempts ? 'Retake quiz' : 'Start quiz';
+  const uniqueTypes = Array.from(new Set(quiz.question_types));
 
   return (
-    <div className="page-shell">
+    <div className="page-shell bg-canvas">
       <PageHeader />
-      <div style={{ padding: '12px 20px' }}>
-        <Link to="/quizzes" className="inline-link">
-          <ArrowLeft size={16} />
-          Back to quizzes
-        </Link>
-      </div>
 
-      <main className="page-container">
-        <section className="hero-card">
-          <div>
-            <p className="eyebrow">Quiz</p>
-            <h1 className="display-title font-bold" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+      <main className="mx-auto w-full max-w-5xl px-margin py-space-xl max-sm:px-space-md">
+        <Link to="/quizzes" className={BACK_LINK_CLASS}>
+          <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
+          Back to Quizzes
+        </Link>
+
+        {/* Hero */}
+        <div className="mt-space-md flex flex-col justify-between gap-space-md md:flex-row md:items-end">
+          <div className="flex max-w-2xl flex-col gap-space-xs">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              {quiz.source_session_titles.map((title) => (
+                <span
+                  key={title}
+                  className="inline-flex items-center gap-1.5 rounded border border-hairline bg-surface-card px-2.5 py-1 font-mono text-code-sm text-body"
+                >
+                  <FolderOpen size={15} className="text-muted" />
+                  From session:{' '}
+                  {sessions[title] ? (
+                    <Link
+                      to={`/sessions/${sessions[title]}`}
+                      className="font-medium text-ink hover:underline"
+                    >
+                      {title}
+                    </Link>
+                  ) : (
+                    <strong className="font-medium text-ink">{title}</strong>
+                  )}
+                </span>
+              ))}
+              {uniqueTypes.map((type) => (
+                <span
+                  key={type}
+                  className="inline-flex items-center rounded-full bg-ink px-2.5 py-1 text-caption-uppercase uppercase text-surface"
+                >
+                  {QUESTION_TYPE_LABELS[type]}
+                </span>
+              ))}
+            </div>
+
+            <h1 className="text-display-hero tracking-tight text-ink max-sm:text-headline-lg">
               {quiz.title}
             </h1>
-            <div className="mt-3">
-              <p className="text-xs text-body mb-2">{quiz.question_count} questions</p>
-              <QuestionTypeBadges types={quiz.question_types} />
-              <p className="text-xs text-body mt-3">
-                from{' '}
-                {quiz.source_session_titles.map((title, idx) => (
-                  <span key={title}>
-                    {idx > 0 && ', '}
-                    {sessions[title] ? (
-                      <Link to={`/sessions/${sessions[title]}`} className="inline-link">
-                        {title}
-                      </Link>
-                    ) : (
-                      title
-                    )}
-                  </span>
-                ))}
-              </p>
-            </div>
           </div>
 
-          <Link to={`/quizzes/${id}/take`} className="btn btn-primary">
-            <Play size={16} />
+          <Link
+            to={`/quizzes/${id}/take`}
+            className="inline-flex h-10 shrink-0 items-center gap-2 self-start rounded-lg bg-primary px-5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active md:self-auto"
+          >
+            <Play size={19} />
             {buttonText}
           </Link>
-        </section>
+        </div>
 
-        <section className="section-header">
-          <h2>Attempt history ({attempts.length})</h2>
-        </section>
+        {/* Stat strip */}
+        <div className="mt-space-lg">
+          <QuizStatCards questionCount={quiz.question_count} attempts={attempts} />
+        </div>
 
-        <AttemptHistory attempts={attempts} />
+        {/* Attempt history */}
+        <div className="mt-space-xl flex flex-col gap-space-sm">
+          <div className="flex items-center justify-between pb-space-xs">
+            <div className="flex items-center gap-2">
+              <h2 className="text-title-md text-ink">Attempt History</h2>
+              <span className="inline-flex h-5 items-center justify-center rounded-full bg-hairline-soft px-2 font-mono text-[11px] text-muted">
+                {attempts.length}
+              </span>
+            </div>
+            {hasAttempts && (
+              <span className="text-caption-uppercase uppercase text-muted">Sorted by newest</span>
+            )}
+          </div>
+          <AttemptHistory attempts={attempts} />
+        </div>
+
+        {/* Insight — renders nothing below two attempts */}
+        <div className="mt-space-xl">
+          <MasteryTrajectory attempts={attempts} />
+        </div>
       </main>
     </div>
   );
