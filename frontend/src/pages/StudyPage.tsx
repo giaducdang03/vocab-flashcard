@@ -693,14 +693,10 @@ export default function StudyPage() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-center gap-6 flex-shrink-0">
+            <div className="flex items-center justify-between gap-space-md">
               <button
                 type="button"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-semibold transition-all ${
-                  currentIndex === 0
-                    ? 'bg-white text-ink border-hairline opacity-40 cursor-not-allowed'
-                    : 'bg-white text-ink border-hairline hover:border-primary hover:-translate-y-0.5'
-                }`}
+                className="inline-flex items-center gap-space-sm rounded-lg border border-hairline-strong bg-surface-card px-4 py-2.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface-card"
                 disabled={currentIndex === 0}
                 onClick={handlePrev}
               >
@@ -708,17 +704,13 @@ export default function StudyPage() {
                 Previous
               </button>
 
-              <span className="text-sm font-semibold text-body min-w-20 text-center">
+              <span className="font-mono text-code-sm text-muted">
                 {currentIndex + 1} of {filteredCards.length}
               </span>
 
               <button
                 type="button"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-semibold transition-all ${
-                  currentIndex >= filteredCards.length - 1
-                    ? 'bg-white text-ink border-hairline opacity-40 cursor-not-allowed'
-                    : 'bg-white text-ink border-hairline hover:border-primary hover:-translate-y-0.5'
-                }`}
+                className="inline-flex items-center gap-space-sm rounded-lg bg-primary px-5 py-2.5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary"
                 disabled={currentIndex >= filteredCards.length - 1}
                 onClick={handleNext}
               >
@@ -728,8 +720,17 @@ export default function StudyPage() {
             </div>
 
             {/* Keyboard Hints */}
-            <div className="text-center text-xs text-muted bg-white/50 rounded-xl p-3 flex-shrink-0">
-              <p>💡 <span className="bg-black/8 px-1.5 py-0.5 rounded font-mono">Spacebar</span> to flip • <span className="bg-black/8 px-1.5 py-0.5 rounded font-mono">← →</span> arrow keys to navigate</p>
+            <div className="flex justify-center">
+              <p className="inline-flex flex-wrap items-center justify-center gap-space-sm rounded-full bg-canvas-soft px-4 py-2 text-body-sm text-muted">
+                <span>💡</span>
+                <span>
+                  <span className="font-mono text-code-sm text-body">Space</span> to flip
+                </span>
+                <span aria-hidden="true">•</span>
+                <span>
+                  <span className="font-mono text-code-sm text-body">← →</span> arrow keys to navigate
+                </span>
+              </p>
             </div>
           </div>
         ) : null}
