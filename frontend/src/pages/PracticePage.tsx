@@ -111,7 +111,7 @@ export default function PracticePage() {
     return <div className="app-shell center-block">Building practice set…</div>;
   }
 
-  if (!deck || deck.questions.length === 0 || error) {
+  if (!deck || error || deck.questions.length < 4) {
     return (
       <div className="page-shell">
         <PageHeader />
