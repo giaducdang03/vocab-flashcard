@@ -209,7 +209,7 @@ export default function SessionDetailPage() {
     <div className="page-shell">
       <PageHeader user={user} onLogout={handleLogout} />
 
-      <div className="page-toolbar flex items-center border-b border-hairline">
+      <div className="page-toolbar flex items-center">
         <Link to="/sessions" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-muted transition-colors hover:text-ink">
           <ArrowLeft size={16} />
           Sessions
