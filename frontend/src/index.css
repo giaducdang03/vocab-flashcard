@@ -483,8 +483,7 @@ textarea {
   color: var(--ink);
 }
 
-.stack-form,
-.editor-panel {
+.stack-form {
   display: grid;
   gap: 18px;
 }
@@ -517,10 +516,6 @@ textarea {
   color: var(--body);
 }
 
-.session-hero {
-  align-items: center;
-}
-
 .progress-box {
   min-width: 220px;
   display: grid;
@@ -532,111 +527,9 @@ textarea {
   color: var(--body);
 }
 
-.editor-panel {
-  background: rgba(255, 255, 255, 0.84);
-  border: 1px solid var(--hairline);
-  border-radius: 20px;
-  padding: 22px;
-}
-
-.editor-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
 .field-group textarea {
   min-height: 88px;
   resize: vertical;
-}
-
-.full-width {
-  grid-column: 1 / -1;
-}
-
-.synonym-block {
-  display: grid;
-  gap: 12px;
-}
-
-.synonym-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.card-list {
-  display: grid;
-  gap: 16px;
-}
-
-.card-row {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid var(--hairline);
-  border-radius: 18px;
-  padding: 18px;
-  display: grid;
-  gap: 16px;
-}
-
-.card-row.is-learned {
-  border-color: rgba(31, 138, 101, 0.35);
-  background: rgba(31, 138, 101, 0.04);
-}
-
-.learn-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 999px;
-  border: 1px solid var(--hairline);
-  background: transparent;
-  color: var(--ink);
-  padding: 8px 12px;
-  font-weight: 600;
-}
-
-.learn-toggle.active {
-  background: rgba(31, 138, 101, 0.08);
-  border-color: rgba(31, 138, 101, 0.25);
-  color: var(--success);
-}
-
-.card-preview-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-}
-
-.meta-label {
-  margin: 0 0 8px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.meta-sub {
-  margin: 8px 0 0;
-  color: var(--body);
-}
-
-.synonym-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.synonym-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(159, 187, 224, 0.12);
-  border: 1px solid rgba(159, 187, 224, 0.22);
-  color: var(--ink);
-  font-size: 12px;
 }
 
 .inline-link {

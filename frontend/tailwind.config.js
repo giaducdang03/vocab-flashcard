@@ -26,6 +26,7 @@ export default {
         'canvas-soft': '#fafaf7',
         'hairline-soft': '#efeee8',
         'hairline-strong': '#cfcdc4',
+        'learned-surface': '#ebf6f1',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
