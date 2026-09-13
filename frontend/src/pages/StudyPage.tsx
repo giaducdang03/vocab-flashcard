@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Filter, Settings, Shuffle, Volume2 } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Circle, Filter, RotateCcw, Settings, Shuffle, Volume2 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
+import PageHeader from '../components/PageHeader';
 import type { Card, SessionDetailResponse } from '../types';
 
 type FilterMode = 'all' | 'unlearned' | 'learned';
@@ -89,9 +91,18 @@ function pickVoice(voices: SpeechSynthesisVoice[], gender: VoiceGender, accent: 
   return { voice: englishVoices[0] || voices[0] || null, exactMatch: false };
 }
 
+const TOOL_BUTTON_CLASS =
+  'inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink';
+
+const TOOL_BUTTON_ACTIVE_CLASS =
+  'inline-flex items-center gap-1.5 rounded-lg border border-hairline-strong bg-canvas-soft px-3 py-1.5 text-body-sm font-semibold text-ink transition-colors';
+
+const EYEBROW_CLASS = 'text-caption-uppercase uppercase text-muted';
+
 export default function StudyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [detail, setDetail] = useState<SessionDetailResponse | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
@@ -312,6 +323,11 @@ export default function StudyPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrev, handleNext]);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   if (loading) {
     return <div className="app-shell center-block">Loading session…</div>;
   }
@@ -321,14 +337,17 @@ export default function StudyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-canvas to-amber-100/20 py-6 px-5">
+    <div className="page-shell bg-canvas">
+      <PageHeader user={user} onLogout={handleLogout} />
+
       {voiceToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-ink text-white text-sm font-semibold rounded-xl shadow-lg animate-fadeIn">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-fadeIn rounded-xl bg-ink px-4 py-3 text-body-sm font-semibold text-white shadow-lg">
           {voiceToast}
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto flex flex-col gap-4 h-[calc(100vh-48px)]">
+      <main className="mx-auto w-full max-w-6xl px-margin py-space-xl max-sm:px-space-md">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-space-md">
       {/* Top Bar */}
       <header className="flex items-center justify-between gap-4 border-b border-hairline pb-4 flex-shrink-0">
         <Link to={`/sessions/${id}`} className="inline-flex items-center gap-2 text-ink font-semibold hover:text-primary transition-colors">
@@ -533,9 +552,7 @@ export default function StudyPage() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-hidden flex flex-col gap-4">
-        {/* Progress Bar */}
+          {/* Progress Bar */}
         <div className="flex flex-col gap-2 mb-4 flex-shrink-0">
           <div className="flex items-baseline gap-3">
             <span className="text-sm font-bold text-ink">
@@ -734,8 +751,8 @@ export default function StudyPage() {
             </div>
           </div>
         ) : null}
+        </div>
       </main>
-      </div>
     </div>
   );
 }
