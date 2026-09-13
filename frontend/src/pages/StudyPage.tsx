@@ -521,7 +521,7 @@ export default function StudyPage() {
               )}
             </div>
 
-            <span className="rounded-lg bg-hairline-soft px-3 py-1.5 font-mono text-code-sm font-semibold text-ink">
+            <span className="hidden">
               {learnedCount} / {cards.length}
             </span>
           </div>
