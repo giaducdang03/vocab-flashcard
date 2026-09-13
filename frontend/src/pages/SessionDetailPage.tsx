@@ -230,7 +230,7 @@ export default function SessionDetailPage() {
               </h1>
 
               <div className="pt-2">
-                <div className="mb-2 flex items-center justify-between text-body-sm">
+                <div className="mb-2 flex flex-col items-start justify-between gap-1 text-body-sm lg:flex-row lg:items-center">
                   <span className="flex items-center gap-1.5 font-medium text-ink">
                     <ShieldCheck size={18} className="text-secondary" />
                     Mastery progress
@@ -242,7 +242,9 @@ export default function SessionDetailPage() {
                 </div>
                 <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-hairline-soft">
                   <div
-                    className="h-full rounded-full bg-primary transition-all duration-500"
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      progressPercent < 33 ? 'bg-error' : progressPercent < 67 ? 'bg-primary' : 'bg-success'
+                    }`}
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
