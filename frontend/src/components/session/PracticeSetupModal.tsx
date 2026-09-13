@@ -29,17 +29,13 @@ export default function PracticeSetupModal({
 
   // Calculate predicted question count
   const questionCount = useMemo(() => {
-    let count = 0;
-    selectedTypes.forEach((type) => {
-      if (type === 'synonym') {
-        // Only count cards that have synonyms
-        count += cards.filter((card) => card.synonyms.length > 0).length;
-      } else {
-        // All cards have en_to_vi and vi_to_en questions
-        count += cards.length;
-      }
-    });
-    return count;
+    // Count each card exactly once if it's eligible for at least one selected type
+    return cards.filter((card) => {
+      return selectedTypes.some((type) => {
+        if (type === 'synonym') return card.synonyms.length > 0;
+        return true;
+      });
+    }).length;
   }, [cards, selectedTypes]);
 
   const toggleType = (type: QuestionType) => {

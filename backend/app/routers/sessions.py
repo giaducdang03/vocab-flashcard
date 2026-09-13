@@ -110,8 +110,8 @@ async def start_practice(
 
     cards = sorted(session.cards, key=lambda c: (c.position, c.created_at))
 
-    if len(cards) < 4:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Need at least 4 cards to practice")
+    if len(cards) < quiz_generator.MIN_POOL_SIZE:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Need at least {quiz_generator.MIN_POOL_SIZE} cards to practice")
 
     try:
         generated_questions = quiz_generator.generate_practice_questions(cards, payload.question_types)

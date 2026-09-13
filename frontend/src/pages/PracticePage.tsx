@@ -73,6 +73,13 @@ export default function PracticePage() {
     }
 
     const question = deck.questions[currentIndex];
+
+    // Prevent answering the same question twice
+    const currentAnswer = answers.find((a) => a.question.card_id === question.card_id);
+    if (currentAnswer) {
+      return;
+    }
+
     const isCorrect = optionIndex === question.correct_index;
 
     setSelectedIndex(optionIndex);
