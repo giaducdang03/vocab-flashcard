@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Filter, Settings, Shuffle, Volume2 } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Circle, RotateCcw, Settings, Shuffle, Volume2 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
+import PageHeader from '../components/PageHeader';
 import type { Card, SessionDetailResponse } from '../types';
 
 type FilterMode = 'all' | 'unlearned' | 'learned';
@@ -89,9 +91,18 @@ function pickVoice(voices: SpeechSynthesisVoice[], gender: VoiceGender, accent: 
   return { voice: englishVoices[0] || voices[0] || null, exactMatch: false };
 }
 
+const TOOL_BUTTON_CLASS =
+  'inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink';
+
+const TOOL_BUTTON_ACTIVE_CLASS =
+  'inline-flex items-center gap-1.5 rounded-lg border border-hairline-strong bg-canvas-soft px-3 py-1.5 text-body-sm font-semibold text-ink transition-colors';
+
+const EYEBROW_CLASS = 'text-caption-uppercase uppercase text-muted';
+
 export default function StudyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [detail, setDetail] = useState<SessionDetailResponse | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
@@ -271,6 +282,15 @@ export default function StudyPage() {
   const currentCard = displayedCards[currentIndex] || null;
   const learnedCount = useMemo(() => cards.filter((card) => card.is_learned).length, [cards]);
 
+  const filterCounts = useMemo(
+    () => ({
+      all: cards.length,
+      unlearned: cards.length - learnedCount,
+      learned: learnedCount,
+    }),
+    [cards.length, learnedCount],
+  );
+
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -312,6 +332,11 @@ export default function StudyPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrev, handleNext]);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   if (loading) {
     return <div className="app-shell center-block">Loading session…</div>;
   }
@@ -321,233 +346,204 @@ export default function StudyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-canvas to-amber-100/20 py-6 px-5">
+    <div className="page-shell bg-canvas">
+      <PageHeader user={user} onLogout={handleLogout} />
+
       {voiceToast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-3 bg-ink text-white text-sm font-semibold rounded-xl shadow-lg animate-fadeIn">
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 animate-fadeIn rounded-xl bg-ink px-4 py-3 text-body-sm font-semibold text-white shadow-lg">
           {voiceToast}
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto flex flex-col gap-4 h-[calc(100vh-48px)]">
+      <main className="mx-auto w-full max-w-6xl px-margin py-space-xl max-sm:px-space-md">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-space-md">
       {/* Top Bar */}
-      <header className="flex items-center justify-between gap-4 border-b border-hairline pb-4 flex-shrink-0">
-        <Link to={`/sessions/${id}`} className="inline-flex items-center gap-2 text-ink font-semibold hover:text-primary transition-colors">
-          <ArrowLeft size={16} />
-          <span className="text-sm">Session detail</span>
-        </Link>
-
-        <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1 flex-shrink-0">
-          <button
-            type="button"
-            className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === 'all'
-                ? 'bg-white text-ink'
-                : 'bg-transparent text-muted'
-            }`}
-            onClick={() => {
-              setFilter('all');
-              setCurrentIndex(0);
-              setIsFlipped(false);
-            }}
+      <header className="flex flex-col gap-space-md flex-shrink-0">
+        <div className="flex flex-wrap items-center justify-between gap-space-sm">
+          <Link
+            to={`/sessions/${id}`}
+            className="group inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
           >
-            <Filter size={14} />
-            All
-          </button>
-          <button
-            type="button"
-            className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === 'unlearned'
-                ? 'bg-white text-ink'
-                : 'bg-transparent text-muted'
-            }`}
-            onClick={() => {
-              setFilter('unlearned');
-              setCurrentIndex(0);
-              setIsFlipped(false);
-            }}
-          >
-            Unlearned
-          </button>
-          <button
-            type="button"
-            className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === 'learned'
-                ? 'bg-white text-ink'
-                : 'bg-transparent text-muted'
-            }`}
-            onClick={() => {
-              setFilter('learned');
-              setCurrentIndex(0);
-              setIsFlipped(false);
-            }}
-          >
-            Learned
-          </button>
-        </div>
+            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
+            Session detail
+          </Link>
 
-        <button
-          type="button"
-          className="px-3 py-1 text-xs font-semibold text-muted border border-hairline rounded-lg hover:border-primary hover:text-primary transition-all flex-shrink-0"
-          onClick={() => {
-            setCurrentIndex(0);
-            setIsFlipped(false);
-          }}
-          title="Back to first card"
-        >
-          ↻ Start
-        </button>
+          <div className="inline-flex items-center gap-space-xs rounded-xl bg-hairline-soft p-1">
+            {(['all', 'unlearned', 'learned'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={filter === mode}
+                className={`rounded-lg px-3 py-1.5 text-body-sm capitalize transition-colors ${
+                  filter === mode
+                    ? 'bg-surface-card font-semibold text-ink ring-1 ring-hairline'
+                    : 'text-body hover:text-ink'
+                }`}
+                onClick={() => {
+                  setFilter(mode);
+                  setCurrentIndex(0);
+                  setIsFlipped(false);
+                }}
+              >
+                {mode}
+                <span
+                  className={`ml-1.5 font-mono text-code-sm ${
+                    mode === 'learned' ? 'text-secondary' : 'text-muted-soft'
+                  }`}
+                >
+                  {filterCounts[mode]}
+                </span>
+              </button>
+            ))}
+          </div>
 
-        <button
-          type="button"
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all flex-shrink-0 ${
-            shuffleEnabled ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
-          }`}
-          onClick={handleToggleShuffle}
-          title={shuffleEnabled ? 'Turn off shuffle' : 'Shuffle card order'}
-        >
-          <Shuffle size={16} />
-          Shuffle
-        </button>
-
-        {speechSupported && (
-          <div className="relative flex-shrink-0" ref={speakerSettingsRef}>
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
-                showSpeakerSettings ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
-              }`}
-              onClick={() => setShowSpeakerSettings((current) => !current)}
-              title="Configure pronunciation voice"
+              className={TOOL_BUTTON_CLASS}
+              onClick={() => {
+                setCurrentIndex(0);
+                setIsFlipped(false);
+              }}
+              title="Back to first card"
             >
-              <Volume2 size={16} />
-              Speaker
+              <RotateCcw size={16} />
+              <span className="max-sm:hidden">Start</span>
             </button>
 
-            {showSpeakerSettings && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Voice</p>
-                  <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceGender === 'female' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceGender('female')}
-                      title="Female voice"
-                    >
-                      Nữ
-                    </button>
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceGender === 'male' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceGender('male')}
-                      title="Male voice"
-                    >
-                      Nam
-                    </button>
-                  </div>
-                </div>
+            <button
+              type="button"
+              className={shuffleEnabled ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
+              onClick={handleToggleShuffle}
+              title={shuffleEnabled ? 'Turn off shuffle' : 'Shuffle card order'}
+            >
+              <Shuffle size={16} />
+              <span className="max-sm:hidden">Shuffle</span>
+            </button>
 
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Accent</p>
-                  <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceAccent === 'en-US' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceAccent('en-US')}
-                      title="US pronunciation"
-                    >
-                      US
-                    </button>
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceAccent === 'en-GB' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceAccent('en-GB')}
-                      title="UK pronunciation"
-                    >
-                      UK
-                    </button>
+            {speechSupported && (
+              <div className="relative" ref={speakerSettingsRef}>
+                <button
+                  type="button"
+                  className={showSpeakerSettings ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
+                  onClick={() => setShowSpeakerSettings((current) => !current)}
+                  title="Configure pronunciation voice"
+                >
+                  <Volume2 size={16} />
+                  <span className="max-sm:hidden">Speaker</span>
+                </button>
+
+                {showSpeakerSettings && (
+                  <div className="absolute right-0 top-full z-20 mt-2 flex w-56 flex-col gap-space-md rounded-xl border border-hairline bg-surface-card p-space-md shadow-lg">
+                    <div>
+                      <p className={`${EYEBROW_CLASS} mb-2`}>Voice</p>
+                      <div className="flex items-center gap-space-xs rounded-lg bg-hairline-soft p-1">
+                        {(['female', 'male'] as const).map((gender) => (
+                          <button
+                            key={gender}
+                            type="button"
+                            aria-pressed={voiceGender === gender}
+                            className={`flex-1 rounded px-3 py-1.5 text-body-sm transition-colors ${
+                              voiceGender === gender
+                                ? 'bg-surface-card font-semibold text-ink ring-1 ring-hairline'
+                                : 'text-body hover:text-ink'
+                            }`}
+                            onClick={() => setVoiceGender(gender)}
+                            title={gender === 'female' ? 'Female voice' : 'Male voice'}
+                          >
+                            {gender === 'female' ? 'Nữ' : 'Nam'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className={`${EYEBROW_CLASS} mb-2`}>Accent</p>
+                      <div className="flex items-center gap-space-xs rounded-lg bg-hairline-soft p-1">
+                        {(['en-US', 'en-GB'] as const).map((accent) => (
+                          <button
+                            key={accent}
+                            type="button"
+                            aria-pressed={voiceAccent === accent}
+                            className={`flex-1 rounded px-3 py-1.5 font-mono text-code-sm transition-colors ${
+                              voiceAccent === accent
+                                ? 'bg-surface-card font-semibold text-ink ring-1 ring-hairline'
+                                : 'text-body hover:text-ink'
+                            }`}
+                            onClick={() => setVoiceAccent(accent)}
+                            title={accent === 'en-US' ? 'US pronunciation' : 'UK pronunciation'}
+                          >
+                            {accent === 'en-US' ? 'US' : 'UK'}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        <div className="relative flex-shrink-0" ref={displaySettingsRef}>
-          <button
-            type="button"
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
-              showDisplaySettings ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
-            }`}
-            onClick={() => setShowDisplaySettings((current) => !current)}
-            title="Configure card fields"
-          >
-            <Settings size={16} />
-            Display
-          </button>
+            <div className="relative" ref={displaySettingsRef}>
+              <button
+                type="button"
+                className={showDisplaySettings ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
+                onClick={() => setShowDisplaySettings((current) => !current)}
+                title="Configure card fields"
+              >
+                <Settings size={16} />
+                <span className="max-sm:hidden">Display</span>
+              </button>
 
-          {showDisplaySettings && (
-            <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted mb-1">Show on card</p>
-              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-primary"
-                  checked={displayConfig.phonetic}
-                  onChange={() => toggleDisplayField('phonetic')}
-                />
-                Phonetic
-              </label>
-              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-primary"
-                  checked={displayConfig.synonyms}
-                  onChange={() => toggleDisplayField('synonyms')}
-                />
-                Synonyms
-              </label>
-              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-primary"
-                  checked={displayConfig.example}
-                  onChange={() => toggleDisplayField('example')}
-                />
-                Example
-              </label>
+              {showDisplaySettings && (
+                <div className="absolute right-0 top-full z-20 mt-2 flex w-56 flex-col gap-space-sm rounded-xl border border-hairline bg-surface-card p-space-md shadow-lg">
+                  <p className={EYEBROW_CLASS}>Show on card</p>
+                  {(
+                    [
+                      ['phonetic', 'Phonetic'],
+                      ['synonyms', 'Synonyms'],
+                      ['example', 'Example'],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <label
+                      key={field}
+                      className="flex cursor-pointer select-none items-center gap-space-sm text-body-sm text-ink"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-primary"
+                        checked={displayConfig[field]}
+                        onChange={() => toggleDisplayField(field)}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="text-xs font-semibold text-body flex-shrink-0">
-          {learnedCount}/{cards.length}
+            <span className="hidden">
+              {learnedCount} / {cards.length}
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-hidden flex flex-col gap-4">
-        {/* Progress Bar */}
-        <div className="flex flex-col gap-2 mb-4 flex-shrink-0">
-          <div className="flex items-baseline gap-3">
-            <span className="text-sm font-bold text-ink">
+          {/* Progress Bar */}
+        <div className="flex flex-col gap-space-sm flex-shrink-0">
+          <div className="flex items-baseline gap-space-sm">
+            <span className="font-mono text-title-sm text-ink">
               {filteredCards.length === 0 ? 0 : currentIndex + 1} / {filteredCards.length}
             </span>
-            <span className="text-sm text-body">{detail.session.title}</span>
+            <span className="text-body-sm text-muted">{detail.session.title}</span>
           </div>
-          <div className="w-full h-3 bg-hairline rounded-full overflow-hidden">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-hairline-soft">
             <div
-              className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all"
+              className="h-full rounded-full bg-primary transition-all duration-300"
               style={{
-                width: filteredCards.length === 0 ? '0%' : `${((currentIndex + 1) / filteredCards.length) * 100}%`,
+                width:
+                  filteredCards.length === 0
+                    ? '0%'
+                    : `${((currentIndex + 1) / filteredCards.length) * 100}%`,
               }}
             />
           </div>
@@ -555,45 +551,45 @@ export default function StudyPage() {
 
         {/* Study Area */}
         {filteredCards.length === 0 ? (
-          <div className="flex items-center justify-center flex-1">
-            <p className="text-[#5a5852]">No cards to study in this filter.</p>
+          <div className="flex min-h-[440px] items-center justify-center rounded-2xl border border-hairline bg-surface-card">
+            <p className="text-body-md text-muted">No cards to study in this filter.</p>
           </div>
         ) : currentCard ? (
-          <div className="flex flex-col gap-4 flex-1 min-h-0">
-            {/* Flashcard */}
+          <div className="flex flex-col gap-space-md">
             <div
-              className={`flex-1 perspective cursor-pointer transition-transform duration-600 `}
+              className="perspective min-h-[440px] cursor-pointer transition-transform duration-500 md:min-h-[480px]"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
               }}
               onClick={() => setIsFlipped((current) => !current)}
             >
-              <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
+              <div className="relative h-full min-h-[440px] w-full md:min-h-[480px]" style={{ transformStyle: 'preserve-3d' }}>
                 {/* Front */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-white/98 to-amber-50/95 border-2 border-hairline rounded-2xl p-9 flex flex-col items-center justify-center"
+                  className="absolute inset-0 flex h-full flex-col rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden' }}
                 >
-                  <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                     <button
                       type="button"
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm transition-colors ${
                         currentCard.is_learned
-                          ? 'bg-green-100/40 border-green-300/40 text-success'
-                          : 'border-hairline bg-transparent text-ink hover:border-primary'
+                          ? 'bg-learned-surface text-secondary'
+                          : 'bg-hairline-soft text-muted hover:text-ink'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         void toggleLearned(currentCard.id, !currentCard.is_learned);
                       }}
                     >
-                      <CheckCircle2 size={18} />
-                      {currentCard.is_learned ? 'Learned' : 'Not learned'}
+                      {currentCard.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                      {currentCard.is_learned ? 'Learned' : 'Mark learned'}
                     </button>
+
                     <button
                       type="button"
-                      className="px-2 py-1 text-xs font-semibold text-muted border border-hairline rounded-lg hover:border-primary hover:text-primary transition-all"
+                      className="inline-flex items-center rounded-lg border border-hairline bg-canvas-soft px-3 py-1.5 text-body-sm text-ink transition-colors hover:bg-hairline-soft"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsFlipped(true);
@@ -602,15 +598,16 @@ export default function StudyPage() {
                       Flip
                     </button>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-4xl md:text-5xl font-light leading-tight tracking-tight text-ink break-words">
+
+                  <div className="flex flex-1 flex-col items-center justify-center gap-space-sm text-center">
+                    <div className="flex items-center gap-space-sm">
+                      <h2 className="break-words text-headline-lg text-ink sm:text-display-hero">
                         {currentCard.front_text}
                       </h2>
                       {speechSupported && (
                         <button
                           type="button"
-                          className="w-10 h-10 shrink-0 rounded-full border border-hairline bg-white/70 text-ink hover:border-primary hover:text-primary transition-all flex items-center justify-center"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline bg-canvas-soft text-body transition-colors hover:bg-hairline-soft hover:text-ink"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleSpeak(currentCard.front_text);
@@ -622,35 +619,36 @@ export default function StudyPage() {
                       )}
                     </div>
                     {displayConfig.phonetic && currentCard.front_phonetic && (
-                      <p className="text-lg text-body font-mono">{currentCard.front_phonetic}</p>
+                      <p className="font-mono text-code-phonetic text-muted">{currentCard.front_phonetic}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-orange-100/6 to-orange-200/4 border-2 border-hairline rounded-2xl p-9 flex flex-col items-center justify-center overflow-y-auto"
+                  className="absolute inset-0 flex h-full flex-col justify-center overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
-                  <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                  <div className="absolute top-space-lg left-space-lg right-space-lg flex items-center justify-between sm:top-10 sm:left-10 sm:right-10">
                     <button
                       type="button"
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm transition-colors ${
                         currentCard.is_learned
-                          ? 'bg-green-100/40 border-green-300/40 text-success'
-                          : 'border-hairline bg-transparent text-ink hover:border-primary'
+                          ? 'bg-learned-surface text-secondary'
+                          : 'bg-hairline-soft text-muted hover:text-ink'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         void toggleLearned(currentCard.id, !currentCard.is_learned);
                       }}
                     >
-                      <CheckCircle2 size={18} />
-                      {currentCard.is_learned ? 'Learned' : 'Not learned'}
+                      {currentCard.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                      {currentCard.is_learned ? 'Learned' : 'Mark learned'}
                     </button>
+
                     <button
                       type="button"
-                      className="px-2 py-1 text-xs font-semibold text-muted border border-hairline rounded-lg hover:border-primary hover:text-primary transition-all"
+                      className="inline-flex items-center rounded-lg border border-hairline bg-canvas-soft px-3 py-1.5 text-body-sm text-ink transition-colors hover:bg-hairline-soft"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsFlipped(false);
@@ -659,22 +657,23 @@ export default function StudyPage() {
                       Flip back
                     </button>
                   </div>
-                  <div className="flex flex-col items-center justify-start gap-4 w-full pt-12">
-                    <h2 className="text-2xl md:text-3xl font-light leading-tight tracking-tight text-ink text-center break-words">
+
+                  <div className="flex w-full flex-col gap-space-lg">
+                    <h2 className="break-words text-center text-headline-lg text-ink">
                       {currentCard.back_text}
                     </h2>
 
                     {displayConfig.synonyms && currentCard.synonyms.length > 0 && (
-                      <div className="w-full bg-white/60 border border-hairline rounded-2xl p-4">
-                        <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">Synonyms</p>
-                        <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <p className={`${EYEBROW_CLASS} mb-2`}>Synonyms</p>
+                        <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
                           {currentCard.synonyms.map((synonym) => (
-                            <div key={synonym.id} className="flex flex-col gap-1 p-2 bg-blue-100/8 border border-blue-300/20 rounded-xl text-sm">
-                              <span className="font-semibold text-ink">{synonym.word}</span>
+                            <div key={synonym.id} className="rounded-xl bg-canvas-soft p-3">
+                              <p className="text-title-sm text-ink">{synonym.word}</p>
                               {synonym.phonetic && (
-                                <span className="text-xs text-body font-mono" title={synonym.phonetic}>
+                                <p className="mt-1 font-mono text-code-sm text-muted-soft" title={synonym.phonetic}>
                                   {synonym.phonetic}
-                                </span>
+                                </p>
                               )}
                             </div>
                           ))}
@@ -683,9 +682,9 @@ export default function StudyPage() {
                     )}
 
                     {displayConfig.example && currentCard.example && (
-                      <div className="w-full bg-white/60 border border-hairline rounded-2xl p-4">
-                        <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">Example</p>
-                        <p className="text-sm leading-relaxed text-ink italic">{currentCard.example}</p>
+                      <div className="rounded-xl bg-canvas-soft p-space-md">
+                        <p className={`${EYEBROW_CLASS} mb-2`}>Example</p>
+                        <p className="text-body-md leading-relaxed text-ink">{currentCard.example}</p>
                       </div>
                     )}
                   </div>
@@ -694,14 +693,10 @@ export default function StudyPage() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-center gap-6 flex-shrink-0">
+            <div className="flex items-center justify-between gap-space-md">
               <button
                 type="button"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-semibold transition-all ${
-                  currentIndex === 0
-                    ? 'bg-white text-ink border-hairline opacity-40 cursor-not-allowed'
-                    : 'bg-white text-ink border-hairline hover:border-primary hover:-translate-y-0.5'
-                }`}
+                className="inline-flex items-center gap-space-sm rounded-lg border border-hairline-strong bg-surface-card px-4 py-2.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface-card"
                 disabled={currentIndex === 0}
                 onClick={handlePrev}
               >
@@ -709,17 +704,13 @@ export default function StudyPage() {
                 Previous
               </button>
 
-              <span className="text-sm font-semibold text-body min-w-20 text-center">
+              <span className="font-mono text-code-sm text-muted">
                 {currentIndex + 1} of {filteredCards.length}
               </span>
 
               <button
                 type="button"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border font-semibold transition-all ${
-                  currentIndex >= filteredCards.length - 1
-                    ? 'bg-white text-ink border-hairline opacity-40 cursor-not-allowed'
-                    : 'bg-white text-ink border-hairline hover:border-primary hover:-translate-y-0.5'
-                }`}
+                className="inline-flex items-center gap-space-sm rounded-lg bg-primary px-5 py-2.5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary"
                 disabled={currentIndex >= filteredCards.length - 1}
                 onClick={handleNext}
               >
@@ -729,13 +720,22 @@ export default function StudyPage() {
             </div>
 
             {/* Keyboard Hints */}
-            <div className="text-center text-xs text-muted bg-white/50 rounded-xl p-3 flex-shrink-0">
-              <p>💡 <span className="bg-black/8 px-1.5 py-0.5 rounded font-mono">Spacebar</span> to flip • <span className="bg-black/8 px-1.5 py-0.5 rounded font-mono">← →</span> arrow keys to navigate</p>
+            <div className="flex justify-center">
+              <p className="inline-flex flex-wrap items-center justify-center gap-space-sm rounded-full bg-canvas-soft px-4 py-2 text-body-sm text-muted">
+                <span>💡</span>
+                <span>
+                  <span className="font-mono text-code-sm text-body">Space</span> to flip
+                </span>
+                <span aria-hidden="true">•</span>
+                <span>
+                  <span className="font-mono text-code-sm text-body">← →</span> arrow keys to navigate
+                </span>
+              </p>
             </div>
           </div>
         ) : null}
+        </div>
       </main>
-      </div>
     </div>
   );
 }
