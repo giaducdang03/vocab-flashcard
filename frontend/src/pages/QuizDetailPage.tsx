@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, FolderOpen, Play } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 import type { QuizDetail } from '../types';
 import { QUESTION_TYPE_LABELS } from '../types';
 import AttemptHistory from '../components/quiz/AttemptHistory';
@@ -13,10 +14,17 @@ const BACK_LINK_CLASS =
   'group inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink';
 
 export default function QuizDetailPage() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { id } = useParams();
   const [detail, setDetail] = useState<QuizDetail | null>(null);
   const [sessions, setSessions] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   const fetchDetail = async () => {
     if (!id) {
@@ -59,7 +67,7 @@ export default function QuizDetailPage() {
   if (!detail) {
     return (
       <div className="page-shell bg-canvas">
-        <PageHeader />
+        <PageHeader user={user} onLogout={handleLogout} />
         <main className="mx-auto w-full max-w-5xl px-margin py-space-xl max-sm:px-space-md">
           <Link to="/quizzes" className={BACK_LINK_CLASS}>
             <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
@@ -81,7 +89,7 @@ export default function QuizDetailPage() {
 
   return (
     <div className="page-shell bg-canvas">
-      <PageHeader />
+      <PageHeader user={user} onLogout={handleLogout} />
 
       <main className="mx-auto w-full max-w-5xl px-margin py-space-xl max-sm:px-space-md">
         <Link to="/quizzes" className={BACK_LINK_CLASS}>
