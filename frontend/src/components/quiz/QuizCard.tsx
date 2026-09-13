@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react';
+import { ArrowRight, Trash2 } from 'lucide-react';
 import type { Quiz } from '../../types';
 import QuestionTypeBadges from '../QuestionTypeBadges';
 
@@ -30,13 +30,21 @@ export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
       <QuestionTypeBadges types={quiz.question_types} />
 
       {/* Meta row: question count, attempts, best score */}
-      <div className="flex justify-between gap-2 text-sm text-body">
-        <span>{quiz.question_count} questions</span>
-        <span>{quiz.attempt_count} attempts</span>
-        <span>
-          Best:{' '}
-          {quiz.best_score !== null ? `${quiz.best_score}/${quiz.question_count}` : '—'}
-        </span>
+      <div className="quiz-stat-box">
+        <div className="quiz-stat">
+          <span className="quiz-stat-label">Questions</span>
+          <span className="quiz-stat-value">{quiz.question_count}</span>
+        </div>
+        <div className="quiz-stat">
+          <span className="quiz-stat-label">Attempts</span>
+          <span className="quiz-stat-value">{quiz.attempt_count}</span>
+        </div>
+        <div className="quiz-stat">
+          <span className="quiz-stat-label">Best</span>
+          <span className="quiz-stat-value">
+            {quiz.best_score !== null ? `${quiz.best_score}/${quiz.question_count}` : '—'}
+          </span>
+        </div>
       </div>
 
       {/* Meta row: source sessions */}
@@ -50,9 +58,10 @@ export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
       <button
         type="button"
         onClick={onOpen}
-        className="w-full px-4 py-2 bg-primary text-white border border-primary rounded-lg hover:bg-primary-active font-semibold text-sm transition-all"
+        className="w-full px-4 py-2 bg-primary text-white border border-primary rounded-lg hover:bg-primary-active font-semibold text-sm transition-all flex items-center justify-center gap-2"
       >
         Open quiz
+        <ArrowRight size={15} />
       </button>
     </article>
   );

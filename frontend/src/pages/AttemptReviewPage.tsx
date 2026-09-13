@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
 import type { AttemptReview } from '../types';
 
@@ -12,10 +13,17 @@ const formatDuration = (seconds: number | null) => {
 };
 
 export default function AttemptReviewPage() {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { id } = useParams();
   const [review, setReview] = useState<AttemptReview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -48,15 +56,13 @@ export default function AttemptReviewPage() {
   if (!review || error) {
     return (
       <div className="page-shell">
-        <PageHeader />
-        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
+        <PageHeader user={user} onLogout={handleLogout} />
+
+        <main className="page-container">
           <Link to="/quizzes" className="inline-link">
             <ArrowLeft size={16} />
             Back to quizzes
           </Link>
-        </div>
-
-        <main className="page-container">
           <div className="empty-state">
             <h3>{error ? 'Error' : 'Review not found'}</h3>
             <p>
@@ -81,15 +87,13 @@ export default function AttemptReviewPage() {
 
   return (
     <div className="page-shell">
-      <PageHeader />
-      <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
+      <PageHeader user={user} onLogout={handleLogout} />
+
+      <main className="page-container">
         <Link to={`/quizzes/${review.quiz_id}`} className="inline-link">
           <ArrowLeft size={16} />
           Back to quiz
         </Link>
-      </div>
-
-      <main className="page-container">
         <section className="hero-card">
           <div>
             <p className="eyebrow">{review.quiz_title}</p>

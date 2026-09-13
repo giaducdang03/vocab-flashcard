@@ -27,6 +27,9 @@ export default {
         'hairline-soft': '#efeee8',
         'hairline-strong': '#cfcdc4',
         'learned-surface': '#ebf6f1',
+        'muted-soft': '#a09c92',
+        'secondary-fixed': '#94f6ca',
+        'primary-fixed': '#ffdbd0',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

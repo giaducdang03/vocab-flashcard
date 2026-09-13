@@ -132,7 +132,7 @@ export default function TakeQuizPage() {
         <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
           <Link to={`/quizzes/${id}`} className="inline-link">
             <ArrowLeft size={16} />
-            {attempt.quiz_title}
+            Exit | {attempt.quiz_title}
           </Link>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import type { AnswerResult, QuizQuestion } from '../../types';
 import { QUESTION_TYPE_LABELS } from '../../types';
+import { Check } from 'lucide-react';
 
 type QuizQuestionViewProps = {
   question: QuizQuestion;
@@ -53,9 +54,12 @@ export default function QuizQuestionView({
       <main className="page-container">
         {/* Progress box */}
         <div className="progress-box">
-          <span>
-            Question {index + 1} of {total}
-          </span>
+          <div className="progress-box-header">
+            <span>
+              Question {index + 1} of {total}
+            </span>
+            <span className="progress-percent">{Math.round(progressPercent)}% completed</span>
+          </div>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
@@ -74,17 +78,24 @@ export default function QuizQuestionView({
 
         {/* Options list */}
         <section className="option-list">
-          {question.options.map((option, optionIndex) => (
-            <button
-              key={optionIndex}
-              type="button"
-              className={getOptionButtonClass(optionIndex)}
-              onClick={() => onSelect(optionIndex)}
-              disabled={isChecking || hasResult}
-            >
-              {option}
-            </button>
-          ))}
+          {question.options.map((option, optionIndex) => {
+            const letter = String.fromCharCode(65 + optionIndex);
+            const isCorrectOption = hasResult && optionIndex === result.correct_index;
+
+            return (
+              <button
+                key={optionIndex}
+                type="button"
+                className={getOptionButtonClass(optionIndex)}
+                onClick={() => onSelect(optionIndex)}
+                disabled={isChecking || hasResult}
+              >
+                <span className="option-letter">{letter}</span>
+                {option}
+                {isCorrectOption && <Check size={18} className="option-check" />}
+              </button>
+            );
+          })}
         </section>
 
         {/* Feedback and Next button */}
