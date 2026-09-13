@@ -626,28 +626,29 @@ export default function StudyPage() {
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-orange-100/6 to-orange-200/4 border-2 border-hairline rounded-2xl p-9 flex flex-col items-center justify-center overflow-y-auto"
+                  className="absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
-                  <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                     <button
                       type="button"
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm transition-colors ${
                         currentCard.is_learned
-                          ? 'bg-green-100/40 border-green-300/40 text-success'
-                          : 'border-hairline bg-transparent text-ink hover:border-primary'
+                          ? 'bg-learned-surface text-secondary'
+                          : 'bg-hairline-soft text-muted hover:text-ink'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         void toggleLearned(currentCard.id, !currentCard.is_learned);
                       }}
                     >
-                      <CheckCircle2 size={18} />
-                      {currentCard.is_learned ? 'Learned' : 'Not learned'}
+                      {currentCard.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                      {currentCard.is_learned ? 'Learned' : 'Mark learned'}
                     </button>
+
                     <button
                       type="button"
-                      className="px-2 py-1 text-xs font-semibold text-muted border border-hairline rounded-lg hover:border-primary hover:text-primary transition-all"
+                      className="inline-flex items-center rounded-lg border border-hairline bg-canvas-soft px-3 py-1.5 text-body-sm text-ink transition-colors hover:bg-hairline-soft"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsFlipped(false);
@@ -656,22 +657,23 @@ export default function StudyPage() {
                       Flip back
                     </button>
                   </div>
-                  <div className="flex flex-col items-center justify-start gap-4 w-full pt-12">
-                    <h2 className="text-2xl md:text-3xl font-light leading-tight tracking-tight text-ink text-center break-words">
+
+                  <div className="mt-space-lg flex w-full flex-col gap-space-lg">
+                    <h2 className="break-words text-center text-headline-lg text-ink">
                       {currentCard.back_text}
                     </h2>
 
                     {displayConfig.synonyms && currentCard.synonyms.length > 0 && (
-                      <div className="w-full bg-white/60 border border-hairline rounded-2xl p-4">
-                        <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">Synonyms</p>
-                        <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <p className={`${EYEBROW_CLASS} mb-2`}>Synonyms</p>
+                        <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
                           {currentCard.synonyms.map((synonym) => (
-                            <div key={synonym.id} className="flex flex-col gap-1 p-2 bg-blue-100/8 border border-blue-300/20 rounded-xl text-sm">
-                              <span className="font-semibold text-ink">{synonym.word}</span>
+                            <div key={synonym.id} className="rounded-xl bg-canvas-soft p-3">
+                              <p className="text-title-sm text-ink">{synonym.word}</p>
                               {synonym.phonetic && (
-                                <span className="text-xs text-body font-mono" title={synonym.phonetic}>
+                                <p className="mt-1 font-mono text-code-sm text-muted-soft" title={synonym.phonetic}>
                                   {synonym.phonetic}
-                                </span>
+                                </p>
                               )}
                             </div>
                           ))}
@@ -680,9 +682,9 @@ export default function StudyPage() {
                     )}
 
                     {displayConfig.example && currentCard.example && (
-                      <div className="w-full bg-white/60 border border-hairline rounded-2xl p-4">
-                        <p className="text-xs font-bold uppercase tracking-widest text-muted mb-3">Example</p>
-                        <p className="text-sm leading-relaxed text-ink italic">{currentCard.example}</p>
+                      <div className="rounded-xl bg-canvas-soft p-space-md">
+                        <p className={`${EYEBROW_CLASS} mb-2`}>Example</p>
+                        <p className="text-body-md leading-relaxed text-ink">{currentCard.example}</p>
                       </div>
                     )}
                   </div>
