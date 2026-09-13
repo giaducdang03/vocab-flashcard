@@ -551,45 +551,45 @@ export default function StudyPage() {
 
         {/* Study Area */}
         {filteredCards.length === 0 ? (
-          <div className="flex items-center justify-center flex-1">
-            <p className="text-[#5a5852]">No cards to study in this filter.</p>
+          <div className="flex min-h-[440px] items-center justify-center rounded-2xl border border-hairline bg-surface-card">
+            <p className="text-body-md text-muted">No cards to study in this filter.</p>
           </div>
         ) : currentCard ? (
-          <div className="flex flex-col gap-4 flex-1 min-h-0">
-            {/* Flashcard */}
+          <div className="flex flex-col gap-space-md">
             <div
-              className={`flex-1 perspective cursor-pointer transition-transform duration-600 `}
+              className="perspective min-h-[440px] cursor-pointer transition-transform duration-500 md:min-h-[480px]"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
               }}
               onClick={() => setIsFlipped((current) => !current)}
             >
-              <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
+              <div className="relative h-full min-h-[440px] w-full md:min-h-[480px]" style={{ transformStyle: 'preserve-3d' }}>
                 {/* Front */}
                 <div
-                  className="absolute inset-0 bg-gradient-to-br from-white/98 to-amber-50/95 border-2 border-hairline rounded-2xl p-9 flex flex-col items-center justify-center"
+                  className="absolute inset-0 flex flex-col rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden' }}
                 >
-                  <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                  <div className="flex items-center justify-between">
                     <button
                       type="button"
-                      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm transition-colors ${
                         currentCard.is_learned
-                          ? 'bg-green-100/40 border-green-300/40 text-success'
-                          : 'border-hairline bg-transparent text-ink hover:border-primary'
+                          ? 'bg-learned-surface text-secondary'
+                          : 'bg-hairline-soft text-muted hover:text-ink'
                       }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         void toggleLearned(currentCard.id, !currentCard.is_learned);
                       }}
                     >
-                      <CheckCircle2 size={18} />
-                      {currentCard.is_learned ? 'Learned' : 'Not learned'}
+                      {currentCard.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} />}
+                      {currentCard.is_learned ? 'Learned' : 'Mark learned'}
                     </button>
+
                     <button
                       type="button"
-                      className="px-2 py-1 text-xs font-semibold text-muted border border-hairline rounded-lg hover:border-primary hover:text-primary transition-all"
+                      className="inline-flex items-center rounded-lg border border-hairline bg-canvas-soft px-3 py-1.5 text-body-sm text-ink transition-colors hover:bg-hairline-soft"
                       onClick={(e) => {
                         e.stopPropagation();
                         setIsFlipped(true);
@@ -598,15 +598,16 @@ export default function StudyPage() {
                       Flip
                     </button>
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-4xl md:text-5xl font-light leading-tight tracking-tight text-ink break-words">
+
+                  <div className="flex flex-1 flex-col items-center justify-center gap-space-sm text-center">
+                    <div className="flex items-center gap-space-sm">
+                      <h2 className="break-words text-headline-lg text-ink sm:text-display-hero">
                         {currentCard.front_text}
                       </h2>
                       {speechSupported && (
                         <button
                           type="button"
-                          className="w-10 h-10 shrink-0 rounded-full border border-hairline bg-white/70 text-ink hover:border-primary hover:text-primary transition-all flex items-center justify-center"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline bg-canvas-soft text-body transition-colors hover:bg-hairline-soft hover:text-ink"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleSpeak(currentCard.front_text);
@@ -618,7 +619,7 @@ export default function StudyPage() {
                       )}
                     </div>
                     {displayConfig.phonetic && currentCard.front_phonetic && (
-                      <p className="text-lg text-body font-mono">{currentCard.front_phonetic}</p>
+                      <p className="font-mono text-code-phonetic text-muted">{currentCard.front_phonetic}</p>
                     )}
                   </div>
                 </div>
