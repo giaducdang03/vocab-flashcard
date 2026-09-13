@@ -434,56 +434,48 @@ export default function StudyPage() {
                 </button>
 
                 {showSpeakerSettings && (
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-3">
+                  <div className="absolute right-0 top-full z-20 mt-2 flex w-56 flex-col gap-space-md rounded-xl border border-hairline bg-surface-card p-space-md shadow-lg">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Voice</p>
-                      <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
-                        <button
-                          type="button"
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                            voiceGender === 'female' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                          }`}
-                          onClick={() => setVoiceGender('female')}
-                          title="Female voice"
-                        >
-                          Nữ
-                        </button>
-                        <button
-                          type="button"
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                            voiceGender === 'male' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                          }`}
-                          onClick={() => setVoiceGender('male')}
-                          title="Male voice"
-                        >
-                          Nam
-                        </button>
+                      <p className={`${EYEBROW_CLASS} mb-2`}>Voice</p>
+                      <div className="flex items-center gap-space-xs rounded-lg bg-hairline-soft p-1">
+                        {(['female', 'male'] as const).map((gender) => (
+                          <button
+                            key={gender}
+                            type="button"
+                            aria-pressed={voiceGender === gender}
+                            className={`flex-1 rounded px-3 py-1.5 text-body-sm transition-colors ${
+                              voiceGender === gender
+                                ? 'bg-surface-card font-semibold text-ink ring-1 ring-hairline'
+                                : 'text-body hover:text-ink'
+                            }`}
+                            onClick={() => setVoiceGender(gender)}
+                            title={gender === 'female' ? 'Female voice' : 'Male voice'}
+                          >
+                            {gender === 'female' ? 'Nữ' : 'Nam'}
+                          </button>
+                        ))}
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Accent</p>
-                      <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
-                        <button
-                          type="button"
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                            voiceAccent === 'en-US' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                          }`}
-                          onClick={() => setVoiceAccent('en-US')}
-                          title="US pronunciation"
-                        >
-                          US
-                        </button>
-                        <button
-                          type="button"
-                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                            voiceAccent === 'en-GB' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                          }`}
-                          onClick={() => setVoiceAccent('en-GB')}
-                          title="UK pronunciation"
-                        >
-                          UK
-                        </button>
+                      <p className={`${EYEBROW_CLASS} mb-2`}>Accent</p>
+                      <div className="flex items-center gap-space-xs rounded-lg bg-hairline-soft p-1">
+                        {(['en-US', 'en-GB'] as const).map((accent) => (
+                          <button
+                            key={accent}
+                            type="button"
+                            aria-pressed={voiceAccent === accent}
+                            className={`flex-1 rounded px-3 py-1.5 font-mono text-code-sm transition-colors ${
+                              voiceAccent === accent
+                                ? 'bg-surface-card font-semibold text-ink ring-1 ring-hairline'
+                                : 'text-body hover:text-ink'
+                            }`}
+                            onClick={() => setVoiceAccent(accent)}
+                            title={accent === 'en-US' ? 'US pronunciation' : 'UK pronunciation'}
+                          >
+                            {accent === 'en-US' ? 'US' : 'UK'}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -503,35 +495,28 @@ export default function StudyPage() {
               </button>
 
               {showDisplaySettings && (
-                <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-2">
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-1">Show on card</p>
-                  <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 accent-primary"
-                      checked={displayConfig.phonetic}
-                      onChange={() => toggleDisplayField('phonetic')}
-                    />
-                    Phonetic
-                  </label>
-                  <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 accent-primary"
-                      checked={displayConfig.synonyms}
-                      onChange={() => toggleDisplayField('synonyms')}
-                    />
-                    Synonyms
-                  </label>
-                  <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 accent-primary"
-                      checked={displayConfig.example}
-                      onChange={() => toggleDisplayField('example')}
-                    />
-                    Example
-                  </label>
+                <div className="absolute right-0 top-full z-20 mt-2 flex w-56 flex-col gap-space-sm rounded-xl border border-hairline bg-surface-card p-space-md shadow-lg">
+                  <p className={EYEBROW_CLASS}>Show on card</p>
+                  {(
+                    [
+                      ['phonetic', 'Phonetic'],
+                      ['synonyms', 'Synonyms'],
+                      ['example', 'Example'],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <label
+                      key={field}
+                      className="flex cursor-pointer select-none items-center gap-space-sm text-body-sm text-ink"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-primary"
+                        checked={displayConfig[field]}
+                        onChange={() => toggleDisplayField(field)}
+                      />
+                      {label}
+                    </label>
+                  ))}
                 </div>
               )}
             </div>
