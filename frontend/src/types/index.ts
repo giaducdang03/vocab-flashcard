@@ -135,3 +135,26 @@ export type AttemptReview = {
   submitted_at: string;
   questions: ReviewQuestion[];
 };
+
+export type PracticeQuestion = {
+  card_id: string;
+  question_type: QuestionType;
+  prompt_text: string;
+  prompt_phonetic?: string | null;
+  options: string[];
+  correct_index: number;
+  position: number;
+};
+
+export type PracticeStart = {
+  session_id: string;
+  session_title: string;
+  questions: PracticeQuestion[];
+};
+
+/** One answered question, kept in client state only — never sent to the server. */
+export type PracticeAnswer = {
+  question: PracticeQuestion;
+  selected_index: number;
+  is_correct: boolean;
+};

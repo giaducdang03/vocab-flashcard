@@ -9,7 +9,9 @@ from app.models.card import Card, Synonym
 from app.models.session import Session
 from app.models.user import User
 from app.schemas.card import CardOut
+from app.schemas.practice import PracticeQuestionOut, PracticeStartOut, PracticeStartRequest
 from app.schemas.session import SessionCreate, SessionOut, SessionUpdate
+from app.services import quiz_generator
 
 router = APIRouter()
 
@@ -88,3 +90,52 @@ async def delete_session(session_id: str, current_user: User = Depends(get_curre
 
     await db.delete(session)
     await db.commit()
+
+
+@router.post("/{session_id}/practice", response_model=PracticeStartOut)
+async def start_practice(
+    session_id: str,
+    payload: PracticeStartRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> PracticeStartOut:
+    result = await db.execute(
+        select(Session)
+        .options(selectinload(Session.cards).selectinload(Card.synonyms))
+        .where(Session.id == session_id, Session.user_id == current_user.id)
+    )
+    session = result.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+
+    cards = sorted(session.cards, key=lambda c: (c.position, c.created_at))
+
+    if len(cards) < quiz_generator.MIN_POOL_SIZE:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Need at least {quiz_generator.MIN_POOL_SIZE} cards to practice")
+
+    try:
+        generated_questions = quiz_generator.generate_practice_questions(cards, payload.question_types)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    if not generated_questions:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough cards for the selected question types")
+
+    practice_questions = [
+        PracticeQuestionOut(
+            card_id=q.card_id,
+            question_type=q.question_type,
+            prompt_text=q.prompt_text,
+            prompt_phonetic=q.prompt_phonetic,
+            options=q.options,
+            correct_index=q.correct_index,
+            position=i,
+        )
+        for i, q in enumerate(generated_questions)
+    ]
+
+    return PracticeStartOut(
+        session_id=session.id,
+        session_title=session.title,
+        questions=practice_questions,
+    )

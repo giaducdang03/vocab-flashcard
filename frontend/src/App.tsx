@@ -9,6 +9,7 @@ import QuizzesPage from './pages/QuizzesPage';
 import QuizDetailPage from './pages/QuizDetailPage';
 import TakeQuizPage from './pages/TakeQuizPage';
 import AttemptReviewPage from './pages/AttemptReviewPage';
+import PracticePage from './pages/PracticePage';
 import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -60,6 +61,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <StudyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sessions/:id/practice"
+        element={
+          <ProtectedRoute>
+            <PracticePage />
           </ProtectedRoute>
         }
       />
