@@ -16,7 +16,7 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
   return (
     <article
       className={`rounded-xl p-5 transition-colors sm:p-6 ${
-        card.is_learned ? 'bg-learned-surface/70 hover:bg-learned-surface' : 'bg-surface-card hover:bg-canvas-soft'
+        card.is_learned ? 'border-2 border-success bg-surface-card' : 'bg-surface-card hover:bg-canvas-soft'
       }`}
     >
       <div className="flex items-start justify-between gap-4">
