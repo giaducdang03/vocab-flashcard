@@ -1,0 +1,125 @@
+c95adb5 feat: add card_learn_events table with backfill
+ backend/alembic/env.py                             |  2 +-
+ .../versions/20260909_add_card_learn_events.py     | 48 ++++++++++++++++++++++
+ backend/app/models/card.py                         | 16 ++++++++
+ 3 files changed, 65 insertions(+), 1 deletion(-)
+diff --git a/backend/alembic/env.py b/backend/alembic/env.py
+index e2e90c3..ba93e17 100644
+--- a/backend/alembic/env.py
++++ b/backend/alembic/env.py
+@@ -1,18 +1,18 @@
+ from logging.config import fileConfig
+ 
+ from alembic import context
+ from sqlalchemy import engine_from_config, pool
+ 
+ from app.config import settings
+ from app.models.base import Base
+-from app.models.card import Card, Synonym
++from app.models.card import Card, CardLearnEvent, Synonym
+ from app.models.session import Session
+ from app.models.user import User
+ 
+ config = context.config
+ 
+ if config.config_file_name is not None:
+     fileConfig(config.config_file_name)
+ 
+ # Convert asyncpg URL to psycopg for Alembic migrations (sync operations)
+ db_url = settings.DATABASE_URL.replace("+asyncpg", "+psycopg")
+diff --git a/backend/alembic/versions/20260909_add_card_learn_events.py b/backend/alembic/versions/20260909_add_card_learn_events.py
+new file mode 100644
+index 0000000..bda0489
+--- /dev/null
++++ b/backend/alembic/versions/20260909_add_card_learn_events.py
+@@ -0,0 +1,48 @@
++"""add card_learn_events
++
++Revision ID: 20260909_events
++Revises: 20260817_initial
++Create Date: 2026-09-09 00:00:00.000000
++
++"""
++from alembic import op
++import sqlalchemy as sa
++
++
++revision = "20260909_events"
++down_revision = "20260817_initial"
++branch_labels = None
++depends_on = None
++
++
++def upgrade() -> None:
++    op.create_table(
++        "card_learn_events",
++        sa.Column("id", sa.String(length=36), nullable=False),
++        sa.Column("card_id", sa.String(length=36), nullable=False),
++        sa.Column("event_type", sa.String(length=20), nullable=False),
++        sa.Column("occurred_at", sa.DateTime(timezone=True), nullable=False),
++        sa.ForeignKeyConstraint(["card_id"], ["cards.id"], ondelete="CASCADE"),
++        sa.PrimaryKeyConstraint("id"),
++    )
++    op.create_index(
++        op.f("ix_card_learn_events_card_id"), "card_learn_events", ["card_id"]
++    )
++    op.create_index(
++        op.f("ix_card_learn_events_occurred_at"), "card_learn_events", ["occurred_at"]
++    )
++
++    op.execute(
++        """
++        INSERT INTO card_learn_events (id, card_id, event_type, occurred_at)
++        SELECT gen_random_uuid()::text, id, 'learned', created_at
++        FROM cards
++        WHERE is_learned = true
++        """
++    )
++
++
++def downgrade() -> None:
++    op.drop_index(op.f("ix_card_learn_events_occurred_at"), table_name="card_learn_events")
++    op.drop_index(op.f("ix_card_learn_events_card_id"), table_name="card_learn_events")
++    op.drop_table("card_learn_events")
+diff --git a/backend/app/models/card.py b/backend/app/models/card.py
+index 92f2ac5..f7cfa1d 100644
+--- a/backend/app/models/card.py
++++ b/backend/app/models/card.py
+@@ -16,21 +16,37 @@ class Card(Base):
+     front_text: Mapped[str] = mapped_column(String(500), nullable=False)
+     front_phonetic: Mapped[str | None] = mapped_column(String(200), nullable=True)
+     back_text: Mapped[str] = mapped_column(Text, nullable=False)
+     example: Mapped[str | None] = mapped_column(Text, nullable=True)
+     is_learned: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+     position: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+ 
+     session: Mapped["Session"] = relationship(back_populates="cards")
+     synonyms: Mapped[list["Synonym"]] = relationship(back_populates="card", cascade="all, delete-orphan")
++    learn_events: Mapped[list["CardLearnEvent"]] = relationship(
++        back_populates="card", cascade="all, delete-orphan", passive_deletes=True
++    )
+ 
+ 
+ class Synonym(Base):
+     __tablename__ = "synonyms"
+ 
+     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+     card_id: Mapped[str] = mapped_column(String(36), ForeignKey("cards.id"), nullable=False)
+     word: Mapped[str] = mapped_column(String(200), nullable=False)
+     phonetic: Mapped[str | None] = mapped_column(String(200), nullable=True)
+ 
+     card: Mapped[Card] = relationship(back_populates="synonyms")
++
++
++class CardLearnEvent(Base):
++    __tablename__ = "card_learn_events"
++    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
++    card_id: Mapped[str] = mapped_column(
++        String(36), ForeignKey("cards.id", ondelete="CASCADE"), nullable=False, index=True
++    )
++    event_type: Mapped[str] = mapped_column(String(20), nullable=False)
++    occurred_at: Mapped[datetime] = mapped_column(
++        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False, index=True
++    )
++    card: Mapped["Card"] = relationship(back_populates="learn_events")

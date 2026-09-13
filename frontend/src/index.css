@@ -341,6 +341,40 @@ textarea {
   font-size: 13px;
 }
 
+.quiz-stat-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.quiz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.quiz-stat:not(:last-child) {
+  border-right: 1px solid var(--hairline);
+}
+
+.quiz-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.quiz-stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

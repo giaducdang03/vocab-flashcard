@@ -1,0 +1,197 @@
+fb27ddb feat: split dashboard into Dashboard and Your sessions sections with KPI tiles
+ frontend/src/components/dashboard/KpiTile.tsx      | 17 +++++
+ frontend/src/components/dashboard/StatsSection.tsx | 87 ++++++++++++++++++++++
+ frontend/src/pages/DashboardPage.tsx               |  7 ++
+ frontend/src/types/index.ts                        | 11 +++
+ 4 files changed, 122 insertions(+)
+diff --git a/frontend/src/components/dashboard/KpiTile.tsx b/frontend/src/components/dashboard/KpiTile.tsx
+new file mode 100644
+index 0000000..de16a44
+--- /dev/null
++++ b/frontend/src/components/dashboard/KpiTile.tsx
+@@ -0,0 +1,17 @@
++type KpiTileProps = {
++  label: string;
++  value: number | string;
++  suffix?: string;
++};
++
++export default function KpiTile({ label, value, suffix }: KpiTileProps) {
++  return (
++    <div className="bg-white border border-hairline rounded-2xl p-4 flex flex-col gap-1">
++      <span className="text-xs font-bold uppercase tracking-widest text-muted">{label}</span>
++      <span className="text-3xl font-light letter-spacing-tight text-ink">
++        {value}
++        {suffix ? <span className="text-base text-body ml-1">{suffix}</span> : null}
++      </span>
++    </div>
++  );
++}
+diff --git a/frontend/src/components/dashboard/StatsSection.tsx b/frontend/src/components/dashboard/StatsSection.tsx
+new file mode 100644
+index 0000000..3b65549
+--- /dev/null
++++ b/frontend/src/components/dashboard/StatsSection.tsx
+@@ -0,0 +1,87 @@
++import { useEffect, useMemo, useState } from 'react';
++import { api } from '../../api/client';
++import type { DailyStats, Session } from '../../types';
++import KpiTile from './KpiTile';
++
++type StatsSectionProps = {
++  sessions: Session[];
++};
++
++export default function StatsSection({ sessions }: StatsSectionProps) {
++  const [stats, setStats] = useState<DailyStats | null>(null);
++  const [statsError, setStatsError] = useState(false);
++  const [statsLoading, setStatsLoading] = useState(true);
++  const [days, setDays] = useState(30);
++
++  useEffect(() => {
++    let cancelled = false;
++    const tzOffsetMinutes = -new Date().getTimezoneOffset();
++
++    setStatsLoading(true);
++
++    api
++      .get('/stats/daily', { params: { days, tz_offset_minutes: tzOffsetMinutes } })
++      .then((response) => {
++        if (!cancelled) {
++          setStats(response.data);
++          setStatsError(false);
++        }
++      })
++      .catch(() => {
++        if (!cancelled) {
++          setStatsError(true);
++        }
++      })
++      .finally(() => {
++        if (!cancelled) {
++          setStatsLoading(false);
++        }
++      });
++
++    return () => {
++      cancelled = true;
++    };
++  }, [days]);
++
++  const totals = useMemo(() => {
++    const total = sessions.reduce((sum, session) => sum + session.total_cards, 0);
++    const learned = sessions.reduce((sum, session) => sum + session.learned_cards, 0);
++
++    return {
++      total,
++      learned,
++      percent: total > 0 ? Math.round((learned / total) * 100) : 0,
++    };
++  }, [sessions]);
++
++  if (sessions.length === 0) {
++    return (
++      <div className="empty-state">
++        <p>No study data yet. Create your first session to start tracking progress.</p>
++      </div>
++    );
++  }
++
++  const streakValue = statsError ? '—' : statsLoading ? '…' : (stats?.current_streak ?? 0);
++
++  return (
++    <div className="flex flex-col gap-4">
++      <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
++        <KpiTile label="Total words" value={totals.total} />
++        <KpiTile label="Learned" value={totals.learned} />
++        <KpiTile label="Mastery" value={totals.percent} suffix="%" />
++        <KpiTile label="Streak" value={streakValue} suffix="days" />
++      </div>
++
++      {statsLoading && !stats && (
++        <div className="bg-white border border-hairline rounded-2xl p-5 h-72 animate-pulse" />
++      )}
++
++      {statsError && (
++        <p className="text-sm text-error m-0">
++          Couldn't load daily stats. Your totals are still accurate.
++        </p>
++      )}
++    </div>
++  );
++}
+diff --git a/frontend/src/pages/DashboardPage.tsx b/frontend/src/pages/DashboardPage.tsx
+index 208161f..ecdb25a 100644
+--- a/frontend/src/pages/DashboardPage.tsx
++++ b/frontend/src/pages/DashboardPage.tsx
+@@ -1,16 +1,17 @@
+ import { useEffect, useState } from 'react';
+ import { BookOpenText, Plus, Search, Trash2, LogOut } from 'lucide-react';
+ import { Link, useNavigate } from 'react-router-dom';
+ import { api } from '../api/client';
+ import { useAuth } from '../contexts/AuthContext';
+ import type { Session } from '../types';
++import StatsSection from '../components/dashboard/StatsSection';
+ 
+ export default function DashboardPage() {
+   const navigate = useNavigate();
+   const { user, logout } = useAuth();
+   const [sessions, setSessions] = useState<Session[]>([]);
+   const [title, setTitle] = useState('');
+   const [loading, setLoading] = useState(true);
+   const [creating, setCreating] = useState(false);
+ 
+   const fetchSessions = async () => {
+@@ -86,20 +87,26 @@ export default function DashboardPage() {
+               onChange={(event) => setTitle(event.target.value)}
+               placeholder="New session name"
+             />
+             <button type="submit" className="btn btn-primary" disabled={creating}>
+               <Plus size={16} />
+               {creating ? 'Creating...' : 'New session'}
+             </button>
+           </form>
+         </section>
+ 
++        <section className="section-header">
++          <h2>Dashboard</h2>
++        </section>
++
++        <StatsSection sessions={sessions} />
++
+         <section className="section-header">
+           <h2>Your sessions</h2>
+           <p>{sessions.length} total</p>
+         </section>
+ 
+         {loading ? (
+           <div className="empty-state">Loading sessions…</div>
+         ) : sessions.length === 0 ? (
+           <div className="empty-state">
+             <BookOpenText size={36} />
+diff --git a/frontend/src/types/index.ts b/frontend/src/types/index.ts
+index 9cafe89..b636c8c 100644
+--- a/frontend/src/types/index.ts
++++ b/frontend/src/types/index.ts
+@@ -32,10 +32,21 @@ export type Card = {
+   example?: string | null;
+   is_learned: boolean;
+   position: number;
+   synonyms: Synonym[];
+ };
+ 
+ export type SessionDetailResponse = {
+   session: Session;
+   cards: Card[];
+ };
++
++export type DailyPoint = {
++  date: string;
++  learned_count: number;
++};
++
++export type DailyStats = {
++  days: number;
++  daily: DailyPoint[];
++  current_streak: number;
++};
