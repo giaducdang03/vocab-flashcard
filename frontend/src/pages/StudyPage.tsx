@@ -282,6 +282,15 @@ export default function StudyPage() {
   const currentCard = displayedCards[currentIndex] || null;
   const learnedCount = useMemo(() => cards.filter((card) => card.is_learned).length, [cards]);
 
+  const filterCounts = useMemo(
+    () => ({
+      all: cards.length,
+      unlearned: cards.length - learnedCount,
+      learned: learnedCount,
+    }),
+    [cards.length, learnedCount],
+  );
+
   const handlePrev = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
@@ -349,206 +358,188 @@ export default function StudyPage() {
       <main className="mx-auto w-full max-w-6xl px-margin py-space-xl max-sm:px-space-md">
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-space-md">
       {/* Top Bar */}
-      <header className="flex items-center justify-between gap-4 border-b border-hairline pb-4 flex-shrink-0">
-        <Link to={`/sessions/${id}`} className="inline-flex items-center gap-2 text-ink font-semibold hover:text-primary transition-colors">
-          <ArrowLeft size={16} />
-          <span className="text-sm">Session detail</span>
-        </Link>
-
-        <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1 flex-shrink-0">
-          <button
-            type="button"
-            className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === 'all'
-                ? 'bg-white text-ink'
-                : 'bg-transparent text-muted'
-            }`}
-            onClick={() => {
-              setFilter('all');
-              setCurrentIndex(0);
-              setIsFlipped(false);
-            }}
+      <header className="flex flex-col gap-space-md flex-shrink-0">
+        <div className="flex flex-wrap items-center justify-between gap-space-sm">
+          <Link
+            to={`/sessions/${id}`}
+            className="group inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
           >
-            <Filter size={14} />
-            All
-          </button>
-          <button
-            type="button"
-            className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === 'unlearned'
-                ? 'bg-white text-ink'
-                : 'bg-transparent text-muted'
-            }`}
-            onClick={() => {
-              setFilter('unlearned');
-              setCurrentIndex(0);
-              setIsFlipped(false);
-            }}
-          >
-            Unlearned
-          </button>
-          <button
-            type="button"
-            className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-              filter === 'learned'
-                ? 'bg-white text-ink'
-                : 'bg-transparent text-muted'
-            }`}
-            onClick={() => {
-              setFilter('learned');
-              setCurrentIndex(0);
-              setIsFlipped(false);
-            }}
-          >
-            Learned
-          </button>
-        </div>
+            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
+            Session detail
+          </Link>
 
-        <button
-          type="button"
-          className="px-3 py-1 text-xs font-semibold text-muted border border-hairline rounded-lg hover:border-primary hover:text-primary transition-all flex-shrink-0"
-          onClick={() => {
-            setCurrentIndex(0);
-            setIsFlipped(false);
-          }}
-          title="Back to first card"
-        >
-          ↻ Start
-        </button>
+          <div className="inline-flex items-center gap-space-xs rounded-xl bg-hairline-soft p-1">
+            {(['all', 'unlearned', 'learned'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={filter === mode}
+                className={`rounded-lg px-3 py-1.5 text-body-sm capitalize transition-colors ${
+                  filter === mode
+                    ? 'bg-surface-card font-semibold text-ink ring-1 ring-hairline'
+                    : 'text-body hover:text-ink'
+                }`}
+                onClick={() => {
+                  setFilter(mode);
+                  setCurrentIndex(0);
+                  setIsFlipped(false);
+                }}
+              >
+                {mode}
+                <span
+                  className={`ml-1.5 font-mono text-code-sm ${
+                    mode === 'learned' ? 'text-secondary' : 'text-muted-soft'
+                  }`}
+                >
+                  {filterCounts[mode]}
+                </span>
+              </button>
+            ))}
+          </div>
 
-        <button
-          type="button"
-          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all flex-shrink-0 ${
-            shuffleEnabled ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
-          }`}
-          onClick={handleToggleShuffle}
-          title={shuffleEnabled ? 'Turn off shuffle' : 'Shuffle card order'}
-        >
-          <Shuffle size={16} />
-          Shuffle
-        </button>
-
-        {speechSupported && (
-          <div className="relative flex-shrink-0" ref={speakerSettingsRef}>
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
-                showSpeakerSettings ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
-              }`}
-              onClick={() => setShowSpeakerSettings((current) => !current)}
-              title="Configure pronunciation voice"
+              className={TOOL_BUTTON_CLASS}
+              onClick={() => {
+                setCurrentIndex(0);
+                setIsFlipped(false);
+              }}
+              title="Back to first card"
             >
-              <Volume2 size={16} />
-              Speaker
+              <RotateCcw size={16} />
+              <span className="max-sm:hidden">Start</span>
             </button>
 
-            {showSpeakerSettings && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Voice</p>
-                  <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceGender === 'female' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceGender('female')}
-                      title="Female voice"
-                    >
-                      Nữ
-                    </button>
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceGender === 'male' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceGender('male')}
-                      title="Male voice"
-                    >
-                      Nam
-                    </button>
-                  </div>
-                </div>
+            <button
+              type="button"
+              className={shuffleEnabled ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
+              onClick={handleToggleShuffle}
+              title={shuffleEnabled ? 'Turn off shuffle' : 'Shuffle card order'}
+            >
+              <Shuffle size={16} />
+              <span className="max-sm:hidden">Shuffle</span>
+            </button>
 
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Accent</p>
-                  <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceAccent === 'en-US' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceAccent('en-US')}
-                      title="US pronunciation"
-                    >
-                      US
-                    </button>
-                    <button
-                      type="button"
-                      className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                        voiceAccent === 'en-GB' ? 'bg-white text-ink' : 'bg-transparent text-muted'
-                      }`}
-                      onClick={() => setVoiceAccent('en-GB')}
-                      title="UK pronunciation"
-                    >
-                      UK
-                    </button>
+            {speechSupported && (
+              <div className="relative" ref={speakerSettingsRef}>
+                <button
+                  type="button"
+                  className={showSpeakerSettings ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
+                  onClick={() => setShowSpeakerSettings((current) => !current)}
+                  title="Configure pronunciation voice"
+                >
+                  <Volume2 size={16} />
+                  <span className="max-sm:hidden">Speaker</span>
+                </button>
+
+                {showSpeakerSettings && (
+                  <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Voice</p>
+                      <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
+                        <button
+                          type="button"
+                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            voiceGender === 'female' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                          }`}
+                          onClick={() => setVoiceGender('female')}
+                          title="Female voice"
+                        >
+                          Nữ
+                        </button>
+                        <button
+                          type="button"
+                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            voiceGender === 'male' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                          }`}
+                          onClick={() => setVoiceGender('male')}
+                          title="Male voice"
+                        >
+                          Nam
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted mb-2">Accent</p>
+                      <div className="flex items-center gap-1 bg-surface-strong rounded-xl p-1">
+                        <button
+                          type="button"
+                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            voiceAccent === 'en-US' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                          }`}
+                          onClick={() => setVoiceAccent('en-US')}
+                          title="US pronunciation"
+                        >
+                          US
+                        </button>
+                        <button
+                          type="button"
+                          className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                            voiceAccent === 'en-GB' ? 'bg-white text-ink' : 'bg-transparent text-muted'
+                          }`}
+                          onClick={() => setVoiceAccent('en-GB')}
+                          title="UK pronunciation"
+                        >
+                          UK
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        <div className="relative flex-shrink-0" ref={displaySettingsRef}>
-          <button
-            type="button"
-            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-all ${
-              showDisplaySettings ? 'bg-white border-primary text-primary' : 'border-hairline text-muted hover:border-primary hover:text-primary'
-            }`}
-            onClick={() => setShowDisplaySettings((current) => !current)}
-            title="Configure card fields"
-          >
-            <Settings size={16} />
-            Display
-          </button>
+            <div className="relative" ref={displaySettingsRef}>
+              <button
+                type="button"
+                className={showDisplaySettings ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
+                onClick={() => setShowDisplaySettings((current) => !current)}
+                title="Configure card fields"
+              >
+                <Settings size={16} />
+                <span className="max-sm:hidden">Display</span>
+              </button>
 
-          {showDisplaySettings && (
-            <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted mb-1">Show on card</p>
-              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-primary"
-                  checked={displayConfig.phonetic}
-                  onChange={() => toggleDisplayField('phonetic')}
-                />
-                Phonetic
-              </label>
-              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-primary"
-                  checked={displayConfig.synonyms}
-                  onChange={() => toggleDisplayField('synonyms')}
-                />
-                Synonyms
-              </label>
-              <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-primary"
-                  checked={displayConfig.example}
-                  onChange={() => toggleDisplayField('example')}
-                />
-                Example
-              </label>
+              {showDisplaySettings && (
+                <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-hairline rounded-xl shadow-lg p-3 z-10 flex flex-col gap-2">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted mb-1">Show on card</p>
+                  <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 accent-primary"
+                      checked={displayConfig.phonetic}
+                      onChange={() => toggleDisplayField('phonetic')}
+                    />
+                    Phonetic
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 accent-primary"
+                      checked={displayConfig.synonyms}
+                      onChange={() => toggleDisplayField('synonyms')}
+                    />
+                    Synonyms
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 accent-primary"
+                      checked={displayConfig.example}
+                      onChange={() => toggleDisplayField('example')}
+                    />
+                    Example
+                  </label>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="text-xs font-semibold text-body flex-shrink-0">
-          {learnedCount}/{cards.length}
+            <span className="rounded-lg bg-hairline-soft px-3 py-1.5 font-mono text-code-sm font-semibold text-ink">
+              {learnedCount} / {cards.length}
+            </span>
+          </div>
         </div>
       </header>
 
