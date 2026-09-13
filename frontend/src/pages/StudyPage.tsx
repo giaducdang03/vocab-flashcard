@@ -567,7 +567,7 @@ export default function StudyPage() {
               <div className="relative h-full min-h-[440px] w-full md:min-h-[480px]" style={{ transformStyle: 'preserve-3d' }}>
                 {/* Front */}
                 <div
-                  className="absolute inset-0 flex flex-col rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
+                  className="absolute inset-0 flex h-full flex-col rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden' }}
                 >
                   <div className="flex items-center justify-between">
@@ -626,10 +626,10 @@ export default function StudyPage() {
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
+                  className="absolute inset-0 flex h-full flex-col items-center justify-center overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="absolute top-space-lg left-space-lg right-space-lg flex items-center justify-between sm:top-10 sm:left-10 sm:right-10">
                     <button
                       type="button"
                       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm transition-colors ${
@@ -658,7 +658,7 @@ export default function StudyPage() {
                     </button>
                   </div>
 
-                  <div className="mt-space-lg flex w-full flex-col gap-space-lg">
+                  <div className="flex w-full flex-col items-center gap-space-lg">
                     <h2 className="break-words text-center text-headline-lg text-ink">
                       {currentCard.back_text}
                     </h2>
