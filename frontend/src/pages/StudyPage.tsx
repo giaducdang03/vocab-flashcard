@@ -626,7 +626,7 @@ export default function StudyPage() {
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 flex h-full flex-col items-center justify-center overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
+                  className="absolute inset-0 flex h-full flex-col justify-center overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="absolute top-space-lg left-space-lg right-space-lg flex items-center justify-between sm:top-10 sm:left-10 sm:right-10">
@@ -658,7 +658,7 @@ export default function StudyPage() {
                     </button>
                   </div>
 
-                  <div className="flex w-full flex-col items-center gap-space-lg">
+                  <div className="flex w-full flex-col gap-space-lg">
                     <h2 className="break-words text-center text-headline-lg text-ink">
                       {currentCard.back_text}
                     </h2>
