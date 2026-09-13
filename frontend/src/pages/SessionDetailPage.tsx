@@ -105,7 +105,7 @@ export default function SessionDetailPage() {
     return sorted;
   }, [cards, filter, query, sort]);
 
-  const resetKey = `${filter}|${query}|${sort}`;
+  const resetKey = `${filter}|${query}|${sort}|${sortedFilteredCards.length}`;
   const { visibleCount, sentinelRef } = useInfiniteReveal(resetKey, sortedFilteredCards.length, CARD_BATCH_SIZE);
   const visibleCards = sortedFilteredCards.slice(0, visibleCount);
 
