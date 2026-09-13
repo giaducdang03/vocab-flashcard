@@ -888,7 +888,7 @@ textarea {
 .option-list {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .option-button {
@@ -934,6 +934,42 @@ textarea {
   border-color: var(--error);
   background: rgba(207, 45, 86, 0.08);
   color: var(--error);
+}
+
+.option-button {
+  justify-content: flex-start;
+  text-align: left;
+  gap: 12px;
+}
+
+.option-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--surface-strong);
+  color: var(--body);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.option-button.correct .option-letter {
+  background: var(--success);
+  color: #fff;
+}
+
+.option-button.wrong .option-letter {
+  background: var(--error);
+  color: #fff;
+}
+
+.option-check {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--success);
 }
 
 @media (max-width: 900px) {
