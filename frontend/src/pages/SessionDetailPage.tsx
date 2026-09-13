@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BookOpen, Download, Plus, ShieldCheck, Table, Upload } from 'lucide-react';
+import { ArrowLeft, BookOpen, Download, Plus, ShieldCheck, Table, Upload, Zap } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,6 +9,7 @@ import CardsToolbar, { type FilterKey, type SortKey } from '../components/sessio
 import BulkActionBar from '../components/session/BulkActionBar';
 import CardRow from '../components/session/CardRow';
 import AddCardModal, { type CardDraftInput } from '../components/session/AddCardModal';
+import PracticeSetupModal from '../components/session/PracticeSetupModal';
 import { useInfiniteReveal } from '../hooks/useInfiniteReveal';
 import type { Card, SessionDetailResponse } from '../types';
 
@@ -31,6 +32,7 @@ export default function SessionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showPractice, setShowPractice] = useState(false);
 
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<FilterKey>('all');
@@ -261,6 +263,16 @@ export default function SessionDetailPage() {
                   Study deck
                 </Link>
               )}
+              {cards.length >= 4 && (
+                <button
+                  type="button"
+                  onClick={() => setShowPractice(true)}
+                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
+                >
+                  <Zap size={18} className="text-secondary" />
+                  Quick practice
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setShowImport(true)}
@@ -380,6 +392,13 @@ export default function SessionDetailPage() {
           onClose={() => setShowImport(false)}
         />
       )}
+
+      <PracticeSetupModal
+        isOpen={showPractice}
+        sessionId={id || ''}
+        cards={cards}
+        onClose={() => setShowPractice(false)}
+      />
     </div>
   );
 }
