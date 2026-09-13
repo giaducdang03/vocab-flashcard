@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Circle, Filter, RotateCcw, Settings, Shuffle, Volume2 } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Circle, RotateCcw, Settings, Shuffle, Volume2 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
