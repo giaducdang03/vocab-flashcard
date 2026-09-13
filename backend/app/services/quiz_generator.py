@@ -240,3 +240,66 @@ def generate_questions(
     rng.shuffle(questions)
 
     return questions
+
+
+def generate_practice_questions(
+    cards: Sequence[Any],
+    question_types: Sequence[str],
+    rng: Random | None = None,
+) -> list[GeneratedQuestion]:
+    """One question per card for a throwaway practice run.
+
+    Unlike `generate_questions`, nothing here is persisted and the caller wants
+    the whole session covered, so every card appears exactly once. The question
+    type for a card is drawn at random from the requested types that card is
+    eligible for — a card with no synonyms simply gets a translation question.
+
+    Raises:
+        ValueError: If pool < 4 cards, question_types is empty, or a type is unknown.
+    """
+    if rng is None:
+        rng = Random()
+
+    if len(cards) < MIN_POOL_SIZE:
+        raise ValueError(f"Need at least {MIN_POOL_SIZE} cards to practice")
+
+    if not question_types:
+        raise ValueError("Select at least one question type")
+
+    for question_type in question_types:
+        if question_type not in QUESTION_TYPES:
+            raise ValueError(f"Unknown question type: {question_type}")
+
+    questions: list[GeneratedQuestion] = []
+
+    for card in cards:
+        candidates = [t for t in question_types if _is_eligible(card, t)]
+        if not candidates:
+            continue
+
+        rng.shuffle(candidates)
+
+        # Try each eligible type until one can find three distractors.
+        for question_type in candidates:
+            options_result = _build_options(card, question_type, cards, rng)
+            if options_result is None:
+                continue
+
+            options, correct_index = options_result
+            prompt_text, prompt_phonetic = _prompt_of(card, question_type)
+
+            questions.append(
+                GeneratedQuestion(
+                    card_id=card.id,
+                    question_type=question_type,
+                    prompt_text=prompt_text,
+                    prompt_phonetic=prompt_phonetic,
+                    options=options,
+                    correct_index=correct_index,
+                )
+            )
+            break
+
+    rng.shuffle(questions)
+
+    return questions
