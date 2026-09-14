@@ -132,6 +132,10 @@ async def _quiz_list_item(db: AsyncSession, quiz: Quiz) -> QuizListItem:
         best_score=best_score,
         last_attempt_at=last_attempt_at,
         created_at=quiz.created_at,
+        status=quiz.status,
+        uses_ai=quiz.uses_ai,
+        error_message=quiz.error_message,
+        ai_question_count=quiz.ai_question_count,
     )
 
 
