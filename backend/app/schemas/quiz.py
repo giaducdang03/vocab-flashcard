@@ -79,6 +79,8 @@ class AnswerSubmitRequest(BaseModel):
 class AnswerSubmitResponse(BaseModel):
     is_correct: bool
     correct_index: int
+    # Chỉ câu do AI soạn mới có. Chỉ lộ ra SAU khi người học đã trả lời.
+    explanation: str | None = None
 
 
 class AttemptSubmitResponse(BaseModel):
@@ -101,6 +103,8 @@ class ReviewQuestionOut(BaseModel):
     selected_index: int | None = None
     is_correct: bool
     card_id: str | None = None
+    explanation: str | None = None
+    source: str = "algo"
 
 
 class AttemptReviewOut(BaseModel):

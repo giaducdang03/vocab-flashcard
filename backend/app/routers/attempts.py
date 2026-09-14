@@ -111,6 +111,7 @@ async def submit_answer(
     return AnswerSubmitResponse(
         is_correct=is_correct,
         correct_index=question.correct_index,
+        explanation=question.explanation,
     )
 
 
@@ -232,6 +233,8 @@ async def review_attempt(
             selected_index=answer.selected_index if answer else None,
             is_correct=answer.is_correct if answer else False,
             card_id=question.card_id,
+            explanation=question.explanation,
+            source=question.source,
         )
         review_questions.append(review_question)
 
