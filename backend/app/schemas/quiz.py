@@ -112,3 +112,15 @@ class AttemptReviewOut(BaseModel):
     duration_seconds: int | None = None
     submitted_at: datetime
     questions: list[ReviewQuestionOut]
+
+
+class AiStatusOut(BaseModel):
+    available: bool
+    daily_limit: int
+    used_today: int
+
+
+class QuizStatusOut(BaseModel):
+    status: str
+    question_count: int
+    error_message: str | None = None

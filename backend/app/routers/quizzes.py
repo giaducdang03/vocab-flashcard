@@ -14,6 +14,7 @@ from app.models.quiz import Quiz, QuizAttempt, QuizQuestion, QuizSourceSession
 from app.models.session import Session
 from app.models.user import User
 from app.schemas.quiz import (
+    AiStatusOut,
     AttemptStartOut,
     CapacityRequest,
     CapacityResponse,
@@ -21,6 +22,7 @@ from app.schemas.quiz import (
     QuizCreate,
     QuizDetailOut,
     QuizListItem,
+    QuizStatusOut,
     AttemptSummary,
 )
 from app.services.ai import ai_available, get_provider
@@ -34,6 +36,8 @@ from app.services.quiz_generator import (
 )
 
 router = APIRouter()
+
+PENDING_TIMEOUT_MINUTES = 10
 
 
 async def _load_user_sessions(
@@ -202,8 +206,7 @@ def _add_questions(db: AsyncSession, quiz_id: str, generated, start_position: in
     return position
 
 
-async def _enforce_daily_ai_limit(db: AsyncSession, user_id: str) -> None:
-    """Chặn khi user đã dùng hết lượt sinh đề AI trong 24 giờ qua."""
+async def _count_ai_quizzes_today(db: AsyncSession, user_id: str) -> int:
     since = datetime.now(timezone.utc) - timedelta(hours=24)
     result = await db.execute(
         select(func.count(Quiz.id)).where(
@@ -212,9 +215,29 @@ async def _enforce_daily_ai_limit(db: AsyncSession, user_id: str) -> None:
             Quiz.created_at >= since,
         )
     )
-    used_today = result.scalar() or 0
+    return result.scalar() or 0
 
-    if used_today >= settings.AI_DAILY_QUIZ_LIMIT:
+
+async def _expire_if_stale(db: AsyncSession, quiz: Quiz) -> None:
+    """Chuyển quiz 'pending' quá hạn sang 'failed'."""
+    if quiz.status != "pending":
+        return
+
+    created_at = quiz.created_at
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=timezone.utc)
+
+    if datetime.now(timezone.utc) - created_at <= timedelta(minutes=PENDING_TIMEOUT_MINUTES):
+        return
+
+    quiz.status = "failed"
+    quiz.error_message = "Quá trình soạn đề bị gián đoạn. Hãy thử lại."
+    await db.commit()
+
+
+async def _enforce_daily_ai_limit(db: AsyncSession, user_id: str) -> None:
+    """Chặn khi user đã dùng hết lượt sinh đề AI trong 24 giờ qua."""
+    if await _count_ai_quizzes_today(db, user_id) >= settings.AI_DAILY_QUIZ_LIMIT:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=(
@@ -372,6 +395,19 @@ async def list_quizzes(
     return items
 
 
+@router.get("/ai-status", response_model=AiStatusOut)
+async def get_ai_status(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> AiStatusOut:
+    """Cho frontend biết có nên hiện hai dạng câu hỏi AI hay không."""
+    return AiStatusOut(
+        available=ai_available(),
+        daily_limit=settings.AI_DAILY_QUIZ_LIMIT,
+        used_today=await _count_ai_quizzes_today(db, current_user.id),
+    )
+
+
 @router.get("/{quiz_id}", response_model=QuizDetailOut)
 async def get_quiz(
     quiz_id: str,
@@ -486,3 +522,63 @@ async def start_attempt(
         quiz_title=quiz.title,
         questions=questions,
     )
+
+
+@router.get("/{quiz_id}/status", response_model=QuizStatusOut)
+async def get_quiz_status(
+    quiz_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> QuizStatusOut:
+    """Endpoint nhẹ để frontend poll trong lúc AI soạn đề."""
+    quiz = await _get_owned_quiz(db, quiz_id, current_user.id)
+    await _expire_if_stale(db, quiz)
+
+    result = await db.execute(
+        select(func.count(QuizQuestion.id)).where(QuizQuestion.quiz_id == quiz_id)
+    )
+
+    return QuizStatusOut(
+        status=quiz.status,
+        question_count=result.scalar() or 0,
+        error_message=quiz.error_message,
+    )
+
+
+@router.post("/{quiz_id}/retry", response_model=QuizListItem)
+async def retry_quiz(
+    quiz_id: str,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> QuizListItem:
+    """Soạn lại một quiz AI đã hỏng, giữ nguyên id để không đẻ ra quiz rác."""
+    quiz = await _get_owned_quiz(db, quiz_id, current_user.id)
+
+    if not quiz.uses_ai:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Chỉ đề có phần AI mới soạn lại được",
+        )
+
+    if quiz.status == "pending":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Đề đang được soạn",
+        )
+
+    if quiz.retry_count >= 3:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Đề này đã thử lại quá 3 lần",
+        )
+
+    quiz.retry_count += 1
+    quiz.status = "pending"
+    quiz.error_message = None
+    await db.commit()
+    await db.refresh(quiz)
+
+    background_tasks.add_task(run_ai_generation, quiz.id)
+
+    return await _quiz_list_item(db, quiz)
