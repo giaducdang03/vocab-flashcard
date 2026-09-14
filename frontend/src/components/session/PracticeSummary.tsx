@@ -1,13 +1,14 @@
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { PracticeAnswer, QuestionType } from '../../types';
-import { QUESTION_TYPE_LABELS } from '../../types';
+import type { PracticeAnswer, PracticePool, QuestionType } from '../../types';
+import { PRACTICE_POOL_LABELS, QUESTION_TYPE_LABELS } from '../../types';
 
 type PracticeSummaryProps = {
   answers: PracticeAnswer[];
   durationSeconds: number;
   sessionId: string;
   sessionTitle: string;
+  pool: PracticePool;
   onRestart: () => void;
 };
 
@@ -23,6 +24,7 @@ export default function PracticeSummary({
   durationSeconds,
   sessionId,
   sessionTitle,
+  pool,
   onRestart,
 }: PracticeSummaryProps) {
   const total = answers.length;
@@ -59,9 +61,14 @@ export default function PracticeSummary({
     <div className="page-shell">
       <main className="page-container compact">
         <section className="rounded-xl border border-hairline bg-surface-card p-6 sm:p-8">
-          <span className="rounded bg-primary/10 px-2.5 py-1 text-caption-uppercase font-bold uppercase tracking-wider text-primary">
-            Practice complete
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded bg-primary/10 px-2.5 py-1 text-caption-uppercase font-bold uppercase tracking-wider text-primary">
+              Practice complete
+            </span>
+            <span className="rounded bg-hairline-soft px-2.5 py-1 text-caption-uppercase font-bold uppercase tracking-wider text-muted">
+              {PRACTICE_POOL_LABELS[pool]}
+            </span>
+          </div>
 
           <h1 className="mb-0 mt-4 text-headline-lg font-medium tracking-tight text-ink">
             {sessionTitle}

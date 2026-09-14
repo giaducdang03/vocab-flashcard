@@ -14,6 +14,9 @@ QUESTION_TYPES: tuple[str, str, str] = ("en_to_vi", "vi_to_en", "synonym")
 # distinct cards to draw from.
 MIN_POOL_SIZE = 4
 
+# A practice run can be narrowed to part of the session by learned state.
+PRACTICE_POOLS: tuple[str, str, str] = ("all", "unlearned", "learned")
+
 
 @dataclass(frozen=True)
 class GeneratedQuestion:
@@ -242,25 +245,59 @@ def generate_questions(
     return questions
 
 
+def filter_cards_by_pool(cards: Sequence[Any], pool: str) -> list[Any]:
+    """Narrow a session's cards to the requested practice pool.
+
+    Args:
+        cards: All cards of the session, in display order.
+        pool: One of `PRACTICE_POOLS`.
+
+    Raises:
+        ValueError: If `pool` is not one of `PRACTICE_POOLS`.
+    """
+    if pool == "all":
+        return list(cards)
+    if pool == "unlearned":
+        return [card for card in cards if not card.is_learned]
+    if pool == "learned":
+        return [card for card in cards if card.is_learned]
+
+    raise ValueError(f"Unknown practice pool: {pool}")
+
+
 def generate_practice_questions(
     cards: Sequence[Any],
     question_types: Sequence[str],
     rng: Random | None = None,
+    distractor_pool: Sequence[Any] | None = None,
 ) -> list[GeneratedQuestion]:
     """One question per card for a throwaway practice run.
 
     Unlike `generate_questions`, nothing here is persisted and the caller wants
-    the whole session covered, so every card appears exactly once. The question
+    the whole pool covered, so every card appears exactly once. The question
     type for a card is drawn at random from the requested types that card is
     eligible for — a card with no synonyms simply gets a translation question.
 
+    Args:
+        cards: Cards to generate questions for — already narrowed to the pool
+            the user picked.
+        question_types: Requested question types.
+        rng: Random number generator (default: a fresh `Random()`).
+        distractor_pool: Cards the wrong answers are drawn from. Defaults to
+            `cards`. Callers narrowing `cards` by learned state pass the whole
+            session here, so a two-card pool still gets varied distractors and
+            the four-card minimum stays a property of the session.
+
     Raises:
-        ValueError: If pool < 4 cards, question_types is empty, or a type is unknown.
+        ValueError: If the distractor pool has fewer than `MIN_POOL_SIZE`
+            cards, `question_types` is empty, or a type is unknown.
     """
     if rng is None:
         rng = Random()
 
-    if len(cards) < MIN_POOL_SIZE:
+    pool = distractor_pool if distractor_pool is not None else cards
+
+    if len(pool) < MIN_POOL_SIZE:
         raise ValueError(f"Need at least {MIN_POOL_SIZE} cards to practice")
 
     if not question_types:
@@ -281,7 +318,7 @@ def generate_practice_questions(
 
         # Try each eligible type until one can find three distractors.
         for question_type in candidates:
-            options_result = _build_options(card, question_type, cards, rng)
+            options_result = _build_options(card, question_type, pool, rng)
             if options_result is None:
                 continue
 

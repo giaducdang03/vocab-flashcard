@@ -99,6 +99,11 @@ async def start_practice(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> PracticeStartOut:
+    """Generate a throwaway practice deck from this session's cards.
+
+    Stateless on purpose: nothing is written, so every call returns a fresh
+    shuffle and there is no attempt to resume.
+    """
     result = await db.execute(
         select(Session)
         .options(selectinload(Session.cards).selectinload(Card.synonyms))
@@ -110,16 +115,34 @@ async def start_practice(
 
     cards = sorted(session.cards, key=lambda c: (c.position, c.created_at))
 
+    # The four-card minimum is a property of the session, not of the chosen
+    # pool: distractors are drawn from every card regardless of the pool.
     if len(cards) < quiz_generator.MIN_POOL_SIZE:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Need at least {quiz_generator.MIN_POOL_SIZE} cards to practice")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Need at least {quiz_generator.MIN_POOL_SIZE} cards to practice",
+        )
+
+    practice_cards = quiz_generator.filter_cards_by_pool(cards, payload.pool)
+
+    if not practice_cards:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No cards match the selected pool",
+        )
 
     try:
-        generated_questions = quiz_generator.generate_practice_questions(cards, payload.question_types)
+        generated_questions = quiz_generator.generate_practice_questions(
+            practice_cards, payload.question_types, distractor_pool=cards
+        )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     if not generated_questions:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Not enough cards for the selected question types")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Not enough cards for the selected question types",
+        )
 
     practice_questions = [
         PracticeQuestionOut(
@@ -137,5 +160,6 @@ async def start_practice(
     return PracticeStartOut(
         session_id=session.id,
         session_title=session.title,
+        pool=payload.pool,
         questions=practice_questions,
     )

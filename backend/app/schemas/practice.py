@@ -4,9 +4,13 @@ from pydantic import BaseModel, Field
 
 QuestionType = Literal["en_to_vi", "vi_to_en", "synonym"]
 
+# Which slice of a session a practice run draws its questions from, by learned state.
+PracticePool = Literal["all", "unlearned", "learned"]
+
 
 class PracticeStartRequest(BaseModel):
     question_types: list[QuestionType] = Field(min_length=1)
+    pool: PracticePool = "all"
 
 
 class PracticeQuestionOut(BaseModel):
@@ -22,4 +26,5 @@ class PracticeQuestionOut(BaseModel):
 class PracticeStartOut(BaseModel):
     session_id: str
     session_title: str
+    pool: PracticePool
     questions: list[PracticeQuestionOut]

@@ -149,7 +149,17 @@ export type PracticeQuestion = {
 export type PracticeStart = {
   session_id: string;
   session_title: string;
+  pool: PracticePool;
   questions: PracticeQuestion[];
+};
+
+/** Which slice of a session a practice run draws its questions from. */
+export type PracticePool = 'all' | 'unlearned' | 'learned';
+
+export const PRACTICE_POOL_LABELS: Record<PracticePool, string> = {
+  all: 'All cards',
+  unlearned: 'Unlearned only',
+  learned: 'Learned only',
 };
 
 /** One answered question, kept in client state only — never sent to the server. */
