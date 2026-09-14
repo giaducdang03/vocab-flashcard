@@ -12,6 +12,7 @@ type QuizCreateModalProps = {
 };
 
 const QUESTION_TYPES: QuestionType[] = ['en_to_vi', 'vi_to_en', 'synonym'];
+const QUESTION_COUNT_PRESETS = [5, 10, 20, 30, 50];
 
 export default function QuizCreateModal({
   isOpen,
@@ -23,6 +24,7 @@ export default function QuizCreateModal({
   const [sessionIds, setSessionIds] = useState<string[]>([]);
   const [types, setTypes] = useState<QuestionType[]>(['en_to_vi']);
   const [questionCount, setQuestionCount] = useState(10);
+  const [useCustomCount, setUseCustomCount] = useState(false);
   const [title, setTitle] = useState('');
   const [capacity, setCapacity] = useState<QuizCapacity | null>(null);
   const [creating, setCreating] = useState(false);
@@ -35,6 +37,7 @@ export default function QuizCreateModal({
     setSessionIds([]);
     setTypes(['en_to_vi']);
     setQuestionCount(10);
+    setUseCustomCount(false);
     setTitle('');
     setCapacity(null);
     setError(null);
@@ -212,18 +215,72 @@ export default function QuizCreateModal({
                     : 'Loading capacity...'}
                 </p>
               </div>
-              <div className="field-group">
-                <input
-                  type="number"
-                  min="1"
-                  max={maxQuestions || undefined}
-                  value={questionCount}
-                  onChange={(e) =>
-                    setQuestionCount(Math.max(1, parseInt(e.target.value) || 1))
-                  }
-                  placeholder="Enter number of questions"
-                />
+              <div className="question-count-presets">
+                {QUESTION_COUNT_PRESETS.filter(
+                  (n) => maxQuestions === 0 || n <= maxQuestions
+                ).map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    className={`preset-button ${
+                      !useCustomCount && questionCount === n ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setQuestionCount(n);
+                      setUseCustomCount(false);
+                    }}
+                  >
+                    {n}
+                  </button>
+                ))}
+                {maxQuestions > 0 && (
+                  <button
+                    type="button"
+                    className={`preset-button ${
+                      !useCustomCount && questionCount === maxQuestions ? 'active' : ''
+                    }`}
+                    onClick={() => {
+                      setQuestionCount(maxQuestions);
+                      setUseCustomCount(false);
+                    }}
+                  >
+                    All
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`preset-button ${useCustomCount ? 'active' : ''}`}
+                  onClick={() => setUseCustomCount(true)}
+                >
+                  Custom
+                </button>
               </div>
+              {useCustomCount && (
+                <div className="field-group">
+                  <input
+                    type="number"
+                    min="1"
+                    max={maxQuestions || undefined}
+                    value={questionCount === 0 ? '' : questionCount}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (raw === '') {
+                        setQuestionCount(0);
+                        return;
+                      }
+                      const parsed = parseInt(raw, 10);
+                      if (!isNaN(parsed)) {
+                        setQuestionCount(parsed);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (questionCount < 1) setQuestionCount(1);
+                    }}
+                    placeholder="Enter number of questions"
+                    autoFocus
+                  />
+                </div>
+              )}
               {maxQuestions > 0 && questionCount > maxQuestions && (
                 <div className="inline-error">
                   Maximum available questions: {maxQuestions}

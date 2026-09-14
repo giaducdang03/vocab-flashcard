@@ -129,11 +129,17 @@ export default function TakeQuizPage() {
     <>
       <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--canvas)' }}>
         <PageHeader />
-        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
-          <Link to={`/quizzes/${id}`} className="inline-link">
-            <ArrowLeft size={16} />
-            Exit | {attempt.quiz_title}
-          </Link>
+        <div>
+          <div className="page-toolbar">
+            <Link to={`/quizzes/${id}`} className="inline-link quiz-breadcrumb">
+              <span className="breadcrumb-exit">
+                <ArrowLeft size={16} />
+                Exit
+              </span>
+              <span className="breadcrumb-sep">|</span>
+              <span className="breadcrumb-title">{attempt.quiz_title}</span>
+            </Link>
+          </div>
         </div>
       </div>
 
