@@ -28,6 +28,22 @@ export default function QuizQuestionView({
   const progressPercent = ((index + 1) / total) * 100;
   const hasResult = result !== null;
 
+  const renderPrompt = (text: string, questionType: string) => {
+    if (questionType !== 'cloze' || !text.includes('___')) {
+      return text;
+    }
+
+    const [before, ...rest] = text.split('___');
+
+    return (
+      <>
+        {before}
+        <span className="cloze-blank" aria-label="chỗ trống" />
+        {rest.join('___')}
+      </>
+    );
+  };
+
   const getOptionButtonClass = (optionIndex: number): string => {
     const baseClass = 'option-button';
 
@@ -69,7 +85,9 @@ export default function QuizQuestionView({
         <section className="hero-card">
           <div style={{ flex: 1 }}>
             <span className="badge">{QUESTION_TYPE_LABELS[question.question_type]}</span>
-            <h1 className="quiz-prompt">{question.prompt_text}</h1>
+            <h1 className="quiz-prompt">
+              {renderPrompt(question.prompt_text, question.question_type)}
+            </h1>
             {question.prompt_phonetic && (
               <p className="quiz-prompt-phonetic">{question.prompt_phonetic}</p>
             )}
@@ -100,28 +118,33 @@ export default function QuizQuestionView({
 
         {/* Feedback and Next button */}
         {hasResult && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px',
-              paddingTop: '8px',
-            }}
-          >
-            <span
+          <>
+            <div
               style={{
-                fontSize: '16px',
-                fontWeight: 500,
-                color: result.is_correct ? 'var(--success)' : 'var(--error)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '16px',
+                paddingTop: '8px',
               }}
             >
-              {result.is_correct ? 'Correct!' : 'Not quite.'}
-            </span>
-            <button type="button" className="btn btn-primary" onClick={onNext}>
-              {isLast ? 'Finish quiz' : 'Next question'}
-            </button>
-          </div>
+              <span
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  color: result.is_correct ? 'var(--success)' : 'var(--error)',
+                }}
+              >
+                {result.is_correct ? 'Correct!' : 'Not quite.'}
+              </span>
+              <button type="button" className="btn btn-primary" onClick={onNext}>
+                {isLast ? 'Finish quiz' : 'Next question'}
+              </button>
+            </div>
+            {result.explanation && (
+              <p className="answer-explanation">{result.explanation}</p>
+            )}
+          </>
         )}
       </main>
     </div>

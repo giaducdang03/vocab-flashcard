@@ -7,6 +7,7 @@ import QuizCard from '../components/quiz/QuizCard';
 import QuizCreateModal from '../components/quiz/QuizCreateModal';
 import PageHeader from '../components/PageHeader';
 import { useNavigate } from 'react-router-dom';
+import { useQuizPolling } from '../hooks/useQuizPolling';
 
 export default function QuizzesPage() {
   const navigate = useNavigate();
@@ -39,6 +40,28 @@ export default function QuizzesPage() {
     void fetchQuizzes();
     void fetchSessions();
   }, []);
+
+  useQuizPolling(quizzes, (id, status) => {
+    setQuizzes((current) =>
+      current.map((quiz) =>
+        quiz.id === id
+          ? {
+              ...quiz,
+              status: status.status,
+              question_count: status.question_count,
+              error_message: status.error_message,
+            }
+          : quiz,
+      ),
+    );
+  });
+
+  const handleRetry = async (quizId: string) => {
+    const response = await api.post<Quiz>(`/quizzes/${quizId}/retry`);
+    setQuizzes((current) =>
+      current.map((quiz) => (quiz.id === quizId ? response.data : quiz)),
+    );
+  };
 
   const handleDeleteQuiz = async (quizId: string) => {
     try {
@@ -100,6 +123,7 @@ export default function QuizzesPage() {
                 quiz={quiz}
                 onOpen={() => navigate(`/quizzes/${quiz.id}`)}
                 onDelete={() => handleDeleteQuiz(quiz.id)}
+                onRetry={handleRetry}
               />
             ))}
           </div>

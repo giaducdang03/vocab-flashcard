@@ -202,6 +202,14 @@ export default function AttemptReviewPage() {
                       {selectedAnswer}
                     </span>
                   </p>
+                  {question.explanation && (
+                    <div className="review-explanation">
+                      {question.source === 'ai' && (
+                        <span className="type-chip">AI soạn</span>
+                      )}
+                      <p>{question.explanation}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             );

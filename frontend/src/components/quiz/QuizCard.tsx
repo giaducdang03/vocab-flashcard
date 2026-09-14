@@ -6,9 +6,32 @@ type QuizCardProps = {
   quiz: Quiz;
   onOpen: () => void;
   onDelete: () => void;
+  onRetry: (quizId: string) => void;
 };
 
-export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
+export default function QuizCard({ quiz, onOpen, onDelete, onRetry }: QuizCardProps) {
+  if (quiz.status === 'pending') {
+    return (
+      <article className="quiz-card quiz-card--pending">
+        <h3 className="quiz-card__title">{quiz.title}</h3>
+        <p className="quiz-card__note">AI đang soạn đề…</p>
+        <div className="quiz-card__skeleton" />
+      </article>
+    );
+  }
+
+  if (quiz.status === 'failed') {
+    return (
+      <article className="quiz-card quiz-card--failed">
+        <h3 className="quiz-card__title">{quiz.title}</h3>
+        <p className="quiz-card__error">{quiz.error_message ?? 'Soạn đề thất bại.'}</p>
+        <button type="button" onClick={() => onRetry(quiz.id)}>
+          Thử lại
+        </button>
+      </article>
+    );
+  }
+
   return (
     <article className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
       {/* Header: title + delete icon-button */}
