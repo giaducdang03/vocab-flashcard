@@ -19,6 +19,7 @@ class FakeCard:
     back_text: str
     card_type: str = "vocab"
     front_phonetic: str | None = None
+    is_learned: bool = False
     synonyms: list[FakeSynonym] = field(default_factory=list)
 
 
@@ -26,6 +27,7 @@ def make_card(
     index: int,
     card_type: str = "vocab",
     synonyms: list[str] | None = None,
+    is_learned: bool = False,
 ) -> FakeCard:
     """Build a card with predictable, mutually distinct text."""
     return FakeCard(
@@ -34,15 +36,25 @@ def make_card(
         back_text=f"nghia{index}",
         card_type=card_type,
         front_phonetic=f"/w{index}/",
+        is_learned=is_learned,
         synonyms=[FakeSynonym(word=word) for word in (synonyms or [])],
     )
 
 
-def make_pool(size: int, synonyms_for: set[int] | None = None) -> list[FakeCard]:
+def make_pool(
+    size: int,
+    synonyms_for: set[int] | None = None,
+    learned_for: set[int] | None = None,
+) -> list[FakeCard]:
     """Build `size` distinct cards; those whose index is in `synonyms_for`
-    get one synonym each."""
+    get one synonym each; those in `learned_for` are marked as learned."""
     synonyms_for = synonyms_for or set()
+    learned_for = learned_for or set()
     return [
-        make_card(index, synonyms=[f"syn{index}"] if index in synonyms_for else None)
+        make_card(
+            index,
+            synonyms=[f"syn{index}"] if index in synonyms_for else None,
+            is_learned=index in learned_for,
+        )
         for index in range(size)
     ]

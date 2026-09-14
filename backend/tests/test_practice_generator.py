@@ -118,3 +118,109 @@ class TestGeneratePracticeQuestions:
 
         with pytest.raises(ValueError, match="Unknown question type"):
             qg.generate_practice_questions(cards, ["en_to_fr"], rng=random.Random(10))
+
+
+class TestFilterCardsByPool:
+    def test_pool_all_returns_every_card(self):
+        cards = make_pool(6, learned_for={0, 1})
+
+        assert qg.filter_cards_by_pool(cards, "all") == list(cards)
+
+    def test_pool_unlearned_keeps_only_cards_not_marked_learned(self):
+        cards = make_pool(6, learned_for={0, 1})
+
+        result = qg.filter_cards_by_pool(cards, "unlearned")
+
+        assert [card.id for card in result] == ["card-2", "card-3", "card-4", "card-5"]
+
+    def test_pool_learned_keeps_only_cards_marked_learned(self):
+        cards = make_pool(6, learned_for={0, 1})
+
+        result = qg.filter_cards_by_pool(cards, "learned")
+
+        assert [card.id for card in result] == ["card-0", "card-1"]
+
+    def test_pool_learned_on_a_session_with_nothing_learned_is_empty(self):
+        cards = make_pool(6)
+
+        assert qg.filter_cards_by_pool(cards, "learned") == []
+
+    def test_unknown_pool_raises(self):
+        cards = make_pool(6)
+
+        with pytest.raises(ValueError, match="Unknown practice pool"):
+            qg.filter_cards_by_pool(cards, "mastered")
+
+    def test_all_three_pool_names_are_exported(self):
+        assert qg.PRACTICE_POOLS == ("all", "unlearned", "learned")
+
+
+class TestPracticeDistractorPool:
+    def test_two_card_pool_still_works_when_distractors_come_from_the_session(self):
+        session_cards = make_pool(10)
+        practice_cards = session_cards[:2]
+
+        questions = qg.generate_practice_questions(
+            practice_cards,
+            ["en_to_vi"],
+            rng=random.Random(21),
+            distractor_pool=session_cards,
+        )
+
+        assert len(questions) == 2
+        for question in questions:
+            assert len(question.options) == 4
+            assert len(set(question.options)) == 4
+
+    def test_questions_only_cover_the_question_pool(self):
+        session_cards = make_pool(10)
+        practice_cards = session_cards[3:6]
+
+        questions = qg.generate_practice_questions(
+            practice_cards,
+            ["en_to_vi", "vi_to_en"],
+            rng=random.Random(22),
+            distractor_pool=session_cards,
+        )
+
+        assert sorted(q.card_id for q in questions) == ["card-3", "card-4", "card-5"]
+
+    def test_distractors_are_drawn_from_the_distractor_pool(self):
+        session_cards = make_pool(10)
+        practice_cards = session_cards[:2]
+        allowed = {card.back_text for card in session_cards}
+
+        questions = qg.generate_practice_questions(
+            practice_cards,
+            ["en_to_vi"],
+            rng=random.Random(23),
+            distractor_pool=session_cards,
+        )
+
+        for question in questions:
+            assert set(question.options) <= allowed
+
+    def test_distractor_pool_below_minimum_raises(self):
+        session_cards = make_pool(3)
+        practice_cards = session_cards[:1]
+
+        with pytest.raises(ValueError, match="at least 4 cards"):
+            qg.generate_practice_questions(
+                practice_cards,
+                ["en_to_vi"],
+                rng=random.Random(24),
+                distractor_pool=session_cards,
+            )
+
+    def test_omitting_distractor_pool_keeps_the_old_behaviour(self):
+        cards = make_pool(8)
+
+        with_default = qg.generate_practice_questions(
+            cards, ["en_to_vi"], rng=random.Random(25)
+        )
+        with_explicit = qg.generate_practice_questions(
+            cards, ["en_to_vi"], rng=random.Random(25), distractor_pool=cards
+        )
+
+        signature = lambda deck: [(q.card_id, tuple(q.options)) for q in deck]
+        assert signature(with_default) == signature(with_explicit)
