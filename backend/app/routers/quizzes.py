@@ -1,12 +1,13 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.database import get_db
+from app.config import settings
+from app.database import AsyncSessionLocal, get_db
 from app.deps import get_current_user
 from app.models.card import Card, Synonym
 from app.models.quiz import Quiz, QuizAttempt, QuizQuestion, QuizSourceSession
@@ -22,7 +23,15 @@ from app.schemas.quiz import (
     QuizListItem,
     AttemptSummary,
 )
-from app.services.quiz_generator import MIN_POOL_SIZE, compute_capacity, generate_questions
+from app.services.ai import ai_available, get_provider
+from app.services.ai.quiz_ai import generate_ai_questions
+from app.services.quiz_generator import (
+    AI_QUESTION_TYPES,
+    MIN_POOL_SIZE,
+    compute_capacity,
+    generate_questions,
+    split_question_count,
+)
 
 router = APIRouter()
 
@@ -171,17 +180,119 @@ async def compute_capacity_endpoint(
     )
 
 
+def _add_questions(db: AsyncSession, quiz_id: str, generated, start_position: int) -> int:
+    """Ghi các câu hỏi sinh ra vào DB. Trả về vị trí kế tiếp còn trống."""
+    position = start_position
+    for gen_question in generated:
+        db.add(
+            QuizQuestion(
+                quiz_id=quiz_id,
+                card_id=gen_question.card_id,
+                question_type=gen_question.question_type,
+                prompt_text=gen_question.prompt_text,
+                prompt_phonetic=gen_question.prompt_phonetic,
+                options=json.dumps(gen_question.options),
+                correct_index=gen_question.correct_index,
+                explanation=gen_question.explanation,
+                source=gen_question.source,
+                position=position,
+            )
+        )
+        position += 1
+    return position
+
+
+async def _enforce_daily_ai_limit(db: AsyncSession, user_id: str) -> None:
+    """Chặn khi user đã dùng hết lượt sinh đề AI trong 24 giờ qua."""
+    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    result = await db.execute(
+        select(func.count(Quiz.id)).where(
+            Quiz.user_id == user_id,
+            Quiz.uses_ai.is_(True),
+            Quiz.created_at >= since,
+        )
+    )
+    used_today = result.scalar() or 0
+
+    if used_today >= settings.AI_DAILY_QUIZ_LIMIT:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=(
+                f"Bạn đã dùng hết {settings.AI_DAILY_QUIZ_LIMIT} lượt soạn đề bằng AI "
+                "trong 24 giờ qua"
+            ),
+        )
+
+
+async def run_ai_generation(quiz_id: str) -> None:
+    """Sinh phần câu hỏi AI của một quiz đang 'pending'.
+
+    Chạy sau khi response đã trả, nên tự mở session DB riêng: session của
+    request đã đóng ở thời điểm này.
+    """
+    async with AsyncSessionLocal() as db:
+        quiz = await db.get(Quiz, quiz_id)
+        if quiz is None or quiz.status != "pending":
+            return
+
+        source_result = await db.execute(
+            select(QuizSourceSession.session_id).where(
+                QuizSourceSession.quiz_id == quiz_id
+            )
+        )
+        session_ids = list(source_result.scalars().all())
+        cards = await _load_user_cards(db, quiz.user_id, session_ids)
+
+        selected_types = quiz.question_types.split(",")
+        ai_types = [t for t in selected_types if t in AI_QUESTION_TYPES]
+        fallback_types = [t for t in selected_types if t not in AI_QUESTION_TYPES]
+
+        existing = await db.execute(
+            select(func.count(QuizQuestion.id)).where(QuizQuestion.quiz_id == quiz_id)
+        )
+        algo_count = existing.scalar() or 0
+
+        split = split_question_count(cards, selected_types, quiz.requested_count)
+        ai_count = sum(split.get(question_type, 0) for question_type in ai_types)
+
+        provider = get_provider()
+        if provider is None:
+            quiz.status = "ready" if algo_count else "failed"
+            quiz.error_message = None if algo_count else "Tính năng AI chưa được cấu hình"
+            await db.commit()
+            return
+
+        result = await generate_ai_questions(
+            provider, cards, ai_types, ai_count, fallback_types
+        )
+
+        _add_questions(db, quiz_id, result.questions, algo_count)
+        quiz.ai_question_count = result.ai_count
+
+        if not result.questions and algo_count == 0:
+            quiz.status = "failed"
+            quiz.error_message = result.error or "AI không soạn được câu hỏi nào hợp lệ"
+        else:
+            quiz.status = "ready"
+            quiz.error_message = None
+
+        await db.commit()
+
+
 @router.post("", response_model=QuizListItem)
 async def create_quiz(
     payload: QuizCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> QuizListItem:
-    """Create a new quiz."""
-    # Validate and load sessions
-    sessions = await _load_user_sessions(db, current_user.id, payload.session_ids)
+    """Tạo quiz mới.
 
-    # Load cards
+    Chỉ dạng cũ thì sinh đồng bộ như trước. Có dạng AI thì phần thuật toán
+    được ghi ngay, quiz để 'pending', và phần AI sinh ở background task — nhờ
+    vậy AI hỏng cũng không làm mất phần câu hỏi đã có.
+    """
+    sessions = await _load_user_sessions(db, current_user.id, payload.session_ids)
     cards = await _load_user_cards(db, current_user.id, payload.session_ids)
 
     if len(cards) < MIN_POOL_SIZE:
@@ -190,49 +301,52 @@ async def create_quiz(
             detail=f"Need at least {MIN_POOL_SIZE} cards to generate questions",
         )
 
-    # Generate questions
-    generated = generate_questions(cards, payload.question_types, payload.question_count)
+    ai_types = [t for t in payload.question_types if t in AI_QUESTION_TYPES]
+    algo_types = [t for t in payload.question_types if t not in AI_QUESTION_TYPES]
 
-    if not generated:
+    if ai_types and not ai_available():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Tính năng soạn đề bằng AI chưa được bật trên máy chủ",
+        )
+
+    if ai_types:
+        await _enforce_daily_ai_limit(db, current_user.id)
+
+    split = split_question_count(cards, payload.question_types, payload.question_count)
+    algo_count = sum(split.get(question_type, 0) for question_type in algo_types)
+
+    generated = []
+    if algo_count > 0:
+        generated = generate_questions(cards, algo_types, algo_count)
+
+    if not ai_types and not generated:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Could not generate questions with given parameters",
         )
 
-    # Create Quiz
-    question_types_str = ",".join(payload.question_types)
     quiz = Quiz(
         user_id=current_user.id,
         title=payload.title,
-        question_types=question_types_str,
+        question_types=",".join(payload.question_types),
+        requested_count=payload.question_count,
+        uses_ai=bool(ai_types),
+        status="pending" if ai_types else "ready",
     )
     db.add(quiz)
-    await db.flush()  # Get the quiz ID
+    await db.flush()
 
-    # Create QuizSourceSessions
     for session in sessions:
-        source_session = QuizSourceSession(
-            quiz_id=quiz.id,
-            session_id=session.id,
-        )
-        db.add(source_session)
+        db.add(QuizSourceSession(quiz_id=quiz.id, session_id=session.id))
 
-    # Create QuizQuestions
-    for position, gen_question in enumerate(generated):
-        quiz_question = QuizQuestion(
-            quiz_id=quiz.id,
-            card_id=gen_question.card_id,
-            question_type=gen_question.question_type,
-            prompt_text=gen_question.prompt_text,
-            prompt_phonetic=gen_question.prompt_phonetic,
-            options=json.dumps(gen_question.options),
-            correct_index=gen_question.correct_index,
-            position=position,
-        )
-        db.add(quiz_question)
+    _add_questions(db, quiz.id, generated, 0)
 
     await db.commit()
     await db.refresh(quiz)
+
+    if ai_types:
+        background_tasks.add_task(run_ai_generation, quiz.id)
 
     return await _quiz_list_item(db, quiz)
 
