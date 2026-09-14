@@ -224,3 +224,20 @@ class TestPracticeDistractorPool:
 
         signature = lambda deck: [(q.card_id, tuple(q.options)) for q in deck]
         assert signature(with_default) == signature(with_explicit)
+
+    def test_distractor_pool_at_minimum_boundary_works(self):
+        """Test distractor pool with exactly MIN_POOL_SIZE cards (boundary condition)."""
+        session_cards = make_pool(4)  # Exactly MIN_POOL_SIZE
+        practice_cards = session_cards[:2]
+
+        questions = qg.generate_practice_questions(
+            practice_cards,
+            ["en_to_vi"],
+            rng=random.Random(26),
+            distractor_pool=session_cards,
+        )
+
+        assert len(questions) == 2
+        for question in questions:
+            assert len(question.options) == 4
+            assert len(set(question.options)) == 4

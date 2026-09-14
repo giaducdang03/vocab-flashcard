@@ -295,7 +295,7 @@ def generate_practice_questions(
     if rng is None:
         rng = Random()
 
-    pool = list(cards) if distractor_pool is None else list(distractor_pool)
+    pool = distractor_pool if distractor_pool is not None else cards
 
     if len(pool) < MIN_POOL_SIZE:
         raise ValueError(f"Need at least {MIN_POOL_SIZE} cards to practice")
