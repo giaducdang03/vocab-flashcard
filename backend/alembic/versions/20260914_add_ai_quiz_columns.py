@@ -16,14 +16,14 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("quizzes", sa.Column("status", sa.String(length=20), nullable=False, server_default="pending"))
+    op.add_column("quizzes", sa.Column("status", sa.String(length=20), nullable=False, server_default="ready"))
     op.add_column("quizzes", sa.Column("uses_ai", sa.Boolean(), nullable=False, server_default="false"))
     op.add_column("quizzes", sa.Column("error_message", sa.Text(), nullable=True))
     op.add_column("quizzes", sa.Column("ai_question_count", sa.Integer(), nullable=False, server_default="0"))
     op.add_column("quizzes", sa.Column("retry_count", sa.Integer(), nullable=False, server_default="0"))
     op.add_column("quizzes", sa.Column("requested_count", sa.Integer(), nullable=False, server_default="0"))
 
-    op.add_column("quiz_questions", sa.Column("source", sa.String(length=20), nullable=False, server_default="manual"))
+    op.add_column("quiz_questions", sa.Column("source", sa.String(length=10), nullable=False, server_default="algo"))
     op.add_column("quiz_questions", sa.Column("explanation", sa.Text(), nullable=True))
 
 

@@ -34,7 +34,7 @@ class QuizListItem(BaseModel):
     best_score: int | None = None
     last_attempt_at: datetime | None = None
     created_at: datetime
-    status: str = "pending"
+    status: str = "ready"
     uses_ai: bool = False
     error_message: str | None = None
     ai_question_count: int = 0
