@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import type { Card, QuestionType } from '../../types';
+import type { Card, PracticePool, QuestionType } from '../../types';
 import { QUESTION_TYPE_LABELS } from '../../types';
 
 type PracticeSetupModalProps = {
@@ -9,6 +9,29 @@ type PracticeSetupModalProps = {
   sessionId: string;
   cards: Card[];
   onClose: () => void;
+};
+
+const POOLS: { value: PracticePool; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'unlearned', label: 'Unlearned' },
+  { value: 'learned', label: 'Learned' },
+];
+
+/** Mirrors quiz_generator._is_eligible on the backend, so the count shown
+ *  here matches the deck the server actually builds. */
+const isEligible = (card: Card, type: QuestionType) =>
+  type === 'synonym' ? card.card_type === 'vocab' && card.synonyms.length > 0 : true;
+
+const cardsInPool = (cards: Card[], pool: PracticePool) => {
+  if (pool === 'unlearned') {
+    return cards.filter((card) => !card.is_learned);
+  }
+
+  if (pool === 'learned') {
+    return cards.filter((card) => card.is_learned);
+  }
+
+  return cards;
 };
 
 export default function PracticeSetupModal({
@@ -23,20 +46,37 @@ export default function PracticeSetupModal({
     'vi_to_en',
     'synonym',
   ]);
+  const [pool, setPool] = useState<PracticePool>('all');
 
-  // Check if any cards have synonyms
-  const hasSynonyms = useMemo(() => cards.some((card) => card.synonyms.length > 0), [cards]);
+  // Each open starts from the default pool rather than the last run's.
+  useEffect(() => {
+    if (isOpen) {
+      setPool('all');
+    }
+  }, [isOpen]);
 
-  // Calculate predicted question count
-  const questionCount = useMemo(() => {
-    // Count each card exactly once if it's eligible for at least one selected type
-    return cards.filter((card) => {
-      return selectedTypes.some((type) => {
-        if (type === 'synonym') return card.synonyms.length > 0;
-        return true;
-      });
-    }).length;
-  }, [cards, selectedTypes]);
+  const poolCounts = useMemo(
+    () => ({
+      all: cards.length,
+      unlearned: cards.filter((card) => !card.is_learned).length,
+      learned: cards.filter((card) => card.is_learned).length,
+    }),
+    [cards],
+  );
+
+  const activeCards = useMemo(() => cardsInPool(cards, pool), [cards, pool]);
+
+  // Whether the synonym type is offerable depends on the chosen pool.
+  const hasSynonyms = useMemo(
+    () => activeCards.some((card) => isEligible(card, 'synonym')),
+    [activeCards],
+  );
+
+  // A card joins the run if at least one selected type fits it.
+  const questionCount = useMemo(
+    () => activeCards.filter((card) => selectedTypes.some((type) => isEligible(card, type))).length,
+    [activeCards, selectedTypes],
+  );
 
   const toggleType = (type: QuestionType) => {
     setSelectedTypes((current) =>
@@ -46,7 +86,7 @@ export default function PracticeSetupModal({
 
   const handleStartPractice = () => {
     navigate(`/sessions/${sessionId}/practice`, {
-      state: { questionTypes: selectedTypes },
+      state: { questionTypes: selectedTypes, pool },
     });
     onClose();
   };
@@ -57,9 +97,16 @@ export default function PracticeSetupModal({
 
   const canStart = selectedTypes.length > 0 && questionCount > 0;
 
+  const blockedReason =
+    selectedTypes.length === 0
+      ? 'Pick at least one question type.'
+      : questionCount === 0
+        ? 'No cards in this pool match the selected question types.'
+        : null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 animate-fadeIn">
-      <div className="flex w-[90vw] max-w-md flex-col rounded-3xl border border-hairline bg-canvas animate-slideUp">
+      <div className="flex max-h-[90vh] w-[90vw] max-w-md flex-col rounded-3xl border border-hairline bg-canvas animate-slideUp">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-hairline px-7 py-6">
           <h2 className="m-0 text-headline-md font-medium text-ink">Quick practice</h2>
@@ -73,7 +120,37 @@ export default function PracticeSetupModal({
         </div>
 
         {/* Content */}
-        <div className="space-y-6 px-7 py-7">
+        <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-7 py-7">
+          {/* Pool Section */}
+          <div className="space-y-3">
+            <h3 className="text-body-sm font-semibold text-ink">Cards to practice</h3>
+
+            <div className="flex gap-2">
+              {POOLS.map((option) => {
+                const count = poolCounts[option.value];
+                const disabled = count === 0;
+                const active = pool === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setPool(option.value)}
+                    disabled={disabled}
+                    className={`flex-1 rounded-lg border px-3 py-2 text-body-sm font-medium transition-colors ${
+                      active
+                        ? 'border-primary bg-primary/5 text-primary'
+                        : 'border-hairline bg-surface-card text-ink hover:bg-canvas-soft'
+                    } disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface-card`}
+                  >
+                    <span className="block">{option.label}</span>
+                    <span className="block font-mono text-caption text-muted">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Question Types Section */}
           <div className="space-y-4">
             <h3 className="text-body-sm font-semibold text-ink">Question types</h3>
@@ -127,7 +204,7 @@ export default function PracticeSetupModal({
                   <div className="text-caption text-muted">
                     {hasSynonyms
                       ? 'Find synonyms for words'
-                      : 'No cards in this session have synonyms yet'}
+                      : 'No cards in this pool have synonyms yet'}
                   </div>
                 </div>
               </label>
@@ -136,10 +213,14 @@ export default function PracticeSetupModal({
 
           {/* Question Count */}
           <div className="rounded-lg bg-surface-card p-4">
-            <div className="text-body-sm text-ink">
-              <span className="font-semibold text-primary">{questionCount}</span> question
-              {questionCount !== 1 ? 's' : ''} in this run
-            </div>
+            {blockedReason ? (
+              <div className="text-body-sm text-muted">{blockedReason}</div>
+            ) : (
+              <div className="text-body-sm text-ink">
+                <span className="font-semibold text-primary">{questionCount}</span> question
+                {questionCount !== 1 ? 's' : ''} in this run
+              </div>
+            )}
           </div>
         </div>
 
