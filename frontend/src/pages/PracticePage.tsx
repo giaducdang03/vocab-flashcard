@@ -8,6 +8,7 @@ import PracticeSummary from '../components/session/PracticeSummary';
 import type {
   AnswerResult,
   PracticeAnswer,
+  PracticePool,
   PracticeQuestion,
   PracticeStart,
   QuestionType,
@@ -28,6 +29,9 @@ export default function PracticePage() {
     return types;
   }, [location.state?.questionTypes]);
 
+  // Pool comes from the setup modal; a direct visit practices everything.
+  const pool: PracticePool = (location.state?.pool as PracticePool | undefined) ?? 'all';
+
   const [deck, setDeck] = useState<PracticeStart | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -47,6 +51,7 @@ export default function PracticePage() {
       setError(null);
       const response = await api.post<PracticeStart>(`/sessions/${id}/practice`, {
         question_types: questionTypes,
+        pool,
       });
       setDeck(response.data);
       setCurrentIndex(0);
@@ -65,7 +70,7 @@ export default function PracticePage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     void fetchDeck();
-  }, [id, questionTypes]);
+  }, [id, questionTypes, pool]);
 
   const handleSelect = (optionIndex: number) => {
     if (!deck || finished) {
@@ -118,7 +123,9 @@ export default function PracticePage() {
     return <div className="app-shell center-block">Building practice set…</div>;
   }
 
-  if (!deck || error || deck.questions.length < 4) {
+  // A narrowed pool can legitimately produce fewer than four questions; only
+  // an empty deck is unusable.
+  if (!deck || error || deck.questions.length === 0) {
     return (
       <div className="page-shell">
         <PageHeader />
@@ -153,6 +160,7 @@ export default function PracticePage() {
           durationSeconds={durationSeconds}
           sessionId={id!}
           sessionTitle={deck.session_title}
+          pool={deck.pool}
           onRestart={handleRestart}
         />
       </div>
@@ -185,11 +193,17 @@ export default function PracticePage() {
     <>
       <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--canvas)' }}>
         <PageHeader />
-        <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
-          <Link to={`/sessions/${id}`} className="inline-link">
-            <ArrowLeft size={16} />
-            Exit | {deck.session_title}
-          </Link>
+        <div>
+          <div className="page-toolbar">
+            <Link to={`/sessions/${id}`} className="inline-link quiz-breadcrumb">
+              <span className="breadcrumb-exit">
+                <ArrowLeft size={16} />
+                Exit
+              </span>
+              <span className="breadcrumb-sep">|</span>
+              <span className="breadcrumb-title">{deck.session_title}</span>
+            </Link>
+          </div>
         </div>
       </div>
 
