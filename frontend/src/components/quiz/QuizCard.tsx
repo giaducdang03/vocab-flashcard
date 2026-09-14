@@ -25,7 +25,11 @@ export default function QuizCard({ quiz, onOpen, onDelete, onRetry }: QuizCardPr
       <article className="quiz-card quiz-card--failed">
         <h3 className="quiz-card__title">{quiz.title}</h3>
         <p className="quiz-card__error">{quiz.error_message ?? 'Soạn đề thất bại.'}</p>
-        <button type="button" onClick={() => onRetry(quiz.id)}>
+        <button
+          type="button"
+          className="btn btn-secondary quiz-card__retry"
+          onClick={() => onRetry(quiz.id)}
+        >
           Thử lại
         </button>
       </article>
