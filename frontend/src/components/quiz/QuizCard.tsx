@@ -41,8 +41,8 @@ export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
         </div>
         <div className="quiz-stat">
           <span className="quiz-stat-label">Best</span>
-          <span className="quiz-stat-value">
-            {quiz.best_score !== null ? `${quiz.best_score}/${quiz.question_count}` : '—'}
+          <span className={quiz.best_score !== null ? 'quiz-stat-value quiz-stat-value-best' : 'quiz-stat-value'}>
+            {quiz.best_score !== null ? `${quiz.best_score} / ${quiz.question_count}` : '—'}
           </span>
         </div>
       </div>

@@ -345,6 +345,7 @@ textarea {
   border: 1px solid var(--hairline);
   border-radius: 12px;
   overflow: hidden;
+  background: var(--canvas);
 }
 
 .quiz-stat {
@@ -371,6 +372,43 @@ textarea {
   font-size: 15px;
   font-weight: 700;
   color: var(--ink);
+}
+
+.quiz-stat-value-best {
+  color: var(--success);
+}
+
+.question-count-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preset-button {
+  padding: 10px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: var(--surface-card);
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-button:hover:not(:disabled) {
+  border-color: var(--primary);
+}
+
+.preset-button.active {
+  border-color: var(--primary);
+  background: rgba(168, 51, 0, 0.08);
+  color: var(--primary);
+}
+
+.preset-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .btn {
@@ -555,8 +593,9 @@ textarea {
 }
 
 .progress-box span {
-  font-size: 14px;
-  color: var(--body);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .progress-box-header {
@@ -567,10 +606,10 @@ textarea {
 }
 
 .progress-percent {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 
@@ -586,6 +625,28 @@ textarea {
   color: var(--ink);
   font-weight: 600;
   flex-shrink: 0;
+}
+
+.quiz-breadcrumb {
+  gap: 8px;
+}
+
+.breadcrumb-exit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.breadcrumb-sep {
+  color: var(--hairline-strong);
+  font-weight: 400;
+}
+
+.breadcrumb-title {
+  color: var(--ink);
+  font-weight: 700;
 }
 
 /* Study/Flashcard Styles (converted to Tailwind) */
@@ -886,7 +947,7 @@ textarea {
 .option-list {
   display: grid;
   gap: 12px;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .option-button {
