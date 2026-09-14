@@ -179,3 +179,73 @@ class TestMixingQuestionTypes:
         counts = Counter(question.question_type for question in questions)
         assert counts["synonym"] == 2
         assert counts["en_to_vi"] + counts["vi_to_en"] == 7
+
+
+class TestIsEligibleWithAITypes:
+    def test_ai_types_are_eligible_for_any_card(self):
+        cards = make_pool(6)
+        card_without_synonyms = make_card(10, card_type="collocation")
+
+        assert qg._is_eligible(card_without_synonyms, "cloze")
+        assert qg._is_eligible(card_without_synonyms, "context")
+        assert qg._is_eligible(cards[0], "cloze")
+        assert qg._is_eligible(cards[0], "context")
+
+
+class TestGenerateQuestionsRejectsAITypes:
+    def test_generate_questions_rejects_cloze_type(self):
+        with pytest.raises(ValueError, match="AI question type 'cloze' cannot be generated"):
+            qg.generate_questions(make_pool(8), ["cloze"], 4, rng=random.Random(30))
+
+    def test_generate_questions_rejects_context_type(self):
+        with pytest.raises(ValueError, match="AI question type 'context' cannot be generated"):
+            qg.generate_questions(make_pool(8), ["context"], 4, rng=random.Random(31))
+
+    def test_generate_questions_rejects_mixed_ai_and_algo_types(self):
+        with pytest.raises(ValueError, match="AI question type"):
+            qg.generate_questions(
+                make_pool(8), ["en_to_vi", "cloze"], 4, rng=random.Random(32)
+            )
+
+
+class TestSplitQuestionCount:
+    def test_split_across_all_eligible_types(self):
+        cards = make_pool(12, synonyms_for=set(range(12)))
+
+        distribution = qg.split_question_count(
+            cards, ["en_to_vi", "vi_to_en", "synonym"], 9, rng=random.Random(40)
+        )
+
+        assert sum(distribution.values()) == 9
+        assert distribution["en_to_vi"] > 0
+        assert distribution["vi_to_en"] > 0
+        assert distribution["synonym"] > 0
+
+    def test_split_does_not_exceed_capacity(self):
+        cards = make_pool(6)
+
+        distribution = qg.split_question_count(
+            cards, ["en_to_vi"], 10, rng=random.Random(41)
+        )
+
+        assert distribution["en_to_vi"] == 6
+
+    def test_split_caps_at_total_capacity(self):
+        cards = make_pool(8, synonyms_for={0, 1})
+
+        distribution = qg.split_question_count(
+            cards, ["en_to_vi", "vi_to_en", "synonym"], 50, rng=random.Random(42)
+        )
+
+        # en_to_vi: 8, vi_to_en: 8, synonym: 2, total: 18
+        assert sum(distribution.values()) == 18
+
+    def test_split_with_starved_type(self):
+        cards = make_pool(10, synonyms_for={0})
+
+        distribution = qg.split_question_count(
+            cards, ["en_to_vi", "vi_to_en", "synonym"], 15, rng=random.Random(43)
+        )
+
+        assert distribution["synonym"] == 1
+        assert distribution["en_to_vi"] + distribution["vi_to_en"] == 14
