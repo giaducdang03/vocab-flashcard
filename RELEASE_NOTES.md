@@ -1,131 +1,154 @@
 # Release Notes — VocabFlash
 
-Lịch sử phát hành, mới nhất ở trên cùng.
+Những gì đã thay đổi qua từng phiên bản, mới nhất ở trên cùng.
 
-Định dạng theo [Keep a Changelog](https://keepachangelog.com/). Số phiên bản được đánh theo mốc tính năng; repo hiện chưa gắn git tag tương ứng.
+---
+
+## [1.0.0] — 2026-09-14 · Giao diện mới & Ôn nhanh
+
+Bản 1.0 là lần thay áo lớn nhất của VocabFlash. Toàn bộ giao diện được vẽ lại cho gọn và dễ nhìn hơn, và có thêm **Ôn nhanh** — muốn ôn vài phút thì bấm một cái là chạy, không phải ngồi tạo hẳn một bài quiz.
+
+### Ôn nhanh (Quick Practice)
+
+Trước đây muốn kiểm tra xem mình nhớ được bao nhiêu thì phải tạo quiz: đặt tên, chọn số câu, chọn loại câu hỏi. Giờ mở bộ thẻ bất kỳ và bấm **Practice** là vào luyện ngay.
+
+- **Chọn phần muốn ôn**: tất cả các từ, chỉ những từ **chưa thuộc**, hoặc chỉ những từ **đã thuộc**. Sắp thi thì ôn phần chưa thuộc, muốn giữ trí nhớ thì quét lại phần đã thuộc.
+- Vẫn đủ ba kiểu câu hỏi quen thuộc: Anh → Việt, Việt → Anh, và chọn từ đồng nghĩa.
+- **Biết đúng sai ngay** sau mỗi câu, không phải chờ tới cuối.
+- Cuối buổi có **bảng tổng kết** tách theo từng kiểu câu hỏi, để thấy mình yếu ở dạng nào.
+- **Không ghi vào lịch sử.** Ôn nhanh là để luyện, nên kết quả không được lưu và không ảnh hưởng gì tới điểm số hay thống kê của bạn. Cứ sai thoải mái.
+- Bộ thẻ cần có ít nhất 4 từ mới ôn được.
+
+### Giao diện mới toàn bộ
+
+Tám màn hình chính đều được vẽ lại theo cùng một phong cách, nên đi giữa các trang không còn cảm giác chắp vá:
+
+- **Chữ dễ đọc hơn** — đổi sang bộ font mới, riêng số liệu và phiên âm dùng font đều nét cho dễ dò.
+- **Màu dịu mắt hơn**, đặc biệt khi nhìn lâu.
+- **Thanh điều hướng luôn nằm trên cùng**, kèm chip hiển thị chuỗi ngày học liên tiếp.
+
+### Kho bộ thẻ riêng
+
+Danh sách bộ thẻ giờ có trang riêng thay vì nằm chung với dashboard, nên tìm bộ thẻ cũ nhanh hơn. Mỗi bộ hiển thị ngày tạo và tiến độ học.
+
+### Quản lý thẻ dễ hơn hẳn
+
+Trang chi tiết bộ thẻ được làm lại, chủ yếu để đỡ cực khi bộ thẻ đã nhiều từ:
+
+- **Tìm kiếm** thẻ theo từ khóa.
+- **Lọc nhanh** theo: tất cả, từ vựng, cụm từ, chưa thuộc, đã thuộc — mỗi nhóm hiện sẵn số lượng.
+- **Sắp xếp** theo thứ tự gốc, theo bảng chữ cái, hoặc theo thẻ mới thêm gần đây.
+- **Chọn nhiều thẻ cùng lúc** để đánh dấu đã thuộc / chưa thuộc hoặc xóa hàng loạt, thay vì bấm từng cái.
+- **Danh sách dài tự tải thêm khi cuộn**, không còn phải chờ tải hết mới xem được.
+- Thêm thẻ mới qua cửa sổ riêng, gọn hơn form cũ chen giữa trang.
+
+### Xem lại kết quả quiz rõ hơn
+
+- **Bốn ô số liệu** ngay đầu trang: tổng số câu, số lần làm, điểm cao nhất, điểm trung bình.
+- **Lịch sử làm bài** trình bày lại cho dễ đọc, thay cho bảng cũ.
+- **Thẻ Tiến bộ** — đối chiếu lần làm đầu tiên với lần gần nhất: điểm tăng hay giảm bao nhiêu, và làm nhanh hơn được bao nhiêu giây. Hiện ra khi bạn đã làm từ hai lần trở lên.
+
+### Sửa lỗi
+
+- Vào thẳng đường dẫn trang ôn nhanh không còn bị trắng trang.
+- Không thể bấm trả lời hai lần cho cùng một câu nữa.
+- Đổi bộ lọc trong danh sách thẻ giờ luôn hiển thị đúng kết quả mới.
+- Nút quay lại ở trang chi tiết bộ thẻ giờ về đúng kho bộ thẻ thay vì nhảy về dashboard.
+- Sửa thanh tiến độ bị lệch màu và vỡ layout trên màn hình nhỏ.
+- Sửa thanh điều hướng bị lệch ở trang xem lại bài làm.
+- Thẻ đã thuộc đổi từ tô nền sang viền nhạt, chữ không còn bị chìm.
+- Biểu đồ tiến độ từng bộ thẻ không còn bị cắt mất tên.
 
 ---
 
 ## [0.4.0] — 2026-09-10 · Quiz trắc nghiệm
 
-Bản phát hành lớn nhất từ trước tới nay: VocabFlash không chỉ là công cụ lật thẻ nữa, mà đã có hệ thống **kiểm tra kiến thức** hoàn chỉnh — tự sinh đề trắc nghiệm từ chính bộ thẻ của bạn, chấm điểm và lưu lịch sử.
+Bản lớn nhất từ trước tới nay: VocabFlash không chỉ để lật thẻ nữa. Giờ bạn có thể **tự kiểm tra** — app tự ra đề trắc nghiệm từ chính bộ thẻ của bạn, chấm điểm và lưu lại lịch sử để theo dõi mình tiến bộ tới đâu.
 
-### Thêm mới
+### Tạo bài quiz từ bộ thẻ của bạn
 
-**Bộ sinh câu hỏi** (`app/services/quiz_generator.py`)
+- **Ba kiểu câu hỏi**, mỗi câu 4 đáp án: Anh → Việt, Việt → Anh, và chọn từ đồng nghĩa.
+- **Gộp nhiều bộ thẻ vào một bài quiz** — ôn tổng hợp cả tháng trong một lần làm.
+- **Các bước tạo rõ ràng**: chọn bộ thẻ → chọn kiểu câu hỏi → chọn số câu → đặt tên.
+- **Biết trước ra được tối đa bao nhiêu câu.** App tính sẵn theo số thẻ bạn có, nên không xảy ra cảnh chọn 50 câu rồi mới báo không đủ thẻ.
+- **Đáp án sai được chọn cẩn thận** — không trùng đáp án đúng, không lẫn từ đồng nghĩa của chính từ đang hỏi, nên không có câu nào hai đáp án cùng đúng.
+- Cần ít nhất 4 thẻ để tạo được quiz.
 
-- Ba loại câu hỏi 4 đáp án: `en_to_vi` (Anh → Việt), `vi_to_en` (Việt → Anh), `synonym` (chọn từ đồng nghĩa).
-- `compute_capacity()` — tính trước số câu tối đa mỗi loại có thể sinh từ pool thẻ đã chọn, để wizard hiển thị giới hạn thật thay vì để người dùng đoán.
-- Chọn distractor thông minh: loại trừ không phân biệt hoa thường đáp án đúng, `front_text` của thẻ hiện tại, và toàn bộ synonym còn lại của thẻ đó (với câu synonym); khử trùng lặp trước khi bốc ngẫu nhiên 3 phương án sai.
-- Phân bổ số câu đều cho các loại đã chọn, phần dư rải ngẫu nhiên trong giới hạn capacity.
-- Yêu cầu tối thiểu **4 thẻ** trong pool. Toàn bộ module là pure function, không chạm DB — nên unit test được trọn vẹn.
+### Làm bài và xem lại
 
-**Schema & API**
+- **Biết đúng sai ngay sau mỗi câu**, kèm đáp án đúng, không phải chờ tới cuối bài.
+- **Trang xem lại** phân tích từng câu: đề bài, bạn đã chọn gì, đáp án đúng là gì.
+- **Lịch sử đầy đủ mọi lần làm**: điểm số, thời gian làm bài, ngày nộp — để so xem lần này có khá hơn lần trước không.
+- **Màu riêng cho từng kiểu câu hỏi**, nhìn là biết ngay câu đó thuộc dạng nào.
 
-- 5 bảng mới: `quizzes`, `quiz_source_sessions`, `quiz_questions`, `quiz_attempts`, `quiz_answers` (migration `20260910_add_quiz_tables.py`).
-- Router `/quizzes`: `POST /capacity`, `POST ""`, `GET ""`, `GET /{id}`, `DELETE /{id}`, `POST /{id}/attempts`.
-- Router `/attempts`: `POST /{id}/answers`, `POST /{id}/submit`, `GET /{id}`.
-- Quiz có thể lấy nguồn từ **nhiều session cùng lúc** (quan hệ N:M).
+### Đáng chú ý
 
-**Giao diện**
-
-- **Quiz creation wizard** — chọn session nguồn → chọn loại câu hỏi → xem capacity → chọn số câu (1–100) → đặt tên.
-- **Trang danh sách quiz** (`/quizzes`) với lối vào từ dashboard, hiển thị số lượt làm và điểm cao nhất.
-- **Trang chi tiết quiz** kèm lịch sử toàn bộ lượt làm: điểm, thời gian làm bài, ngày nộp.
-- **Trang làm bài** — phản hồi **ngay sau mỗi câu**: chọn xong là biết đúng/sai và đâu là đáp án đúng.
-- **Trang review** — bảng phân tích từng câu: đề bài, lựa chọn của bạn, đáp án đúng, kèm thanh tiến độ.
-- **Badge màu theo loại câu hỏi** để phân biệt nhanh en→vi / vi→en / synonym.
-- Badge **NEW** trên dashboard giới thiệu tính năng quiz.
-
-### Thiết kế đáng chú ý
-
-- **Câu hỏi là snapshot.** Prompt và options được lưu nguyên văn tại thời điểm tạo quiz; `card_id` chỉ giữ để review liên kết ngược lại thẻ, với `ON DELETE SET NULL`. Sửa hoặc xóa thẻ gốc không làm hỏng quiz và bài làm cũ.
-- **Không rò rỉ đáp án.** Payload gửi về client khi đang làm bài (`QuestionOut`) cố ý không chứa `correct_index`. Đáp án đúng chỉ trả về sau khi đã chọn.
-- **Chống trả lời lại.** Ràng buộc unique `(attempt_id, question_id)` ở tầng DB, cộng kiểm tra 409 ở tầng API; nộp bài rồi thì không ghi thêm câu trả lời nào.
-
-### Thay đổi khác
-
-- Tách `PageHeader` dùng chung cho mọi trang, logo bấm được để về dashboard.
-- Thêm favicon.
-- Tên session trong trang quiz trở thành link bấm được.
-- Tinh chỉnh typography: giảm cỡ chữ tiêu đề quiz ở trang danh sách, trang chi tiết và trang review; in đậm tiêu đề quiz.
-- Thêm thanh tiến độ ở trang review.
+- **Sửa hay xóa thẻ không làm hỏng quiz cũ.** Câu hỏi được chụp lại nguyên văn lúc tạo quiz, nên bài làm cũ và điểm số của bạn vẫn còn nguyên kể cả khi bạn dọn dẹp lại bộ thẻ sau đó.
+- **Không lộ đáp án.** Đáp án đúng chỉ được gửi về sau khi bạn đã chọn, nên không có cách nào xem trộm trước.
+- **Không sửa được câu đã trả lời.** Mỗi câu chỉ chấm một lần, và nộp bài rồi thì không sửa thêm được nữa — để điểm số phản ánh đúng thực lực.
 
 ### Sửa lỗi
 
-- Nút **Review** trong lịch sử làm bài giờ điều hướng đúng chỗ (trước đó không có handler).
-- Sửa lỗi TypeScript ở `PageHeader` khi `onLogout` không được truyền vào.
-- Badge NEW được đặt ra ngoài nút để không đè lên chữ.
-
-### Kiểm thử
-
-- `tests/test_quiz_generator.py` — phủ tính capacity, sinh cả ba loại câu, loại trừ distractor, phân bổ đa loại.
-- `smoke_test_quiz.py` — smoke test end-to-end toàn bộ luồng tạo quiz → làm bài → nộp → review.
+- Nút **Review** trong lịch sử làm bài giờ bấm vào là mở đúng bài cần xem.
+- Nhãn **NEW** trên dashboard không còn đè lên chữ.
+- Tinh chỉnh cỡ chữ tiêu đề quiz ở các trang cho dễ đọc hơn.
+- Tên bộ thẻ trong trang quiz giờ bấm được để mở thẳng bộ thẻ đó.
 
 ---
 
 ## [0.3.0] — 2026-09-09 · Dashboard thống kê & theo dõi tiến độ
 
-Trả lời câu hỏi "mình học được bao nhiêu rồi?" bằng dữ liệu thật thay vì cảm giác.
+Trả lời câu hỏi "mình học được bao nhiêu rồi?" bằng số liệu thật, thay vì đoán theo cảm giác.
 
-### Thêm mới
+### Bảng thống kê mới
 
-**Nền tảng dữ liệu**
+- **Bốn ô số liệu chính**: tổng số từ, số từ đã thuộc, mức độ thành thạo (%), và chuỗi ngày học liên tiếp.
+- **Biểu đồ số từ học mỗi ngày**, xem theo **7 ngày** hoặc **30 ngày**.
+- **Biểu đồ tiến độ từng bộ thẻ** — thấy ngay bộ nào đang bỏ dở.
+- Dashboard tách làm hai khu rõ ràng: phần thống kê và phần bộ thẻ của bạn.
+- Lời chào theo tên và menu tài khoản ở góc trên.
 
-- Bảng `card_learn_events` — log **bất biến** ghi lại mọi lần `learned` / `unlearned` kèm timestamp (migration `20260909_add_card_learn_events.py`, có backfill từ cột `is_learned` đang có).
-- Mọi thao tác ghi `is_learned` đều đi qua `apply_learned_state()`, chỉ sinh event khi trạng thái thực sự đổi — gọi lặp cùng giá trị không tạo event trùng.
-- `GET /stats/daily` trả về chuỗi số từ học theo ngày + streak hiện tại, nhận `days` (1–365) và `tz_offset_minutes` (−840…840).
+### Đáng chú ý
 
-**Giao diện**
-
-- Dashboard tách thành hai khu vực rõ ràng: **Dashboard** (thống kê) và **Your sessions**.
-- **KPI tiles**: Total words, Learned, Mastery (%), Streak (ngày).
-- **Biểu đồ Daily learned words** với nút chuyển khung **7 ngày / 30 ngày** (Chart.js).
-- **Biểu đồ Per-session progress** — tiến độ từng bộ thẻ.
-- Lời chào cá nhân hóa "Welcome back" trên dashboard.
-- Menu người dùng dạng dropdown với tên đầy đủ và nút đăng xuất.
-- Footer kèm thông tin bản quyền.
-
-### Thiết kế đáng chú ý
-
-- **Gom ngày theo múi giờ local.** Client gửi `tz_offset_minutes`, backend cộng offset trước khi `date()` — nên "hôm nay" của người dùng đúng là hôm nay, không phải theo UTC.
-- **Streak không gãy giữa ngày.** Nếu hôm nay chưa học từ nào, streak được tính lùi từ hôm qua thay vì tụt về 0.
-- **Đếm theo thẻ riêng biệt.** Số từ học mỗi ngày dùng `COUNT(DISTINCT card_id)`, nên bật/tắt learned nhiều lần trong ngày không thổi phồng con số.
-- Dùng `db.add()` thay vì `card.learn_events.append()`: trong async SQLAlchemy, chạm vào collection của object persistent sẽ trigger lazy load và ném `MissingGreenlet`.
-
-### Thay đổi khác
-
-- Chuyển toàn bộ UI copy của biểu đồ dashboard sang tiếng Anh cho nhất quán.
-- Tạo session chuyển từ form inline sang modal.
-- Tự cuộn lên đầu trang khi điều hướng sang chi tiết session hoặc chế độ học.
+- **Chuỗi ngày học tính theo giờ của bạn**, không theo giờ quốc tế — nên "hôm nay" đúng là hôm nay, không bị lệch ngày.
+- **Chuỗi ngày không gãy oan giữa ngày.** Hôm nay chưa kịp học thì chuỗi vẫn giữ nguyên chứ không tụt về 0 ngay từ sáng — bạn vẫn còn cả ngày để học.
+- **Học đi học lại một từ trong ngày không làm phồng số liệu.** Mỗi từ chỉ được đếm một lần mỗi ngày, nên biểu đồ phản ánh đúng khối lượng thật.
 
 ### Sửa lỗi
 
-- Tiêu đề session dài trong biểu đồ tiến độ giờ được rút gọn còn 25 ký tự kèm tooltip khi hover, thay vì phá vỡ layout.
-- Sửa căn chỉnh nút icon (flexbox) và trạng thái hover.
-- Sửa căn lề nút đóng modal.
+- Tên bộ thẻ quá dài không còn làm vỡ biểu đồ tiến độ — giờ được rút gọn, đưa chuột vào để xem đầy đủ.
+- Sửa lỗi hiển thị tiến độ học trên dashboard.
+- Sửa căn chỉnh các nút biểu tượng và nút đóng cửa sổ.
+- Chuyển tạo bộ thẻ từ form giữa trang sang cửa sổ riêng.
+- Tự cuộn lên đầu trang khi mở bộ thẻ hoặc vào chế độ học.
 
 ---
 
 ## [0.2.0] — 2026-09-08 · Phát âm & tùy biến chế độ học
 
-### Thêm mới
+### Nghe phát âm
 
-- **Phát âm trong chế độ học** qua Web Speech API — bấm loa để nghe từ.
-  - Chọn giọng **nam / nữ** và giọng vùng **en-US / en-GB**, lưu trong `localStorage`.
-  - Fallback theo thứ tự ưu tiên: giữ accent → giữ gender → voice tiếng Anh bất kỳ; kèm toast báo khi không khớp chính xác (ví dụ máy chỉ có giọng nữ UK trong khi bạn chọn nam UK).
-- **Tùy biến hiển thị thẻ** — menu *Show on card* bật/tắt riêng `phonetic`, `synonyms`, `example`. Lưu trong `localStorage`.
-- **Shuffle** thứ tự thẻ (Fisher–Yates), bấm lại để trộn lại.
-- **Copy Prompt** trong modal import — sinh sẵn prompt tiếng Việt để nhờ AI tạo nội dung CSV đúng format; prompt tự điều chỉnh theo lựa chọn chỉ vocab / chỉ collocation / cả hai, có synonyms hay không.
-- **Tải template CSV** (`GET /cards/template/download`) với ví dụ sẵn cho cả vocab và collocation.
+- **Bấm biểu tượng loa để nghe từ** ngay trong chế độ học.
+- Chọn **giọng nam hoặc nữ**, và **giọng Anh-Mỹ hoặc Anh-Anh**. Lựa chọn được nhớ cho những lần sau.
+- Nếu máy bạn không có sẵn đúng giọng đó, app sẽ dùng giọng gần nhất và **báo cho bạn biết** thay vì lặng lẽ đọc bằng giọng khác.
+
+### Tùy biến thẻ học
+
+- **Chọn hiện gì trên thẻ** — bật/tắt riêng phiên âm, từ đồng nghĩa và câu ví dụ, tùy bạn muốn thử thách tới mức nào.
+- **Trộn thẻ** để thứ tự không lặp lại, bấm lại để trộn tiếp.
+
+### Nhập từ dễ hơn
+
+- **Nút Copy Prompt** — tạo sẵn một đoạn yêu cầu để bạn nhờ AI soạn nội dung đúng định dạng, khỏi phải gõ tay từng từ. Đoạn yêu cầu tự đổi theo việc bạn muốn tạo từ vựng, cụm từ hay cả hai.
+- **Tải file mẫu** có sẵn ví dụ cho cả hai loại thẻ, để biết cần điền những cột gì.
 
 ### Sửa lỗi
 
-- Sửa lỗi khớp giới tính giọng đọc — trước đó chọn "nam" vẫn có thể ra giọng nữ mà không báo gì.
-- Sửa bug preview và copy trong modal import.
-- Sửa layout modal import bị vỡ khi hệ điều hành đặt display scaling cao.
+- Chọn giọng nam giờ ra đúng giọng nam — trước đó vẫn có thể ra giọng nữ mà không báo gì.
+- Sửa lỗi xem trước và sao chép trong cửa sổ nhập từ.
+- Sửa cửa sổ nhập từ bị vỡ layout trên máy đặt cỡ hiển thị lớn.
 - Sửa hiển thị tiến độ học trên dashboard.
-- Copy prompt có đường lui bằng `document.execCommand` khi trang không chạy trong secure context (Clipboard API không khả dụng).
+- Nút sao chép giờ vẫn hoạt động trên các trình duyệt không cho phép truy cập clipboard trực tiếp.
 
 ---
 
@@ -133,52 +156,36 @@ Trả lời câu hỏi "mình học được bao nhiêu rồi?" bằng dữ li�
 
 MVP hoàn chỉnh theo [vocab-flashcard-spec.md](vocab-flashcard-spec.md).
 
-### Thêm mới
+### Tài khoản
 
-**Xác thực**
-- Đăng ký / đăng nhập bằng email + mật khẩu (argon2), JWT hết hạn sau 24 giờ.
-- `GET /auth/me`, `ProtectedRoute`, axios interceptor tự gắn token.
+- Đăng ký và đăng nhập bằng email, dữ liệu học của bạn được giữ riêng.
 
-**Sessions & cards**
-- CRUD session đầy đủ, xóa cascade sang cards và synonyms.
-- CRUD card với hai loại: `vocab` (phiên âm IPA + synonyms) và `collocation`.
-- Toggle `is_learned` với optimistic update.
-- `GET /sessions/{id}` eager load cards + synonyms trong một lượt.
+### Bộ thẻ và từ vựng
 
-**Chế độ học**
-- Lật thẻ 3D bằng CSS `preserve-3d` + `rotateY`.
-- Mặt trước: từ + phiên âm. Mặt sau: nghĩa, synonyms (hover xem phiên âm), câu ví dụ.
-- Bộ lọc `Tất cả` / `Chưa học` / `Đã học`; thanh tiến độ `{learned}/{total}`.
-- Phím tắt: `Space` lật thẻ, `←` `→` chuyển thẻ.
+- **Tạo bộ thẻ** theo chủ đề, bài học hay bất cứ cách nào bạn muốn sắp xếp.
+- **Hai loại thẻ**: từ vựng (kèm phiên âm và từ đồng nghĩa) và cụm từ.
+- **Đánh dấu đã thuộc** cho từng từ, đánh dấu tới đâu hiện ngay tới đó.
 
-**Import**
-- `POST /sessions/{id}/import` nhận `.xlsx` (openpyxl) và `.csv`.
-- Modal kéo-thả kèm preview 5 dòng đầu trước khi xác nhận.
-- Parse synonyms dạng `word /phiên âm/; word2 /phiên âm/`.
-- Tự suy `card_type` khi file không có cột này.
-- CSV đọc bằng `utf-8-sig` để chấp nhận BOM do Excel sinh ra.
+### Chế độ học
 
-**Hạ tầng**
-- Docker Compose: postgres 16 + backend FastAPI + frontend static + nginx gateway (port 3000).
-- Compose production riêng (`docker-compose.prod.yml`, gateway port 9990, không expose db/backend/frontend) — xem [DEPLOYMENT.md](DEPLOYMENT.md).
-- Alembic migration chạy tự động khi container backend khởi động.
+- **Thẻ lật hai mặt** — mặt trước là từ và phiên âm, mặt sau là nghĩa, từ đồng nghĩa và câu ví dụ.
+- **Lọc theo tình trạng**: tất cả, chưa thuộc, hoặc đã thuộc.
+- **Thanh tiến độ** hiện số từ đã thuộc trên tổng số.
+- **Phím tắt**: `Space` để lật thẻ, `←` `→` để chuyển thẻ — học liền tay không cần chuột.
+
+### Nhập từ hàng loạt
+
+- **Nhập từ file Excel hoặc CSV**, kéo thả file vào là được.
+- **Xem trước 5 dòng đầu** trước khi nhập, tránh nhập nhầm cả file.
+- Tự nhận biết loại thẻ khi file không ghi rõ, và đọc được file Excel xuất ra mà không lỗi font.
 
 ---
 
-## Việc cần làm trước khi lên production
+## Đang ấp ủ
 
-Những mục dưới đây **chưa** được xử lý và nên làm trước khi mở ra ngoài:
+Những thứ chưa có nhưng nằm trong kế hoạch:
 
-- [ ] Đổi `JWT_SECRET` và `POSTGRES_PASSWORD` — giá trị mặc định đang nằm trong repo.
-- [ ] Siết CORS: `app/main.py` hiện để `allow_origins=["*"]`.
-- [ ] Bật HTTPS (chứng chỉ đặt ở `ssl/`, đã có sẵn cấu hình trong nginx production).
-- [ ] Gắn git tag cho từng phiên bản.
-
-## Hướng phát triển
-
-Ý tưởng chưa triển khai:
-
-- Tích hợp dictionary API để tự điền phiên âm IPA (hiện đang nhập thủ công).
-- Lặp lại ngắt quãng (spaced repetition) dựa trên dữ liệu `card_learn_events` đã có sẵn.
-- Quiz nhập tay đáp án thay vì chỉ trắc nghiệm.
-- Xuất session ra file.
+- **Tự điền phiên âm** — thay vì phải gõ tay từng từ như hiện tại.
+- **Ôn theo lịch thông minh** — app nhắc bạn ôn lại đúng lúc sắp quên, dựa trên lịch sử học đã ghi sẵn.
+- **Câu hỏi tự gõ đáp án**, không chỉ chọn A/B/C/D.
+- **Xuất bộ thẻ ra file** để sao lưu hoặc chia sẻ.
