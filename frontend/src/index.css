@@ -21,6 +21,8 @@
   --success: #1f8a65;
   --error: #cf2d56;
   --hairline-strong: #cfcdc4;
+  --ai-accent: #7c3aed;
+  --ai-accent-soft: #f3eeff;
 }
 
 html {
@@ -179,6 +181,7 @@ textarea {
 }
 
 .hero-card {
+  position: relative;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid var(--hairline);
   border-radius: 20px;
@@ -187,6 +190,35 @@ textarea {
   align-items: end;
   justify-content: space-between;
   gap: 24px;
+}
+
+.hero-card--ai,
+.ai-frame {
+  position: relative;
+  border-color: var(--ai-accent) !important;
+  background: linear-gradient(180deg, var(--ai-accent-soft), rgba(255, 255, 255, 0.72) 60%);
+}
+
+.ai-corner-chip {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 12px 0 8px 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ai-accent), #a78bfa);
+  box-shadow: 0 1px 3px rgb(124 58 237 / 25%);
+}
+
+.ai-corner-chip svg {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .session-create-form {
@@ -1109,10 +1141,83 @@ textarea {
   opacity: 0.7;
 }
 
+.ai-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ai-accent), #a78bfa);
+  box-shadow: 0 1px 3px rgb(124 58 237 / 25%);
+}
+
+.ai-chip svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.choice-row--ai {
+  border-left: 3px solid var(--ai-accent);
+  background: var(--ai-accent-soft);
+}
+
+.choice-row--ai.selected {
+  border-color: var(--ai-accent);
+  background: var(--ai-accent-soft);
+}
+
 .ai-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   margin-top: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.65rem;
+  background: var(--ai-accent-soft);
+  border: 1px solid #e4d9fb;
+  color: var(--ink);
   font-size: 0.8125rem;
-  opacity: 0.75;
+  line-height: 1.5;
+}
+
+.ai-note svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: var(--ai-accent);
+}
+
+.quiz-card--pending .quiz-card__note {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ai-accent);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.quiz-card--pending .quiz-card__note svg {
+  animation: ai-sparkle-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ai-sparkle-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.85);
+  }
+}
+
+.quiz-card--pending .quiz-card__skeleton {
+  background: linear-gradient(90deg, transparent, rgb(124 58 237 / 12%), transparent);
+  background-size: 200% 100%;
 }
 
 .cloze-blank {
@@ -1125,12 +1230,19 @@ textarea {
 
 .answer-explanation,
 .review-explanation {
+  position: relative;
+  display: block;
   margin-top: 0.75rem;
   font-size: 0.875rem;
   line-height: 1.6;
-  opacity: 0.85;
+  color: var(--body);
+  border: 1px solid var(--ai-accent);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--ai-accent-soft), rgba(255, 255, 255, 0.72) 60%);
+  padding: 28px 14px 12px;
 }
 
-.review-explanation .type-chip {
-  margin: 0 0 0.35rem;
+.review-explanation p,
+.answer-explanation p {
+  margin: 0;
 }

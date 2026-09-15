@@ -62,6 +62,7 @@ class QuestionOut(BaseModel):
     prompt_phonetic: str | None = None
     options: list[str]
     position: int
+    source: str = "algo"
 
 
 class AttemptStartOut(BaseModel):

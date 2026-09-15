@@ -59,8 +59,8 @@ export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   en_to_vi: 'English → Vietnamese',
   vi_to_en: 'Vietnamese → English',
   synonym: 'Synonym',
-  cloze: 'Điền từ vào chỗ trống',
-  context: 'Chọn từ theo ngữ cảnh',
+  cloze: 'Fill in the blank',
+  context: 'Choose the word in context',
 };
 
 export type Quiz = {
@@ -117,6 +117,7 @@ export type QuizQuestion = {
   prompt_phonetic?: string | null;
   options: string[];
   position: number;
+  source?: string;
 };
 
 export type AttemptStart = {

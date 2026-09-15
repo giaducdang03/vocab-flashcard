@@ -511,6 +511,7 @@ async def start_attempt(
             prompt_phonetic=qq.prompt_phonetic,
             options=options,
             position=qq.position,
+            source=qq.source,
         )
         questions.append(question)
 

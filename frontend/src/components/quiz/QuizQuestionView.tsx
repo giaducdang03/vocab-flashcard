@@ -1,6 +1,6 @@
 import type { AnswerResult, QuizQuestion } from '../../types';
 import { QUESTION_TYPE_LABELS } from '../../types';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 
 type QuizQuestionViewProps = {
   question: QuizQuestion;
@@ -38,7 +38,7 @@ export default function QuizQuestionView({
     return (
       <>
         {before}
-        <span className="cloze-blank" aria-label="chỗ trống" />
+        <span className="cloze-blank" aria-label="blank" />
         {rest.join('___')}
       </>
     );
@@ -82,8 +82,14 @@ export default function QuizQuestionView({
         </div>
 
         {/* Hero card with question */}
-        <section className="hero-card">
-          <div style={{ flex: 1 }}>
+        <section className={question.source === 'ai' ? 'hero-card hero-card--ai' : 'hero-card'}>
+          {question.source === 'ai' && (
+            <span className="ai-corner-chip" title="AI-generated question; may contain mistakes.">
+              <Sparkles size={12} />
+              AI-generated
+            </span>
+          )}
+          <div style={{ flex: 1, paddingTop: question.source === 'ai' ? '20px' : 0 }}>
             <span className="badge">{QUESTION_TYPE_LABELS[question.question_type]}</span>
             <h1 className="quiz-prompt">
               {renderPrompt(question.prompt_text, question.question_type)}
@@ -142,7 +148,13 @@ export default function QuizQuestionView({
               </button>
             </div>
             {result.explanation && (
-              <p className="answer-explanation">{result.explanation}</p>
+              <div className="answer-explanation">
+                <span className="ai-corner-chip" title="AI-generated content may contain mistakes.">
+                  <Sparkles size={12} />
+                  AI-generated
+                </span>
+                <p>{result.explanation}</p>
+              </div>
             )}
           </>
         )}
