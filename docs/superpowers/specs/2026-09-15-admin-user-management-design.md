@@ -208,6 +208,7 @@ AdminUserDetail = AdminUserRow + {
   activity_7d: [{ date: 'YYYY-MM-DD', count: int }]   # đúng 7 phần tử, cũ → mới, ngày UTC,
                                                       # count = learn events + quiz answers
   ai_usage: { used, limit, resets_at|null }
+  ai_system_default_limit: int                        # AI_DAILY_QUIZ_LIMIT, cho nút "Use system default (N)"
   recent_ai_quizzes: [{ id, title, created_at, status, ai_question_count, requested_count }]  # tối đa 10, mới nhất trước
 }
 ```
@@ -292,6 +293,12 @@ Component con đặt trong `frontend/src/components/admin/`
 ## 9. Kiểm thử
 
 Theo TDD.
+
+> **Cập nhật 2026-09-15 (quyết định khi lên plan):** chỉ làm **unit test** cho logic
+> thuần (policy, quy tắc role, thống kê, schema). **Không** dựng hạ tầng test API
+> (mục 9.1 và 9.3 bị bỏ, không thêm `httpx`/`conftest.py`). Router được giữ mỏng,
+> dồn logic vào hàm thuần để unit test phủ được; luồng HTTP kiểm bằng import app +
+> chạy tay. Mọi lệnh Python chạy qua `backend/.venv`.
 
 ### 9.1 Hạ tầng test API (mới)
 
