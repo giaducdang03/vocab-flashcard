@@ -3,15 +3,15 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: vocabflash
-      POSTGRES_PASSWORD: changeme_secret_123
-      POSTGRES_DB: vocabflash
+      POSTGRES_USER: ${POSTGRES_USER:-vocabflash}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-vocabflash}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vocabflash -d vocabflash"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vocabflash} -d ${POSTGRES_DB:-vocabflash}"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -20,10 +20,13 @@ services:
     build: ./backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+asyncpg://vocabflash:changeme_secret_123@db:5432/vocabflash
-      JWT_SECRET: change_me_super_secret_key
-      JWT_ALGORITHM: HS256
-      JWT_EXPIRE_MINUTES: 1440
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-vocabflash}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-vocabflash}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-1440}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_BASE_URL: ${AI_BASE_URL:-https://api.openai.com/v1}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
     depends_on:
       db:
         condition: service_healthy
@@ -34,7 +37,7 @@ services:
     build: ./frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: http://localhost:3000/api
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api}
 
   nginx:
     image: nginx:alpine
