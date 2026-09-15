@@ -117,6 +117,7 @@ docker-compose -f docker-compose.prod.yml restart
 4. ✅ Setup firewall rules to only allow port 80/443
 5. ✅ Use environment variables for sensitive data
 6. ✅ Keep Docker images updated
+7. ✅ Restrict CORS — `app/main.py` currently allows every origin (`allow_origins=["*"]`)
 
 ## Troubleshooting
 
