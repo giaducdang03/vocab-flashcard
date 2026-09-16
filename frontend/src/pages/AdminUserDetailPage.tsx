@@ -168,6 +168,20 @@ export default function AdminUserDetailPage() {
                       Joined {formatDate(detail.created_at)}
                     </span>
                   </p>
+                  {(detail.email_verified || detail.has_google) && (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                      {detail.email_verified && (
+                        <span className="rounded-full border border-hairline px-2 py-0.5 text-caption-uppercase uppercase text-muted">
+                          Verified
+                        </span>
+                      )}
+                      {detail.has_google && (
+                        <span className="rounded-full border border-hairline px-2 py-0.5 text-caption-uppercase uppercase text-muted">
+                          Google
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <button
