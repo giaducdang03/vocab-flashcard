@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.models.user import User
+from app.services.admin_access import ADMIN_ROLE, should_promote
 
 # Use argon2 for password hashing - supports unlimited password length and more secure than bcrypt
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
@@ -33,3 +34,12 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> User
     if not user or not verify_password(password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     return user
+
+
+async def sync_config_admin(db: AsyncSession, user: User) -> None:
+    """Nâng user lên admin nếu email nằm trong ADMIN_EMAILS."""
+    if not should_promote(user.email, user.role):
+        return
+    user.role = ADMIN_ROLE
+    await db.commit()
+    await db.refresh(user)

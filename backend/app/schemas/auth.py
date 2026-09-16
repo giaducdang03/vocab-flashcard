@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -16,6 +18,7 @@ class UserOut(BaseModel):
     id: str
     email: EmailStr
     display_name: str
+    role: Literal["user", "admin"] = "user"
 
     class Config:
         from_attributes = True

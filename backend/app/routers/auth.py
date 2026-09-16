@@ -6,7 +6,8 @@ from app.database import get_db
 from app.deps import get_current_user
 from app.models.user import User
 from app.schemas.auth import AuthResponse, LoginRequest, RegisterRequest, UserOut
-from app.services.auth import authenticate_user, create_access_token, hash_password
+from app.services.admin_access import ADMIN_ROLE, USER_ROLE, is_config_admin
+from app.services.auth import authenticate_user, create_access_token, hash_password, sync_config_admin
 
 router = APIRouter()
 
@@ -21,6 +22,7 @@ async def register_user(payload: RegisterRequest, db: AsyncSession = Depends(get
         email=str(payload.email),
         password_hash=hash_password(payload.password),
         display_name=payload.display_name,
+        role=ADMIN_ROLE if is_config_admin(str(payload.email)) else USER_ROLE,
     )
     db.add(user)
     await db.commit()
@@ -33,6 +35,7 @@ async def register_user(payload: RegisterRequest, db: AsyncSession = Depends(get
 @router.post("/login", response_model=AuthResponse)
 async def login_user(payload: LoginRequest, db: AsyncSession = Depends(get_db)) -> AuthResponse:
     user = await authenticate_user(db, str(payload.email), payload.password)
+    await sync_config_admin(db, user)
     token = create_access_token(user.id)
     return AuthResponse(user=UserOut.model_validate(user), token=token)
 
