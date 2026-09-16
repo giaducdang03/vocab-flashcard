@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CalendarDays, Check, CircleCheck, Mail } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Check, ChevronDown, CircleCheck, CircleUserRound, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
 import GeneralInfoCard from '../components/admin/GeneralInfoCard';
@@ -130,43 +130,56 @@ export default function AdminUserDetailPage() {
             <span className="text-caption-uppercase uppercase">User Management</span>
           </nav>
 
-          <section className="mt-6 flex flex-wrap items-start justify-between gap-6 border-b border-hairline pb-6">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-headline-lg text-ink">{detail.display_name}</h1>
-                <select
-                  value={draft.role}
-                  disabled={roleLocked || saving}
-                  title={roleLockReason}
-                  onChange={(event) => setDraft({ ...draft, role: event.target.value as UserRole })}
-                  className="h-9 rounded-lg border border-hairline-strong bg-white px-3 text-body-sm text-ink disabled:cursor-not-allowed disabled:bg-canvas-soft disabled:text-muted"
-                >
-                  <option value="user">Role: User</option>
-                  <option value="admin">Role: Admin</option>
-                </select>
-                {detail.is_config_admin && (
-                  <span className="rounded-full border border-hairline px-2.5 py-0.5 text-caption-uppercase uppercase text-muted">
-                    Managed by config
-                  </span>
-                )}
+          <section className="mt-6 rounded-xl border border-hairline bg-surface-card p-6 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-6">
+              <div className="flex min-w-0 items-start gap-4 sm:items-center">
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-muted ring-2 ring-hairline">
+                  <CircleUserRound size={36} strokeWidth={1.5} />
+                </span>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="text-headline-md text-ink">{detail.display_name}</h1>
+                    <div className="relative inline-flex items-center">
+                      <select
+                        value={draft.role}
+                        disabled={roleLocked || saving}
+                        title={roleLockReason}
+                        onChange={(event) => setDraft({ ...draft, role: event.target.value as UserRole })}
+                        className="h-8 appearance-none rounded-full border border-hairline-soft bg-surface-container py-0 pl-3 pr-7 text-body-sm text-ink disabled:cursor-not-allowed disabled:bg-canvas-soft disabled:text-muted"
+                      >
+                        <option value="user">Role: User</option>
+                        <option value="admin">Role: Admin</option>
+                      </select>
+                      <ChevronDown size={14} className="pointer-events-none absolute right-2.5 text-muted" />
+                    </div>
+                    {detail.is_config_admin && (
+                      <span className="rounded-full border border-hairline px-2.5 py-0.5 text-caption-uppercase uppercase text-muted">
+                        Managed by config
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm text-muted">
+                    <span className="flex items-center gap-1.5">
+                      <Mail size={14} />
+                      {detail.email}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <CalendarDays size={14} />
+                      Joined {formatDate(detail.created_at)}
+                    </span>
+                  </p>
+                </div>
               </div>
-              <p className="mt-2 flex flex-wrap items-center gap-2 text-body-sm text-body">
-                <Mail size={14} />
-                {detail.email}
-                <span className="text-muted">•</span>
-                <CalendarDays size={14} />
-                Joined {formatDate(detail.created_at)}
-              </p>
+              <button
+                type="button"
+                className="btn btn-primary h-9 shrink-0 px-3.5 text-body-sm"
+                disabled={!dirty || saving || !rateLimitValid}
+                onClick={handleSave}
+              >
+                <Check size={14} />
+                {saving ? 'Saving…' : 'Save Changes'}
+              </button>
             </div>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={!dirty || saving || !rateLimitValid}
-              onClick={handleSave}
-            >
-              <Check size={16} />
-              {saving ? 'Saving…' : 'Save Changes'}
-            </button>
           </section>
 
           {saveError && (

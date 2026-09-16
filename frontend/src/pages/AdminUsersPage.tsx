@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { RotateCcw, Search, Users } from 'lucide-react';
+import { ChevronDown, RotateCcw, Search, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
 import AdminKpiCard from '../components/admin/AdminKpiCard';
@@ -13,7 +13,7 @@ import type { AdminOverview, AdminUserList, AiFilter } from '../types/admin';
 
 const PAGE_SIZE = 20;
 const SELECT_CLASS =
-  'h-[42px] rounded-lg border border-hairline-strong bg-white px-3 text-body-sm text-ink focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink';
+  'h-[42px] appearance-none rounded-lg border border-hairline-strong bg-white py-0 pl-3 pr-8 text-body-sm text-ink focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink';
 
 export default function AdminUsersPage() {
   const navigate = useNavigate();
@@ -131,24 +131,30 @@ export default function AdminUsersPage() {
               className="h-[42px] w-full rounded-lg border border-hairline-strong bg-white pl-9 pr-3 text-body-sm text-ink focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink"
             />
           </label>
-          <select
-            value={role}
-            onChange={(event) => updateParams({ role: event.target.value, page: '' })}
-            className={SELECT_CLASS}
-          >
-            <option value="">All Roles</option>
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
-          </select>
-          <select
-            value={ai}
-            onChange={(event) => updateParams({ ai: event.target.value, page: '' })}
-            className={SELECT_CLASS}
-          >
-            <option value="">All AI Access</option>
-            <option value="enabled">AI Enabled</option>
-            <option value="disabled">AI Disabled</option>
-          </select>
+          <div className="relative inline-flex items-center">
+            <select
+              value={role}
+              onChange={(event) => updateParams({ role: event.target.value, page: '' })}
+              className={SELECT_CLASS}
+            >
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
+            </select>
+            <ChevronDown size={14} className="pointer-events-none absolute right-3 text-muted" />
+          </div>
+          <div className="relative inline-flex items-center">
+            <select
+              value={ai}
+              onChange={(event) => updateParams({ ai: event.target.value, page: '' })}
+              className={SELECT_CLASS}
+            >
+              <option value="">All AI Access</option>
+              <option value="enabled">AI Enabled</option>
+              <option value="disabled">AI Disabled</option>
+            </select>
+            <ChevronDown size={14} className="pointer-events-none absolute right-3 text-muted" />
+          </div>
           <button type="button" className="btn btn-secondary" onClick={resetFilters} title="Reset filters">
             <RotateCcw size={15} />
             Reset
