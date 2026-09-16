@@ -5,6 +5,7 @@ export type User = {
   email: string;
   display_name: string;
   role: UserRole;
+  email_verified: boolean;
 };
 
 export type Session = {
