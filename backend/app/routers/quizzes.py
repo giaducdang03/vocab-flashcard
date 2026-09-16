@@ -6,7 +6,6 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.config import settings
 from app.database import AsyncSessionLocal, get_db
 from app.deps import get_current_user
 from app.models.card import Card, Synonym
@@ -25,6 +24,7 @@ from app.schemas.quiz import (
     QuizStatusOut,
     AttemptSummary,
 )
+from app.services import ai_policy
 from app.services.ai import ai_available, get_provider
 from app.services.ai.quiz_ai import generate_ai_questions
 from app.services.quiz_generator import (
@@ -206,18 +206,6 @@ def _add_questions(db: AsyncSession, quiz_id: str, generated, start_position: in
     return position
 
 
-async def _count_ai_quizzes_today(db: AsyncSession, user_id: str) -> int:
-    since = datetime.now(timezone.utc) - timedelta(hours=24)
-    result = await db.execute(
-        select(func.count(Quiz.id)).where(
-            Quiz.user_id == user_id,
-            Quiz.uses_ai.is_(True),
-            Quiz.created_at >= since,
-        )
-    )
-    return result.scalar() or 0
-
-
 async def _expire_if_stale(db: AsyncSession, quiz: Quiz) -> None:
     """Chuyển quiz 'pending' quá hạn sang 'failed'."""
     if quiz.status != "pending":
@@ -233,18 +221,6 @@ async def _expire_if_stale(db: AsyncSession, quiz: Quiz) -> None:
     quiz.status = "failed"
     quiz.error_message = "Quá trình soạn đề bị gián đoạn. Hãy thử lại."
     await db.commit()
-
-
-async def _enforce_daily_ai_limit(db: AsyncSession, user_id: str) -> None:
-    """Chặn khi user đã dùng hết lượt sinh đề AI trong 24 giờ qua."""
-    if await _count_ai_quizzes_today(db, user_id) >= settings.AI_DAILY_QUIZ_LIMIT:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail=(
-                f"Bạn đã dùng hết {settings.AI_DAILY_QUIZ_LIMIT} lượt soạn đề bằng AI "
-                "trong 24 giờ qua"
-            ),
-        )
 
 
 async def run_ai_generation(quiz_id: str) -> None:
@@ -334,7 +310,7 @@ async def create_quiz(
         )
 
     if ai_types:
-        await _enforce_daily_ai_limit(db, current_user.id)
+        await ai_policy.enforce_can_create(db, current_user.id)
 
     split = split_question_count(cards, payload.question_types, payload.question_count)
     algo_count = sum(split.get(question_type, 0) for question_type in algo_types)
@@ -400,11 +376,13 @@ async def get_ai_status(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> AiStatusOut:
-    """Cho frontend biết có nên hiện hai dạng câu hỏi AI hay không."""
+    """Cho frontend biết có nên hiện hai dạng câu hỏi AI cho user này hay không."""
+    policy = await ai_policy.get_policy(db, current_user.id)
     return AiStatusOut(
         available=ai_available(),
-        daily_limit=settings.AI_DAILY_QUIZ_LIMIT,
-        used_today=await _count_ai_quizzes_today(db, current_user.id),
+        enabled_for_user=policy.enabled,
+        daily_limit=policy.limit,
+        used_today=await ai_policy.count_ai_quizzes_24h(db, current_user.id),
     )
 
 
@@ -574,6 +552,7 @@ async def retry_quiz(
             detail="Đề này đã thử lại quá 3 lần",
         )
 
+    await ai_policy.enforce_enabled(db, current_user.id)
     quiz.retry_count += 1
     quiz.status = "pending"
     quiz.error_message = None

@@ -121,6 +121,7 @@ class AttemptReviewOut(BaseModel):
 
 class AiStatusOut(BaseModel):
     available: bool
+    enabled_for_user: bool
     daily_limit: int
     used_today: int
 
