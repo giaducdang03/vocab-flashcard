@@ -23,8 +23,8 @@ def _row(ai_enabled: bool = True, daily_limit: int | None = None) -> UserAiPolic
 
 
 class TestResolvePolicy:
-    def test_missing_row_uses_system_defaults(self):
-        assert resolve_policy(None, 20) == EffectivePolicy(enabled=True, limit=20, is_custom=False)
+    def test_missing_row_defaults_to_disabled(self):
+        assert resolve_policy(None, 20) == EffectivePolicy(enabled=False, limit=20, is_custom=False)
 
     def test_null_limit_falls_back_to_system_default(self):
         policy = resolve_policy(_row(ai_enabled=False, daily_limit=None), 20)
@@ -96,9 +96,9 @@ class TestApplyPolicyUpdate:
         assert row.updated_by == "admin"
         assert row.updated_at == self.NOW
 
-    def test_new_row_without_ai_enabled_defaults_to_enabled(self):
+    def test_new_row_without_ai_enabled_defaults_to_disabled(self):
         row, _ = apply_policy_update(None, "u1", updated_by="admin", daily_limit=7, set_limit=True, now=self.NOW)
-        assert row.ai_enabled is True
+        assert row.ai_enabled is False
         assert row.daily_limit == 7
 
     def test_limit_untouched_when_set_limit_is_false(self):
