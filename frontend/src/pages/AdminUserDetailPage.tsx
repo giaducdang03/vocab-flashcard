@@ -27,6 +27,7 @@ export default function AdminUserDetailPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [rateLimitValid, setRateLimitValid] = useState(true);
 
   useEffect(() => {
     if (!id) return;
@@ -157,7 +158,12 @@ export default function AdminUserDetailPage() {
                 Joined {formatDate(detail.created_at)}
               </p>
             </div>
-            <button type="button" className="btn btn-primary" disabled={!dirty || saving} onClick={handleSave}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={!dirty || saving || !rateLimitValid}
+              onClick={handleSave}
+            >
               <Check size={16} />
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
@@ -204,6 +210,7 @@ export default function AdminUserDetailPage() {
               systemDefault={detail.ai_system_default_limit}
               aiEnabled={draft.ai_enabled}
               onChange={(limit) => setDraft({ ...draft, ai_daily_limit: limit })}
+              onValidityChange={setRateLimitValid}
             />
           </div>
 

@@ -13,21 +13,23 @@ const HEADERS = ['User', 'Role', 'Joined', 'Sessions & Cards', 'Quizzes & Accura
 function AiCell({ row }: { row: AdminUserRow }) {
   if (!row.ai_enabled) {
     return (
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-muted">
-        <Ban size={14} />
+      <div className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-hairline-soft px-2 py-0.5 text-caption-uppercase text-[11px] font-semibold text-muted">
+        <Ban size={13} />
         Disabled
-      </span>
+      </div>
     );
   }
 
+  const limitLabel = `${row.ai_used_24h} / ${row.ai_daily_limit}`;
+
   return (
-    <div className="flex flex-col">
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-success">
-        <Zap size={14} />
+    <div className="flex flex-nowrap items-center gap-2.5 whitespace-nowrap">
+      <div className="inline-flex shrink-0 items-center gap-1 rounded-full bg-learned-surface px-2 py-0.5 text-caption-uppercase text-[11px] font-semibold text-secondary">
+        <Zap size={13} />
         Enabled
-      </span>
-      <span className="font-mono text-code-sm text-muted">
-        {row.ai_used_24h} / {row.ai_daily_limit} · 24h{row.ai_limit_is_custom ? '' : ' (default)'}
+      </div>
+      <span className="inline-flex shrink-0 items-center gap-1 rounded bg-surface-container px-2 py-0.5 font-mono text-[12px] font-medium text-ink">
+        {limitLabel}
       </span>
     </div>
   );
@@ -36,7 +38,7 @@ function AiCell({ row }: { row: AdminUserRow }) {
 export default function UserTable({ rows, onOpen }: UserTableProps) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface-card">
-      <table className="w-full min-w-[880px] text-left">
+      <table className="w-full min-w-[960px] text-left">
         <thead className="border-b border-hairline bg-canvas-soft">
           <tr>
             {HEADERS.map((header) => (
