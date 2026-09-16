@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { CircleUser, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { CircleUser, LogOut, ShieldCheck } from 'lucide-react';
 import type { User } from '../types';
 
 type UserMenuProps = {
@@ -8,6 +9,7 @@ type UserMenuProps = {
 };
 
 export default function UserMenu({ user, onLogout }: UserMenuProps) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +51,19 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
             <p className="text-xs text-muted">{user.email}</p>
           </div>
 
+          {user.role === 'admin' && (
+            <button
+              type="button"
+              className="w-full px-4 py-3 flex items-center gap-3 text-sm hover:bg-canvas text-ink transition-colors border-b border-hairline"
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/admin/users');
+              }}
+            >
+              <ShieldCheck size={16} />
+              <span>User Management</span>
+            </button>
+          )}
           <button
             type="button"
             className="w-full px-4 py-3 flex items-center gap-3 text-sm hover:bg-canvas text-ink transition-colors"

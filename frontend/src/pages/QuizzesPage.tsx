@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ClipboardList, Plus } from 'lucide-react';
 import { api } from '../api/client';
+import { apiErrorMessage } from '../api/errors';
 import { useAuth } from '../contexts/AuthContext';
 import type { Quiz, Session } from '../types';
 import QuizCard from '../components/quiz/QuizCard';
@@ -16,6 +17,7 @@ export default function QuizzesPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const fetchQuizzes = async () => {
     setLoading(true);
@@ -57,10 +59,15 @@ export default function QuizzesPage() {
   });
 
   const handleRetry = async (quizId: string) => {
-    const response = await api.post<Quiz>(`/quizzes/${quizId}/retry`);
-    setQuizzes((current) =>
-      current.map((quiz) => (quiz.id === quizId ? response.data : quiz)),
-    );
+    setNotice(null);
+    try {
+      const response = await api.post<Quiz>(`/quizzes/${quizId}/retry`);
+      setQuizzes((current) =>
+        current.map((quiz) => (quiz.id === quizId ? response.data : quiz)),
+      );
+    } catch (err) {
+      setNotice(apiErrorMessage(err, 'Could not retry this quiz.'));
+    }
   };
 
   const handleDeleteQuiz = async (quizId: string) => {
@@ -106,6 +113,15 @@ export default function QuizzesPage() {
             Create quiz
           </button>
         </section>
+
+        {notice && (
+          <div
+            role="alert"
+            className="mb-4 rounded-lg border border-error/30 bg-white px-4 py-3 text-body-sm text-error"
+          >
+            {notice}
+          </div>
+        )}
 
         {loading ? (
           <div className="empty-state">Loading quizzes…</div>

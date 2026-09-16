@@ -1,7 +1,10 @@
+export type UserRole = 'user' | 'admin';
+
 export type User = {
   id: string;
   email: string;
   display_name: string;
+  role: UserRole;
 };
 
 export type Session = {
@@ -81,6 +84,7 @@ export type Quiz = {
 
 export interface AiStatus {
   available: boolean;
+  enabled_for_user: boolean;
   daily_limit: number;
   used_today: number;
 }
