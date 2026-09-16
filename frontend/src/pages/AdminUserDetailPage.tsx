@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Check, CircleCheck, Mail } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
-import AdminKpiCard from '../components/admin/AdminKpiCard';
+import GeneralInfoCard from '../components/admin/GeneralInfoCard';
 import ActivityBars from '../components/admin/ActivityBars';
 import AiAccessCard from '../components/admin/AiAccessCard';
 import RateLimitCard from '../components/admin/RateLimitCard';
@@ -175,47 +175,54 @@ export default function AdminUserDetailPage() {
             </div>
           )}
 
-          <section className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <AdminKpiCard label="Study Sessions" value={plural(detail.session_count, 'session')} caption="created" />
-            <AdminKpiCard
-              label="Flashcards"
-              value={plural(detail.card_count, 'card')}
-              caption={`${detail.learned_cards} learned (${formatPercent(learnedPercent)})`}
-            />
-            <AdminKpiCard
-              label="Quizzes Taken"
-              value={String(detail.quizzes_taken)}
-              caption={`${formatPercent(detail.avg_accuracy)} avg accuracy`}
-            />
-            <AdminKpiCard
-              label="Last Active"
-              value={detail.last_active_at ? formatDate(detail.last_active_at) : 'Never'}
-              caption={detail.last_active_at ? formatDateTime(detail.last_active_at) : 'no activity yet'}
-            />
-          </section>
+          <div className="mt-6 grid gap-6 lg:grid-cols-12">
+            <div className="flex flex-col gap-6 lg:col-span-5">
+              <GeneralInfoCard
+                displayName={detail.display_name}
+                email={detail.email}
+                stats={[
+                  { label: 'Study Sessions', value: plural(detail.session_count, 'session'), caption: 'created' },
+                  {
+                    label: 'Flashcards',
+                    value: plural(detail.card_count, 'card'),
+                    caption: `${detail.learned_cards} learned (${formatPercent(learnedPercent)})`,
+                    tone: 'success',
+                  },
+                  {
+                    label: 'Quizzes Taken',
+                    value: String(detail.quizzes_taken),
+                    caption: `${formatPercent(detail.avg_accuracy)} avg accuracy`,
+                    tone: 'success',
+                  },
+                  {
+                    label: 'Last Active',
+                    value: detail.last_active_at ? formatDate(detail.last_active_at) : 'Never',
+                    caption: detail.last_active_at ? formatDateTime(detail.last_active_at) : 'no activity yet',
+                  },
+                ]}
+              />
 
-          <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <ActivityBars days={detail.activity_7d} />
-            <AiAccessCard
-              enabled={draft.ai_enabled}
-              disabled={saving}
-              onChange={(enabled) => setDraft({ ...draft, ai_enabled: enabled })}
-            />
-          </div>
+              <ActivityBars days={detail.activity_7d} />
+            </div>
 
-          <div className="mt-6">
-            <RateLimitCard
-              usage={detail.ai_usage}
-              value={draft.ai_daily_limit}
-              systemDefault={detail.ai_system_default_limit}
-              aiEnabled={draft.ai_enabled}
-              onChange={(limit) => setDraft({ ...draft, ai_daily_limit: limit })}
-              onValidityChange={setRateLimitValid}
-            />
-          </div>
+            <div className="flex flex-col gap-6 lg:col-span-7">
+              <AiAccessCard
+                enabled={draft.ai_enabled}
+                disabled={saving}
+                onChange={(enabled) => setDraft({ ...draft, ai_enabled: enabled })}
+              />
 
-          <div className="mt-6">
-            <RecentAiQuizzes quizzes={detail.recent_ai_quizzes} />
+              <RateLimitCard
+                usage={detail.ai_usage}
+                value={draft.ai_daily_limit}
+                systemDefault={detail.ai_system_default_limit}
+                aiEnabled={draft.ai_enabled}
+                onChange={(limit) => setDraft({ ...draft, ai_daily_limit: limit })}
+                onValidityChange={setRateLimitValid}
+              />
+
+              <RecentAiQuizzes quizzes={detail.recent_ai_quizzes} />
+            </div>
           </div>
         </>,
       )}
