@@ -668,7 +668,7 @@ export default function StudyPage() {
                         <p className={`${EYEBROW_CLASS} mb-2`}>Synonyms</p>
                         <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
                           {currentCard.synonyms.map((synonym) => (
-                            <div key={synonym.id} className="rounded-xl bg-canvas-soft p-3">
+                            <div key={synonym.id} className="rounded-xl bg-surface-container p-3">
                               <p className="text-title-sm text-ink">{synonym.word}</p>
                               {synonym.phonetic && (
                                 <p className="mt-1 font-mono text-code-sm text-muted-soft" title={synonym.phonetic}>
@@ -682,7 +682,7 @@ export default function StudyPage() {
                     )}
 
                     {displayConfig.example && currentCard.example && (
-                      <div className="rounded-xl bg-canvas-soft p-space-md">
+                      <div className="rounded-xl bg-surface-container p-space-md">
                         <p className={`${EYEBROW_CLASS} mb-2`}>Example</p>
                         <p className="text-body-md leading-relaxed text-ink">{currentCard.example}</p>
                       </div>
