@@ -9,7 +9,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlencode
 
+import httpx
+from jose import jwt
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.config import settings
+from app.models.user import User
+from app.services.admin_access import ADMIN_ROLE, USER_ROLE, is_config_admin
 
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
@@ -80,3 +87,67 @@ def decide_link_action(by_sub, by_email) -> str:
     if by_email is not None:
         return "link"
     return "create"
+
+
+async def exchange_code_for_claims(code: str) -> dict:
+    """Đổi authorization code lấy claims của id_token.
+
+    Không verify chữ ký: token lấy trực tiếp từ token endpoint của Google qua
+    TLS trong cùng request, không qua trung gian nào (khuyến nghị của Google
+    cho server-side code flow).
+    """
+    data = {
+        "code": code,
+        "client_id": settings.GOOGLE_CLIENT_ID,
+        "client_secret": settings.GOOGLE_CLIENT_SECRET,
+        "redirect_uri": settings.GOOGLE_REDIRECT_URI,
+        "grant_type": "authorization_code",
+    }
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.post(GOOGLE_TOKEN_URL, data=data)
+        response.raise_for_status()
+        payload = response.json()
+        id_token = payload.get("id_token")
+        if not id_token:
+            raise GoogleAuthError("exchange_failed")
+        claims = jwt.get_unverified_claims(id_token)
+    except GoogleAuthError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - mọi lỗi mạng/parse đều quy về exchange_failed
+        raise GoogleAuthError("exchange_failed") from exc
+    return claims
+
+
+async def resolve_user(db: AsyncSession, profile: GoogleProfile) -> User:
+    """Thực thi quyết định của decide_link_action, commit, trả User."""
+    by_sub_result = await db.execute(select(User).where(User.google_sub == profile.sub))
+    by_sub = by_sub_result.scalar_one_or_none()
+
+    by_email_result = await db.execute(select(User).where(User.email == profile.email))
+    by_email = by_email_result.scalar_one_or_none()
+
+    action = decide_link_action(by_sub, by_email)
+
+    if action == "login":
+        return by_sub
+
+    if action == "link":
+        by_email.google_sub = profile.sub
+        by_email.email_verified = True
+        await db.commit()
+        await db.refresh(by_email)
+        return by_email
+
+    user = User(
+        email=profile.email,
+        google_sub=profile.sub,
+        email_verified=True,
+        password_hash=None,
+        display_name=profile.display_name,
+        role=ADMIN_ROLE if is_config_admin(profile.email) else USER_ROLE,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return user

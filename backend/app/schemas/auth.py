@@ -19,6 +19,7 @@ class UserOut(BaseModel):
     email: EmailStr
     display_name: str
     role: Literal["user", "admin"] = "user"
+    email_verified: bool = False
 
     class Config:
         from_attributes = True
@@ -27,3 +28,11 @@ class UserOut(BaseModel):
 class AuthResponse(BaseModel):
     user: UserOut
     token: str
+
+
+class GoogleExchangeRequest(BaseModel):
+    code: str
+
+
+class ProvidersOut(BaseModel):
+    google: bool
