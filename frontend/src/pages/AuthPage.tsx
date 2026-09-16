@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { api, API_BASE_URL } from '../api/client';
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, register, isLoading, user } = useAuth();
   const [isRegister, setIsRegister] = useState(false);
   const [form, setForm] = useState({
@@ -14,12 +16,35 @@ export default function AuthPage() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [googleEnabled, setGoogleEnabled] = useState(false);
 
   useEffect(() => {
     if (user) {
       navigate('/', { replace: true });
     }
   }, [navigate, user]);
+
+  useEffect(() => {
+    // Check if Google sign-in is enabled
+    (async () => {
+      try {
+        const response = await api.get('/auth/providers');
+        setGoogleEnabled(response.data.includes('google'));
+      } catch {
+        // If error, just don't show Google button
+        setGoogleEnabled(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    // Display auth error from OAuth callback redirect
+    if (location.state?.authError) {
+      setError(location.state.authError);
+      // Clear the state to prevent showing the error again on page refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   if (isLoading) {
     return <div className="app-shell center-block">Loading...</div>;
@@ -136,6 +161,21 @@ export default function AuthPage() {
               <ArrowRight size={16} />
             </button>
           </form>
+
+          {googleEnabled && (
+            <>
+              <div className="divider-text">or</div>
+              <button
+                type="button"
+                className="btn btn-secondary wide"
+                onClick={() => {
+                  window.location.assign(`${API_BASE_URL}/auth/google/login`);
+                }}
+              >
+                Sign in with Google
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
