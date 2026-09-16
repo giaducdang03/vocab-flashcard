@@ -42,6 +42,33 @@ docker-compose -f docker-compose.prod.yml logs -f
 docker-compose -f docker-compose.prod.yml down
 ```
 
+## Google OAuth Setup
+
+To enable Google login:
+
+1. **Create a Google OAuth 2.0 Application**:
+   - Visit [Google Cloud Console](https://console.cloud.google.com)
+   - Create a new project
+   - Enable Google+ API
+   - Go to Credentials → Create OAuth 2.0 Client ID (Web application)
+
+2. **Configure Redirect URI**:
+   - In Google Cloud Console, add this redirect URI: `https://your-domain.com/auth/callback`
+   - EXACT match required (scheme, domain, path)
+   - For development: `http://localhost:3000/auth/callback`
+
+3. **Set Environment Variables**:
+   - Copy `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from Google Cloud Console
+   - Set `GOOGLE_REDIRECT_URI` to match your Google setup
+   - `FRONTEND_URL` should point to your frontend (default: `http://localhost:5173`)
+
+4. **Run Migration**:
+   ```bash
+   docker compose -f docker-compose.prod.yml exec backend alembic upgrade head
+   ```
+
+Users can now log in with their Google account. First-time Google login creates a new account with `email_verified=true` and no password.
+
 ## Admin Access
 
 Admins manage users at `/admin/users` (open the user menu → **User Management**).
