@@ -117,6 +117,8 @@ def _to_row(row) -> AdminUserRow:
         role=user.role,
         created_at=user.created_at,
         is_config_admin=is_config_admin(user.email),
+        email_verified=user.email_verified,
+        has_google=user.google_sub is not None,
         session_count=int(row.session_count),
         card_count=int(row.card_count),
         quizzes_taken=int(row.quizzes_taken),
