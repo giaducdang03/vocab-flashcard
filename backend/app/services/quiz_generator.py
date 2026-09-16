@@ -9,6 +9,7 @@ from random import Random
 from typing import Any
 
 QUESTION_TYPES: tuple[str, str, str] = ("en_to_vi", "vi_to_en", "synonym")
+AI_QUESTION_TYPES: tuple[str, str] = ("cloze", "context")
 
 # One correct answer plus three distractors means a question needs four
 # distinct cards to draw from.
@@ -27,9 +28,13 @@ class GeneratedQuestion:
     prompt_phonetic: str | None
     options: list[str]
     correct_index: int
+    explanation: str | None = None
+    source: str = "algo"
 
 
 def _is_eligible(card: Any, question_type: str) -> bool:
+    if question_type in AI_QUESTION_TYPES:
+        return True
     if question_type == "synonym":
         return card.card_type == "vocab" and len(card.synonyms) > 0
     return True
@@ -166,6 +171,33 @@ def _distribute(
     return distribution
 
 
+def split_question_count(
+    cards: Sequence[Any],
+    question_types: Sequence[str],
+    question_count: int,
+    rng: Random | None = None,
+) -> dict[str, int]:
+    """Split a question count across types based on capacity.
+
+    Args:
+        cards: Pool of cards to calculate capacity from
+        question_types: List of question types
+        question_count: Total number of questions to split
+        rng: Random number generator (default: use module-level Random())
+
+    Returns:
+        Dict mapping question_type to number of questions to generate
+    """
+    if rng is None:
+        rng = Random()
+
+    capacity = compute_capacity(cards, question_types)
+    total_capacity = sum(capacity.values())
+    actual_question_count = min(question_count, total_capacity)
+
+    return _distribute(actual_question_count, capacity, rng)
+
+
 def generate_questions(
     cards: Sequence[Any],
     question_types: Sequence[str],
@@ -195,6 +227,11 @@ def generate_questions(
 
     if not question_types:
         raise ValueError("Select at least one question type")
+
+    # Check for AI types (which should never go through this function)
+    for question_type in question_types:
+        if question_type in AI_QUESTION_TYPES:
+            raise ValueError(f"AI question type '{question_type}' cannot be generated through this function")
 
     # Calculate capacity for each type
     capacity = compute_capacity(cards, question_types)

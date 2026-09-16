@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-QuestionType = Literal["en_to_vi", "vi_to_en", "synonym"]
+QuestionType = Literal["en_to_vi", "vi_to_en", "synonym", "cloze", "context"]
 
 
 class CapacityRequest(BaseModel):
@@ -34,6 +34,10 @@ class QuizListItem(BaseModel):
     best_score: int | None = None
     last_attempt_at: datetime | None = None
     created_at: datetime
+    status: str = "ready"
+    uses_ai: bool = False
+    error_message: str | None = None
+    ai_question_count: int = 0
 
 
 class AttemptSummary(BaseModel):
@@ -58,6 +62,7 @@ class QuestionOut(BaseModel):
     prompt_phonetic: str | None = None
     options: list[str]
     position: int
+    source: str = "algo"
 
 
 class AttemptStartOut(BaseModel):
@@ -75,6 +80,8 @@ class AnswerSubmitRequest(BaseModel):
 class AnswerSubmitResponse(BaseModel):
     is_correct: bool
     correct_index: int
+    # Chỉ câu do AI soạn mới có. Chỉ lộ ra SAU khi người học đã trả lời.
+    explanation: str | None = None
 
 
 class AttemptSubmitResponse(BaseModel):
@@ -97,6 +104,8 @@ class ReviewQuestionOut(BaseModel):
     selected_index: int | None = None
     is_correct: bool
     card_id: str | None = None
+    explanation: str | None = None
+    source: str = "algo"
 
 
 class AttemptReviewOut(BaseModel):
@@ -108,3 +117,16 @@ class AttemptReviewOut(BaseModel):
     duration_seconds: int | None = None
     submitted_at: datetime
     questions: list[ReviewQuestionOut]
+
+
+class AiStatusOut(BaseModel):
+    available: bool
+    enabled_for_user: bool
+    daily_limit: int
+    used_today: int
+
+
+class QuizStatusOut(BaseModel):
+    status: str
+    question_count: int
+    error_message: str | None = None

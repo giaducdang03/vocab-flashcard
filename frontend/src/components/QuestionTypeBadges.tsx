@@ -10,6 +10,8 @@ const typeColors: Record<QuestionType, { bg: string; text: string }> = {
   en_to_vi: { bg: 'bg-blue-50', text: 'text-blue-700' },
   vi_to_en: { bg: 'bg-purple-50', text: 'text-purple-700' },
   synonym: { bg: 'bg-orange-50', text: 'text-orange-700' },
+  cloze: { bg: 'bg-emerald-50', text: 'text-emerald-700' },
+  context: { bg: 'bg-pink-50', text: 'text-pink-700' },
 };
 
 export default function QuestionTypeBadges({ types, variant = 'inline' }: QuestionTypeBadgesProps) {

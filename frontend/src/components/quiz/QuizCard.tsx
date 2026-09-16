@@ -1,4 +1,4 @@
-import { ArrowRight, Trash2 } from 'lucide-react';
+import { ArrowRight, Sparkles, Trash2 } from 'lucide-react';
 import type { Quiz } from '../../types';
 import QuestionTypeBadges from '../QuestionTypeBadges';
 
@@ -6,11 +6,54 @@ type QuizCardProps = {
   quiz: Quiz;
   onOpen: () => void;
   onDelete: () => void;
+  onRetry: (quizId: string) => void;
 };
 
-export default function QuizCard({ quiz, onOpen, onDelete }: QuizCardProps) {
+export default function QuizCard({ quiz, onOpen, onDelete, onRetry }: QuizCardProps) {
+  if (quiz.status === 'pending') {
+    return (
+      <article className="quiz-card quiz-card--pending ai-frame">
+        <h3 className="quiz-card__title">{quiz.title}</h3>
+        <p className="quiz-card__note">
+          <Sparkles size={14} />
+          AI is generating the quiz…
+        </p>
+        <div className="quiz-card__skeleton" />
+      </article>
+    );
+  }
+
+  if (quiz.status === 'failed') {
+    return (
+      <article className="quiz-card quiz-card--failed">
+        <h3 className="quiz-card__title">{quiz.title}</h3>
+        <p className="quiz-card__error">{quiz.error_message ?? 'Quiz generation failed.'}</p>
+        <button
+          type="button"
+          className="btn btn-secondary quiz-card__retry"
+          onClick={() => onRetry(quiz.id)}
+        >
+          Retry
+        </button>
+      </article>
+    );
+  }
+
   return (
-    <article className="bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4">
+    <article
+      className={
+        quiz.uses_ai
+          ? 'ai-frame border rounded-2xl p-5 flex flex-col gap-4'
+          : 'bg-white border border-hairline rounded-2xl p-5 flex flex-col gap-4'
+      }
+      style={quiz.uses_ai ? { paddingTop: '28px' } : undefined}
+    >
+      {quiz.uses_ai && (
+        <span className="ai-corner-chip" title="Contains AI-generated questions; may contain mistakes.">
+          <Sparkles size={12} />
+          AI-generated
+        </span>
+      )}
       {/* Header: title + delete icon-button */}
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-lg font-bold letter-spacing-tight text-ink flex-1">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, FolderOpen, Play } from 'lucide-react';
+import { ArrowLeft, FolderOpen, Play, Sparkles } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -130,7 +130,16 @@ export default function QuizDetailPage() {
               ))}
             </div>
 
-            <h1 className="text-display-hero tracking-tight text-ink max-sm:text-headline-lg">
+            <h1 className="text-display-hero tracking-tight text-ink max-sm:text-headline-lg flex items-center gap-3 flex-wrap">
+              {quiz.uses_ai && (
+                <span
+                  className="ai-chip"
+                  style={{ marginLeft: 0, padding: '0.5rem' }}
+                  title="Contains AI-generated questions; may contain mistakes."
+                >
+                  <Sparkles size={20} />
+                </span>
+              )}
               {quiz.title}
             </h1>
           </div>

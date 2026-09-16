@@ -36,6 +36,8 @@ export default function PracticeSummary({
     en_to_vi: { correct: 0, total: 0 },
     vi_to_en: { correct: 0, total: 0 },
     synonym: { correct: 0, total: 0 },
+    cloze: { correct: 0, total: 0 },
+    context: { correct: 0, total: 0 },
   };
 
   answers.forEach((answer) => {

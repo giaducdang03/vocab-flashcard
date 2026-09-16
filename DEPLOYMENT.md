@@ -42,6 +42,19 @@ docker-compose -f docker-compose.prod.yml logs -f
 docker-compose -f docker-compose.prod.yml down
 ```
 
+## Admin Access
+
+Admins manage users at `/admin/users` (open the user menu → **User Management**).
+
+1. Set `ADMIN_EMAILS` in `.env` to a comma-separated list, e.g. `ADMIN_EMAILS=you@example.com`.
+2. Restart the backend and register or log in with that email — the account becomes an admin.
+3. Apply the database migration if the container does not run it automatically:
+   `docker compose -f docker-compose.prod.yml exec backend alembic upgrade head`
+
+Admins listed in `ADMIN_EMAILS` cannot be demoted from the UI. `AI_DAILY_QUIZ_LIMIT`
+is the default number of AI quizzes per user per rolling 24 hours; admins can
+override it or disable AI for individual users.
+
 ## Architecture
 
 ```
