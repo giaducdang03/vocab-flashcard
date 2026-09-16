@@ -1,6 +1,6 @@
 import type { AnswerResult, QuizQuestion } from '../../types';
 import { QUESTION_TYPE_LABELS } from '../../types';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 
 type QuizQuestionViewProps = {
   question: QuizQuestion;
@@ -27,6 +27,22 @@ export default function QuizQuestionView({
 }: QuizQuestionViewProps) {
   const progressPercent = ((index + 1) / total) * 100;
   const hasResult = result !== null;
+
+  const renderPrompt = (text: string, questionType: string) => {
+    if (questionType !== 'cloze' || !text.includes('___')) {
+      return text;
+    }
+
+    const [before, ...rest] = text.split('___');
+
+    return (
+      <>
+        {before}
+        <span className="cloze-blank" aria-label="blank" />
+        {rest.join('___')}
+      </>
+    );
+  };
 
   const getOptionButtonClass = (optionIndex: number): string => {
     const baseClass = 'option-button';
@@ -66,10 +82,18 @@ export default function QuizQuestionView({
         </div>
 
         {/* Hero card with question */}
-        <section className="hero-card">
-          <div style={{ flex: 1 }}>
+        <section className={question.source === 'ai' ? 'hero-card hero-card--ai' : 'hero-card'}>
+          {question.source === 'ai' && (
+            <span className="ai-corner-chip" title="AI-generated question; may contain mistakes.">
+              <Sparkles size={12} />
+              AI-generated
+            </span>
+          )}
+          <div style={{ flex: 1, paddingTop: question.source === 'ai' ? '20px' : 0 }}>
             <span className="badge">{QUESTION_TYPE_LABELS[question.question_type]}</span>
-            <h1 className="quiz-prompt">{question.prompt_text}</h1>
+            <h1 className="quiz-prompt">
+              {renderPrompt(question.prompt_text, question.question_type)}
+            </h1>
             {question.prompt_phonetic && (
               <p className="quiz-prompt-phonetic">{question.prompt_phonetic}</p>
             )}
@@ -100,28 +124,39 @@ export default function QuizQuestionView({
 
         {/* Feedback and Next button */}
         {hasResult && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '16px',
-              paddingTop: '8px',
-            }}
-          >
-            <span
+          <>
+            <div
               style={{
-                fontSize: '16px',
-                fontWeight: 500,
-                color: result.is_correct ? 'var(--success)' : 'var(--error)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '16px',
+                paddingTop: '8px',
               }}
             >
-              {result.is_correct ? 'Correct!' : 'Not quite.'}
-            </span>
-            <button type="button" className="btn btn-primary" onClick={onNext}>
-              {isLast ? 'Finish quiz' : 'Next question'}
-            </button>
-          </div>
+              <span
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 500,
+                  color: result.is_correct ? 'var(--success)' : 'var(--error)',
+                }}
+              >
+                {result.is_correct ? 'Correct!' : 'Not quite.'}
+              </span>
+              <button type="button" className="btn btn-primary" onClick={onNext}>
+                {isLast ? 'Finish quiz' : 'Next question'}
+              </button>
+            </div>
+            {result.explanation && (
+              <div className="answer-explanation">
+                <span className="ai-corner-chip" title="AI-generated content may contain mistakes.">
+                  <Sparkles size={12} />
+                  AI-generated
+                </span>
+                <p>{result.explanation}</p>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

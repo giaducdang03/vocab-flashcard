@@ -10,6 +10,8 @@ import QuizDetailPage from './pages/QuizDetailPage';
 import TakeQuizPage from './pages/TakeQuizPage';
 import AttemptReviewPage from './pages/AttemptReviewPage';
 import PracticePage from './pages/PracticePage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import AdminUserDetailPage from './pages/AdminUserDetailPage';
 import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -21,6 +23,24 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="app-shell center-block">Loading…</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role !== 'admin') {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -102,6 +122,22 @@ function AppRoutes() {
           <ProtectedRoute>
             <AttemptReviewPage />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <AdminRoute>
+            <AdminUsersPage />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/users/:id"
+        element={
+          <AdminRoute>
+            <AdminUserDetailPage />
+          </AdminRoute>
         }
       />
     </Routes>

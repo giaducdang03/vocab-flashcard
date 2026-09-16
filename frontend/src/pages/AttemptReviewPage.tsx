@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft, CheckCircle2, RotateCcw, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, RotateCcw, Sparkles, XCircle } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
@@ -202,6 +202,17 @@ export default function AttemptReviewPage() {
                       {selectedAnswer}
                     </span>
                   </p>
+                  {question.explanation && (
+                    <div className="review-explanation">
+                      {question.source === 'ai' && (
+                        <span className="ai-corner-chip" title="AI-generated content may contain mistakes.">
+                          <Sparkles size={12} />
+                          AI-generated
+                        </span>
+                      )}
+                      <p>{question.explanation}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             );

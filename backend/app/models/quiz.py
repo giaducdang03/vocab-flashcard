@@ -16,6 +16,12 @@ class Quiz(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     # Comma-separated question type codes, e.g. "en_to_vi,synonym".
     question_types: Mapped[str] = mapped_column(String(100), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="ready")
+    uses_ai: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ai_question_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    requested_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
@@ -64,6 +70,8 @@ class QuizQuestion(Base):
     options: Mapped[str] = mapped_column(Text, nullable=False)
     correct_index: Mapped[int] = mapped_column(Integer, nullable=False)
     position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    source: Mapped[str] = mapped_column(String(10), nullable=False, default="algo")
+    explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     quiz: Mapped[Quiz] = relationship(back_populates="questions")
 

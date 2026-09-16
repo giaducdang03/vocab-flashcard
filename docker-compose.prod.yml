@@ -24,6 +24,8 @@ services:
       JWT_SECRET: change_me_super_secret_key
       JWT_ALGORITHM: HS256
       JWT_EXPIRE_MINUTES: 1440
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-}
+      AI_DAILY_QUIZ_LIMIT: ${AI_DAILY_QUIZ_LIMIT:-20}
     depends_on:
       db:
         condition: service_healthy

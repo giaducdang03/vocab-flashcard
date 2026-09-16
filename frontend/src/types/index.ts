@@ -1,7 +1,10 @@
+export type UserRole = 'user' | 'admin';
+
 export type User = {
   id: string;
   email: string;
   display_name: string;
+  role: UserRole;
 };
 
 export type Session = {
@@ -51,12 +54,16 @@ export type DailyStats = {
   current_streak: number;
 };
 
-export type QuestionType = 'en_to_vi' | 'vi_to_en' | 'synonym';
+export type QuestionType = 'en_to_vi' | 'vi_to_en' | 'synonym' | 'cloze' | 'context';
+
+export const AI_QUESTION_TYPES: QuestionType[] = ['cloze', 'context'];
 
 export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   en_to_vi: 'English → Vietnamese',
   vi_to_en: 'Vietnamese → English',
   synonym: 'Synonym',
+  cloze: 'Fill in the blank',
+  context: 'Choose the word in context',
 };
 
 export type Quiz = {
@@ -69,7 +76,24 @@ export type Quiz = {
   best_score: number | null;
   last_attempt_at: string | null;
   created_at: string;
+  status: 'pending' | 'ready' | 'failed';
+  uses_ai: boolean;
+  error_message: string | null;
+  ai_question_count: number;
 };
+
+export interface AiStatus {
+  available: boolean;
+  enabled_for_user: boolean;
+  daily_limit: number;
+  used_today: number;
+}
+
+export interface QuizStatus {
+  status: 'pending' | 'ready' | 'failed';
+  question_count: number;
+  error_message: string | null;
+}
 
 export type QuizAttemptSummary = {
   id: string;
@@ -97,6 +121,7 @@ export type QuizQuestion = {
   prompt_phonetic?: string | null;
   options: string[];
   position: number;
+  source?: string;
 };
 
 export type AttemptStart = {
@@ -109,6 +134,7 @@ export type AttemptStart = {
 export type AnswerResult = {
   is_correct: boolean;
   correct_index: number;
+  explanation?: string | null;
 };
 
 export type AttemptSubmitResult = {
@@ -123,6 +149,8 @@ export type ReviewQuestion = QuizQuestion & {
   selected_index: number | null;
   is_correct: boolean;
   card_id: string | null;
+  explanation?: string | null;
+  source?: string;
 };
 
 export type AttemptReview = {
