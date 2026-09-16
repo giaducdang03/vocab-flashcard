@@ -45,7 +45,7 @@ def _as_utc(value: datetime) -> datetime:
 
 def resolve_policy(row: UserAiPolicy | None, default_limit: int) -> EffectivePolicy:
     if row is None:
-        return EffectivePolicy(enabled=True, limit=default_limit, is_custom=False)
+        return EffectivePolicy(enabled=False, limit=default_limit, is_custom=False)
     if row.daily_limit is None:
         return EffectivePolicy(enabled=row.ai_enabled, limit=default_limit, is_custom=False)
     return EffectivePolicy(enabled=row.ai_enabled, limit=row.daily_limit, is_custom=True)
@@ -95,7 +95,7 @@ def apply_policy_update(
     """
     created = row is None
     if row is None:
-        row = UserAiPolicy(user_id=user_id, ai_enabled=True, daily_limit=None)
+        row = UserAiPolicy(user_id=user_id, ai_enabled=False, daily_limit=None)
     if ai_enabled is not None:
         row.ai_enabled = ai_enabled
     if set_limit:

@@ -18,7 +18,7 @@ class UserAiPolicy(Base):
     user_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
-    ai_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    ai_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     # NULL = theo AI_DAILY_QUIZ_LIMIT của hệ thống
     daily_limit: Mapped[int | None] = mapped_column(Integer, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
