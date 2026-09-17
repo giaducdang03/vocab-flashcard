@@ -20,6 +20,7 @@ class UserOut(BaseModel):
     display_name: str
     role: Literal["user", "admin"] = "user"
     email_verified: bool = False
+    avatar_url: str | None = None
 
     class Config:
         from_attributes = True

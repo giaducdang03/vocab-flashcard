@@ -36,6 +36,7 @@ class GoogleProfile:
     sub: str
     email: str
     display_name: str
+    avatar_url: str | None
 
 
 def is_configured() -> bool:
@@ -73,7 +74,8 @@ def normalize_profile(claims: dict) -> GoogleProfile:
         raise GoogleAuthError("google_error")
 
     display_name = (claims.get("name") or "").strip() or email.split("@")[0]
-    return GoogleProfile(sub=sub, email=email, display_name=display_name)
+    avatar_url = (claims.get("picture") or "").strip() or None
+    return GoogleProfile(sub=sub, email=email, display_name=display_name, avatar_url=avatar_url)
 
 
 def decide_link_action(by_sub, by_email) -> str:
@@ -130,11 +132,16 @@ async def resolve_user(db: AsyncSession, profile: GoogleProfile) -> User:
     action = decide_link_action(by_sub, by_email)
 
     if action == "login":
+        if profile.avatar_url and by_sub.avatar_url != profile.avatar_url:
+            by_sub.avatar_url = profile.avatar_url
+            await db.commit()
+            await db.refresh(by_sub)
         return by_sub
 
     if action == "link":
         by_email.google_sub = profile.sub
         by_email.email_verified = True
+        by_email.avatar_url = profile.avatar_url
         await db.commit()
         await db.refresh(by_email)
         return by_email
@@ -145,6 +152,7 @@ async def resolve_user(db: AsyncSession, profile: GoogleProfile) -> User:
         email_verified=True,
         password_hash=None,
         display_name=profile.display_name,
+        avatar_url=profile.avatar_url,
         role=ADMIN_ROLE if is_config_admin(profile.email) else USER_ROLE,
     )
     db.add(user)

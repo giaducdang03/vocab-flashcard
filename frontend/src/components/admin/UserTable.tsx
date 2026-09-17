@@ -57,9 +57,18 @@ export default function UserTable({ rows, onOpen }: UserTableProps) {
             >
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-caption-uppercase text-ink">
-                    {initials(row.display_name)}
-                  </span>
+                  {row.avatar_url ? (
+                    <img
+                      src={row.avatar_url}
+                      alt=""
+                      referrerPolicy="no-referrer"
+                      className="h-9 w-9 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-caption-uppercase text-ink">
+                      {initials(row.display_name)}
+                    </span>
+                  )}
                   <div className="min-w-0">
                     <p className="truncate text-title-sm text-ink">{row.display_name}</p>
                     <p className="truncate text-body-sm text-muted">{row.email}</p>

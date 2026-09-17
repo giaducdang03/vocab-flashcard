@@ -18,6 +18,7 @@ def valid_claims(**overrides) -> dict:
         "email": "User@Example.com",
         "email_verified": True,
         "name": "Nguyen Van A",
+        "picture": "https://lh3.googleusercontent.com/a/avatar.jpg",
     }
     claims.update(overrides)
     return claims
@@ -75,6 +76,17 @@ class TestNormalizeProfile:
         profile = normalize_profile(valid_claims(email="someone@example.com", name="   "))
 
         assert profile.display_name == "someone"
+
+    def test_reads_picture_claim_as_avatar_url(self):
+        profile = normalize_profile(valid_claims())
+
+        assert profile.avatar_url == "https://lh3.googleusercontent.com/a/avatar.jpg"
+
+    def test_avatar_url_is_none_when_picture_missing(self):
+        claims = valid_claims()
+        del claims["picture"]
+
+        assert normalize_profile(claims).avatar_url is None
 
 
 class TestDecideLinkAction:

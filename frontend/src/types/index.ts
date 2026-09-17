@@ -6,6 +6,7 @@ export type User = {
   display_name: string;
   role: UserRole;
   email_verified: boolean;
+  avatar_url: string | null;
 };
 
 export type Session = {
