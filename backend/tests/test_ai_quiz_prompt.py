@@ -379,3 +379,154 @@ class TestVerbTense:
 
         assert "Chia thì động từ" in system
         assert "Điền từ vào chỗ trống" not in system
+
+
+def _word_stress_question(card_id: str = "card-0") -> dict:
+    return {
+        "card_id": card_id,
+        "question_type": "word_stress",
+        "prompt_text": "com · for · ta · ble",
+        "options": ["1 — com", "2 — for", "3 — ta", "4 — ble"],
+        "correct_index": 0,
+        "explanation": "Hậu tố -able không làm đổi trọng âm, nên trọng âm giữ ở âm tiết đầu.",
+    }
+
+
+class TestWordStress:
+    def test_accepts_a_four_syllable_question(self):
+        cards = make_pool(4)
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([_word_stress_question()]), cards, ["word_stress"]
+        )
+
+        assert rejected == []
+        assert len(questions) == 1
+        assert questions[0].question_type == "word_stress"
+        assert questions[0].correct_index == 0
+
+    def test_accepts_a_two_syllable_question(self):
+        cards = make_pool(4)
+        item = _word_stress_question()
+        item["prompt_text"] = "re · cord"
+        item["options"] = ["1 — re", "2 — cord"]
+        item["correct_index"] = 1
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([item]), cards, ["word_stress"]
+        )
+
+        assert rejected == []
+        assert len(questions) == 1
+        assert questions[0].options == ["1 — re", "2 — cord"]
+
+    def test_accepts_a_word_with_repeated_syllables(self):
+        cards = make_pool(4)
+        item = _word_stress_question()
+        item["prompt_text"] = "ba · na · na"
+        item["options"] = ["1 — ba", "2 — na", "3 — na"]
+        item["correct_index"] = 1
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([item]), cards, ["word_stress"]
+        )
+
+        assert rejected == []
+        assert len(questions) == 1
+
+    def test_rejects_an_ipa_stress_mark_in_the_prompt(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["prompt_text"] = "ˈcom · for · ta · ble"
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "lộ đáp án" in rejected[0]
+
+    def test_rejects_an_uppercased_syllable(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["prompt_text"] = "COM · for · ta · ble"
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "lộ đáp án" in rejected[0]
+
+    def test_rejects_a_single_syllable_word(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["prompt_text"] = "book"
+        bad["options"] = ["1 — book", "2 — book "]
+        bad["correct_index"] = 0
+
+        questions, _ = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["word_stress"])
+
+        assert questions == []
+
+    def test_rejects_more_syllables_than_options(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["options"] = ["1 — com", "2 — for", "3 — ta"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "âm tiết" in rejected[0]
+
+    def test_rejects_an_option_without_the_number_prefix(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["options"] = ["com", "2 — for", "3 — ta", "4 — ble"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "định dạng" in rejected[0]
+
+    def test_rejects_an_option_that_does_not_match_its_syllable(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["options"] = ["1 — com", "2 — fur", "3 — ta", "4 — ble"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "không khớp" in rejected[0]
+
+    def test_rejects_options_numbered_out_of_order(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["options"] = ["2 — com", "1 — for", "3 — ta", "4 — ble"]
+
+        questions, _ = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["word_stress"])
+
+        assert questions == []
+
+    def test_carries_no_phonetic(self):
+        cards = make_pool(4)
+
+        questions, _ = quiz_prompt.parse_and_validate(
+            _raw([_word_stress_question()]), cards, ["word_stress"]
+        )
+
+        assert questions[0].prompt_phonetic is None
+
+    def test_build_prompt_accepts_it_as_an_ai_type(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
+
+        assert "Trọng âm từ" in system
+        assert "Chia thì động từ" not in system
