@@ -12,6 +12,8 @@ const typeColors: Record<QuestionType, { bg: string; text: string }> = {
   synonym: { bg: 'bg-orange-50', text: 'text-orange-700' },
   cloze: { bg: 'bg-emerald-50', text: 'text-emerald-700' },
   context: { bg: 'bg-pink-50', text: 'text-pink-700' },
+  verb_tense: { bg: 'bg-amber-50', text: 'text-amber-700' },
+  word_stress: { bg: 'bg-cyan-50', text: 'text-cyan-700' },
 };
 
 export default function QuestionTypeBadges({ types, variant = 'inline' }: QuestionTypeBadgesProps) {

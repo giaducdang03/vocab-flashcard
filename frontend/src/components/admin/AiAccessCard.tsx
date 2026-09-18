@@ -17,7 +17,8 @@ export default function AiAccessCard({ enabled, disabled = false, onChange }: Ai
         <div>
           <h3 className="text-title-sm text-ink">Enable AI quiz generation</h3>
           <p className="mt-1 text-body-sm text-body">
-            Lets this user create quizzes with AI question types (fill in the blank, word in context).
+            Lets this user create quizzes with AI question types (fill in the blank, word in
+            context, verb tense, word stress).
             Turning it off does not cancel quizzes that are already being generated.
           </p>
         </div>

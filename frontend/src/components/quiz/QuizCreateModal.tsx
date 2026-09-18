@@ -148,7 +148,15 @@ export default function QuizCreateModal({
   const maxQuestions = capacity?.max_questions ?? 0;
 
   const availableTypes: QuestionType[] = aiStatus?.available && aiStatus.enabled_for_user
-    ? (['en_to_vi', 'vi_to_en', 'synonym', 'cloze', 'context'] as QuestionType[])
+    ? ([
+        'en_to_vi',
+        'vi_to_en',
+        'synonym',
+        'cloze',
+        'context',
+        'verb_tense',
+        'word_stress',
+      ] as QuestionType[])
     : (['en_to_vi', 'vi_to_en', 'synonym'] as QuestionType[]);
 
   return (
