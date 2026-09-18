@@ -227,3 +227,38 @@ class TestParseAndValidate:
 
         assert len(questions) == 1
         assert len(rejected) == 1
+
+
+class TestBuildSystemPrompt:
+    def test_system_prompt_only_describes_the_requested_types(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["cloze"], 2, max_cards=10)
+
+        assert "Điền từ vào chỗ trống" in system
+        assert "Chọn từ phù hợp tình huống" not in system
+
+    def test_system_prompt_describes_every_requested_type(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["cloze", "context"], 2, max_cards=10)
+
+        assert "Điền từ vào chỗ trống" in system
+        assert "Chọn từ phù hợp tình huống" in system
+
+    def test_type_blocks_follow_a_stable_order_not_the_caller_order(self):
+        cards = make_pool(4)
+
+        system_a, _ = quiz_prompt.build_prompt(cards, ["cloze", "context"], 2, max_cards=10)
+        system_b, _ = quiz_prompt.build_prompt(cards, ["context", "cloze"], 2, max_cards=10)
+
+        assert system_a == system_b
+
+    def test_system_prompt_always_carries_the_shared_sections(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["cloze"], 2, max_cards=10)
+
+        assert "QUY TẮC GIẢI THÍCH" in system
+        assert "RÀNG BUỘC KỸ THUẬT" in system
+        assert "ĐỊNH DẠNG" in system

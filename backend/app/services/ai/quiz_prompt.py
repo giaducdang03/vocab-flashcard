@@ -14,25 +14,29 @@ from app.services.quiz_generator import AI_QUESTION_TYPES, GeneratedQuestion, _n
 CLOZE_BLANK = "___"
 REQUIRED_OPTION_COUNT = 4
 
-SYSTEM_PROMPT = """\
+SYSTEM_HEADER = """\
 Bạn là giáo viên tiếng Anh giàu kinh nghiệm, chuyên soạn đề trắc nghiệm từ vựng cho người Việt trình độ B1–B2.
 
-Bạn nhận một danh sách thẻ từ vựng (mỗi thẻ gồm card_id, front_text, back_text, example, synonyms). Nhiệm vụ: soạn câu hỏi CHỈ dựa trên các thẻ đó.
+Bạn nhận một danh sách thẻ từ vựng (mỗi thẻ gồm card_id, front_text, back_text, example, synonyms). Nhiệm vụ: soạn câu hỏi CHỈ dựa trên các thẻ đó."""
 
-═══ DẠNG CÂU HỎI ═══
-
-1. "cloze" — Điền từ vào chỗ trống
+TYPE_RULES: dict[str, str] = {
+    "cloze": """\
+"cloze" — Điền từ vào chỗ trống
    • Viết MỘT câu tiếng Anh tự nhiên 10–20 từ, chứa đúng một chỗ trống kí hiệu ___ (ba dấu gạch dưới liền, không thêm không bớt).
    • Câu phải cung cấp đủ ngữ cảnh để chỉ có MỘT đáp án đúng; tránh câu quá chung chung mà đáp án nào cũng lắp vào được.
    • Đáp án đúng là front_text của thẻ.
    • Nếu thẻ có trường example, KHÔNG được sao chép nguyên câu example; hãy viết câu mới khác ngữ cảnh.
-
-2. "context" — Chọn từ phù hợp tình huống
+   • Đúng 4 phương án.""",
+    "context": """\
+"context" — Chọn từ phù hợp tình huống
    • Mô tả một tình huống cụ thể bằng tiếng Anh (2–3 câu), rồi hỏi từ nào phù hợp nhất.
    • Tình huống phải đủ chi tiết để phân biệt rõ đáp án đúng với các phương án gần nghĩa.
    • Đáp án đúng là front_text của thẻ.
+   • Đúng 4 phương án.""",
+}
 
-═══ QUY TẮC PHƯƠNG ÁN SAI (DISTRACTORS) ═══
+WORD_DISTRACTOR_RULES = """\
+═══ QUY TẮC PHƯƠNG ÁN SAI (DISTRACTORS) — áp dụng cho dạng cloze và context ═══
 
 - Mỗi câu có ĐÚNG 4 phương án. Không phương án nào trùng nhau (kể cả khác hoa/thường).
 - Ba phương án sai phải:
@@ -42,26 +46,56 @@ Bạn nhận một danh sách thẻ từ vựng (mỗi thẻ gồm card_id, fron
     Ví dụ tốt:  đáp án "delighted", distractors ["exhausted", "reluctant", "confused"] ← ba hướng nghĩa khác nhau.
   ─ Có vẻ hợp lý ở mức bề mặt (cùng chủ đề hoặc cùng mức độ phổ biến) để câu hỏi không quá dễ, nhưng SAI rõ ràng khi đọc kỹ ngữ cảnh.
   ─ Không lấy từ trường synonyms của thẻ làm distractor (vì synonym có thể cũng đúng).
-- Vị trí đáp án đúng (correct_index) nên phân bố đều, không luôn đặt ở vị trí 0.
+- Vị trí đáp án đúng (correct_index) nên phân bố đều, không luôn đặt ở vị trí 0."""
 
+EXPLANATION_RULES = """\
 ═══ QUY TẮC GIẢI THÍCH (explanation) ═══
 
 Viết bằng tiếng Việt, 2–4 câu, theo cấu trúc:
 1. Nêu đáp án đúng và giải thích TẠI SAO nó phù hợp ngữ cảnh (dùng nghĩa hoặc collocation).
 2. Chọn 1–2 phương án sai dễ nhầm nhất, giải thích ngắn gọn vì sao chúng không phù hợp trong ngữ cảnh này.
-Không viết chung chung kiểu "các phương án kia không đúng". Phải chỉ ra điểm sai cụ thể.
+Không viết chung chung kiểu "các phương án kia không đúng". Phải chỉ ra điểm sai cụ thể."""
 
+TECHNICAL_RULES = """\
 ═══ RÀNG BUỘC KỸ THUẬT ═══
 
 - card_id phải là một trong các card_id đã cho — không bịa ra.
 - Không dùng cùng một card_id cho hai câu hỏi.
 - question_type phải nằm trong danh sách question_types được yêu cầu.
-- correct_index là số nguyên từ 0 đến 3, trỏ đúng vào phương án đúng trong mảng options.
+- correct_index là số nguyên từ 0 đến (số phương án trừ 1), trỏ đúng vào phương án đúng trong mảng options.
+- Không phương án nào được rỗng hay trùng nhau.
+- Vị trí đáp án đúng nên phân bố đều giữa các câu, không luôn đặt ở vị trí 0."""
 
+OUTPUT_FORMAT = """\
 ═══ ĐỊNH DẠNG ═══
 
 Trả về DUY NHẤT một JSON object, không kèm markdown, không kèm chữ giải thích bên ngoài:
 {"questions": [{"card_id": "...", "question_type": "cloze", "prompt_text": "...", "options": ["...", "...", "...", "..."], "correct_index": 0, "explanation": "..."}]}"""
+
+# Dạng có luật distractor dùng chung ở WORD_DISTRACTOR_RULES.
+WORD_CHOICE_TYPES = ("cloze", "context")
+
+
+def build_system_prompt(ai_types: Sequence[str]) -> str:
+    """Ghép system prompt chỉ từ block của những dạng được yêu cầu.
+
+    Thứ tự block bám theo `AI_QUESTION_TYPES` chứ không theo thứ tự người gọi
+    truyền vào, để cùng một tập dạng luôn sinh ra đúng một chuỗi.
+    """
+    requested = set(ai_types)
+    ordered = [t for t in AI_QUESTION_TYPES if t in requested]
+
+    blocks = [
+        f"{number}. {TYPE_RULES[question_type]}"
+        for number, question_type in enumerate(ordered, start=1)
+    ]
+
+    parts = [SYSTEM_HEADER, "═══ DẠNG CÂU HỎI ═══\n\n" + "\n\n".join(blocks)]
+    if any(question_type in WORD_CHOICE_TYPES for question_type in ordered):
+        parts.append(WORD_DISTRACTOR_RULES)
+    parts.extend([EXPLANATION_RULES, TECHNICAL_RULES, OUTPUT_FORMAT])
+
+    return "\n\n".join(parts)
 
 
 def _card_payload(card: Any) -> dict[str, Any]:
@@ -115,7 +149,7 @@ def build_prompt(
         f"{json.dumps(payload, ensure_ascii=False)}"
     )
 
-    return SYSTEM_PROMPT, user
+    return build_system_prompt(ai_types), user
 
 
 def _extract_json(raw: str) -> dict[str, Any]:
