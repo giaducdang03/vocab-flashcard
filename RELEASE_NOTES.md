@@ -4,6 +4,13 @@ Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở
 
 ---
 
+## Phiên bản 1.1.1 — 18/09/2026
+### Thêm hai dạng câu hỏi AI mới
+
+- Thêm hai dạng câu hỏi AI: **Verb tense** (điền dạng chia đúng của động từ vào câu có mốc thời gian rõ ràng) và **Word stress** (chọn âm tiết mang trọng âm). Cả hai chỉ hiện với tài khoản đã được bật quyền AI. Dạng Word stress có số phương án bằng số âm tiết của từ (2–4), nên là dạng đầu tiên không cố định 4 phương án.
+
+---
+
 ## Phiên bản 1.1.0 — 16/09/2026
 ### Soạn đề bằng AI
 
