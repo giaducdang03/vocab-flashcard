@@ -30,6 +30,13 @@ PRIMARY_STRESS_MARK = "ˈ"
 STRESS_MARKS = (PRIMARY_STRESS_MARK, "ˌ")
 STRESS_OPTION_RE = re.compile(r"^(\d+) — (.+)$")
 
+# Model hay gõ dấu trọng âm bằng dấu nháy thường (') hoặc dấu nháy kiểu chữ
+# (') thay vì đúng ký tự IPA ˈ, vì bàn phím/dữ liệu huấn luyện phổ biến dùng
+# vậy. Chấp nhận các biến thể này, nhưng chỉ khi nằm trong một cặp dấu gạch
+# chéo /.../ — để phân biệt với dấu nháy đơn xuất hiện tình cờ trong câu văn
+# (ví dụ "it's").
+IPA_TRANSCRIPTION_RE = re.compile(r"/[^/\n]*['ˈʼ’][^/\n]*/")
+
 SYSTEM_HEADER = """\
 Bạn là giáo viên tiếng Anh giàu kinh nghiệm, chuyên soạn đề trắc nghiệm từ vựng cho người Việt trình độ B1–B2.
 
@@ -71,7 +78,7 @@ TYPE_RULES: dict[str, str] = {
      Ví dụ với prompt_text "comfortable": ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable).
    • TUYỆT ĐỐI KHÔNG viết hoa âm tiết nào trong options, kể cả âm tiết mang trọng âm — nhiều sách viết hoa âm tiết đúng để nhấn mạnh (ví dụ "COMfortable"), nhưng làm vậy trong options ở đây là lộ đáp án ngay lập tức. Toàn bộ âm tiết trong options viết thường hoàn toàn, giống hệt prompt_text; chỉ correct_index mới được dùng để chỉ ra âm tiết đúng.
    • correct_index trỏ vào âm tiết mang TRỌNG ÂM CHÍNH.
-   • explanation phải bắt đầu bằng phiên âm IPA đầy đủ của từ, có đánh dấu trọng âm chính bằng ˈ ngay trước âm tiết được nhấn (ví dụ: "/kəmˈfɜːrtəbl/" nếu trọng âm rơi vào âm tiết 2, hoặc "/ˈkʌmftəbl/" nếu rơi vào âm tiết 1), rồi mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
+   • explanation phải bắt đầu bằng phiên âm đặt trong hai dấu gạch chéo /..../ , có đánh dấu trọng âm chính ngay trước âm tiết được nhấn (dùng ký tự IPA ˈ nếu gõ được, hoặc dấu nháy đơn ' nếu không) — ví dụ: "/kəmˈfɜːrtəbl/" hoặc "/kəm'fɜːrtəbl/" nếu trọng âm rơi vào âm tiết 2, "/ˈkʌmftəbl/" hoặc "/'kʌmftəbl/" nếu rơi vào âm tiết 1 — rồi mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
 }
 
 WORD_DISTRACTOR_RULES = """\
@@ -299,8 +306,8 @@ def _check_word_stress(item: dict[str, Any]) -> str | None:
 
     # An toàn để lộ ở đây: explanation chỉ hiện sau khi người học đã trả lời
     # (xem AnswerSubmitResponse.explanation), khác với prompt_text ở trên.
-    if PRIMARY_STRESS_MARK not in item["explanation"]:
-        return "explanation thiếu phiên âm IPA có đánh dấu trọng âm (ˈ)"
+    if IPA_TRANSCRIPTION_RE.search(item["explanation"]) is None:
+        return "explanation thiếu phiên âm IPA có đánh dấu trọng âm"
 
     return None
 

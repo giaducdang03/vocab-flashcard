@@ -608,6 +608,30 @@ class TestWordStress:
         assert rejected == []
         assert len(questions) == 1
 
+    def test_accepts_a_plain_apostrophe_as_the_stress_mark(self):
+        cards = make_pool(4)
+        item = _word_stress_question()
+        item["explanation"] = "/kəm'fɔːtəbl/ - Hậu tố -able không làm đổi trọng âm."
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([item]), cards, ["word_stress"]
+        )
+
+        assert rejected == []
+        assert len(questions) == 1
+
+    def test_rejects_an_apostrophe_that_is_not_inside_a_transcription(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["explanation"] = "Từ này khá đơn giản, it's không có gì đặc biệt."
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "IPA" in rejected[0]
+
     def test_build_prompt_accepts_it_as_an_ai_type(self):
         cards = make_pool(4)
 
