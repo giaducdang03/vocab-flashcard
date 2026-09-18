@@ -531,6 +531,30 @@ class TestWordStress:
         assert questions == []
         assert "không khớp" in rejected[0]
 
+    def test_rejects_an_uppercased_syllable_in_an_option(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["options"] = ["1 — COM", "2 — for", "3 — ta", "4 — ble"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "lộ đáp án" in rejected[0]
+
+    def test_rejects_a_capitalized_stressed_syllable_in_an_option(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["options"] = ["1 — Com", "2 — for", "3 — ta", "4 — ble"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "lộ đáp án" in rejected[0]
+
     def test_rejects_options_numbered_out_of_order(self):
         cards = make_pool(4)
         bad = _word_stress_question()
@@ -598,3 +622,10 @@ class TestWordStress:
         system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
 
         assert "IPA" in system
+
+    def test_prompt_forbids_capitalizing_a_syllable_in_options(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
+
+        assert "lộ đáp án" in system

@@ -69,6 +69,7 @@ TYPE_RULES: dict[str, str] = {
    • Phương án thứ i có dạng "i — âm tiết thứ i", nối bằng " — " (dấu gạch dài, có một khoảng trắng ở mỗi bên), liệt kê theo đúng thứ tự âm tiết trong từ.
    • Ghép các âm tiết trong phương án lại theo đúng thứ tự PHẢI cho ra CHÍNH XÁC prompt_text.
      Ví dụ với prompt_text "comfortable": ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable).
+   • TUYỆT ĐỐI KHÔNG viết hoa âm tiết nào trong options, kể cả âm tiết mang trọng âm — nhiều sách viết hoa âm tiết đúng để nhấn mạnh (ví dụ "COMfortable"), nhưng làm vậy trong options ở đây là lộ đáp án ngay lập tức. Toàn bộ âm tiết trong options viết thường hoàn toàn, giống hệt prompt_text; chỉ correct_index mới được dùng để chỉ ra âm tiết đúng.
    • correct_index trỏ vào âm tiết mang TRỌNG ÂM CHÍNH.
    • explanation phải bắt đầu bằng phiên âm IPA đầy đủ của từ, có đánh dấu trọng âm chính bằng ˈ ngay trước âm tiết được nhấn (ví dụ: "/kəmˈfɜːrtəbl/" nếu trọng âm rơi vào âm tiết 2, hoặc "/ˈkʌmftəbl/" nếu rơi vào âm tiết 1), rồi mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
 }
@@ -285,7 +286,13 @@ def _check_word_stress(item: dict[str, Any]) -> str | None:
             return f"phương án {number} sai định dạng 'N — âm tiết'"
         if match.group(1) != str(number):
             return f"phương án {number} đánh số sai"
-        syllables.append(match.group(2).strip())
+        syllable = match.group(2).strip()
+        # Kiểu trình bày sách giáo khoa hay viết hoa âm tiết được nhấn trong
+        # phương án (ví dụ "COMfortable") để nhấn mạnh — nhưng ở đây điều đó
+        # lộ đáp án ngay lập tức, trước khi người học kịp chọn.
+        if syllable != syllable.lower():
+            return f"phương án {number} viết hoa, lộ đáp án"
+        syllables.append(syllable)
 
     if "".join(syllables) != prompt_text:
         return "các âm tiết trong phương án ghép lại không khớp với prompt_text"
