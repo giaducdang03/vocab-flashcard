@@ -326,6 +326,20 @@ class TestBuildSystemPrompt:
 
         assert "PHẢI là một trong" in system
 
+    def test_json_example_shows_a_realistic_card_id_not_an_ellipsis(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
+
+        assert '"card_id": "..."' not in system
+
+    def test_technical_rules_warn_against_using_front_text_as_card_id(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
+
+        assert "không dùng front_text hay back_text làm card_id" in system
+
 
 class TestVerbTense:
     def test_accepts_a_well_formed_question(self):

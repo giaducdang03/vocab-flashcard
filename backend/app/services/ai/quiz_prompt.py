@@ -92,6 +92,12 @@ Viết bằng tiếng Việt, 2–4 câu, theo cấu trúc:
 2. Chọn 1–2 phương án sai dễ nhầm nhất, giải thích ngắn gọn vì sao chúng không phù hợp trong ngữ cảnh này.
 Không viết chung chung kiểu "các phương án kia không đúng". Phải chỉ ra điểm sai cụ thể."""
 
+# Card_id thật là UUID4 (xem app.models.card.Card.id) — ví dụ này cho model
+# thấy đúng hình dạng chuỗi cần sao chép, tránh nó tưởng "..." nghĩa là được
+# tự bịa hoặc dùng front_text làm định danh.
+_EXAMPLE_CARD_ID = "a1b2c3d4-5e6f-7890-abcd-ef1234567890"
+
+
 def _technical_rules(ordered_types: Sequence[str]) -> str:
     """Ràng buộc kỹ thuật, với question_type liệt kê đích danh các dạng được yêu cầu.
 
@@ -99,12 +105,13 @@ def _technical_rules(ordered_types: Sequence[str]) -> str:
     vì model hay bám vào ví dụ literal trong OUTPUT_FORMAT nếu không có gì cụ
     thể hơn để neo vào — xem lịch sử: khi chỉ yêu cầu verb_tense/word_stress,
     model từng trả về toàn "cloze" vì đó là chuỗi literal duy nhất nó thấy.
+    Cùng lý do, card_id cũng nêu rõ hình dạng và cấm dùng front_text/back_text.
     """
     allowed = ", ".join(f'"{t}"' for t in ordered_types)
     return f"""\
 ═══ RÀNG BUỘC KỸ THUẬT ═══
 
-- card_id phải là một trong các card_id đã cho — không bịa ra.
+- card_id của MỖI câu PHẢI là giá trị y hệt trường "card_id" của thẻ tương ứng trong dữ liệu đầu vào (một chuỗi ký tự dạng UUID, ví dụ "{_EXAMPLE_CARD_ID}") — sao chép nguyên văn, không bịa ra, TUYỆT ĐỐI không dùng front_text hay back_text làm card_id.
 - Không dùng cùng một card_id cho hai câu hỏi.
 - question_type của MỖI câu PHẢI là một trong đúng các giá trị sau: {allowed}. Không dùng giá trị nào khác, kể cả dạng câu hỏi có thật của hệ thống nhưng không nằm trong danh sách này.
 - correct_index là số nguyên từ 0 đến (số phương án trừ 1), trỏ đúng vào phương án đúng trong mảng options.
@@ -117,14 +124,17 @@ def _output_format(ordered_types: Sequence[str]) -> str:
 
     Trước đây ví dụ này hardcode "cloze" — khi cloze không nằm trong dạng
     được yêu cầu, đó là chuỗi "cloze" duy nhất còn sót trong cả prompt, và
-    model bám vào nó thay vì dùng dạng thật.
+    model bám vào nó thay vì dùng dạng thật. Tương tự, card_id từng là "..."
+    — không cho model biết hình dạng thật của card_id — nên với các dạng
+    xoay quanh một từ (verb_tense, word_stress), model từng trả front_text
+    (ví dụ "refer") thay vì card_id thật.
     """
     example_type = ordered_types[0]
     return f"""\
 ═══ ĐỊNH DẠNG ═══
 
 Trả về DUY NHẤT một JSON object, không kèm markdown, không kèm chữ giải thích bên ngoài:
-{{"questions": [{{"card_id": "...", "question_type": "{example_type}", "prompt_text": "...", "options": ["...", "...", "...", "..."], "correct_index": 0, "explanation": "..."}}]}}"""
+{{"questions": [{{"card_id": "{_EXAMPLE_CARD_ID}", "question_type": "{example_type}", "prompt_text": "...", "options": ["...", "...", "...", "..."], "correct_index": 0, "explanation": "..."}}]}}"""
 
 
 # Dạng có luật distractor dùng chung ở WORD_DISTRACTOR_RULES.
