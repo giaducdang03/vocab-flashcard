@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { apiErrorMessage } from '../api/errors';
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function AuthCallbackPage() {
         await loginWithGoogleCode(code);
         navigate('/', { replace: true });
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Sign-in failed. Please try again.';
+        const message = apiErrorMessage(err, 'Sign-in failed. Please try again.');
         navigate('/login', {
           replace: true,
           state: { authError: message },

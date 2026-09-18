@@ -3,6 +3,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { api, API_BASE_URL } from '../api/client';
+import { apiErrorMessage } from '../api/errors';
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -68,7 +69,7 @@ export default function AuthPage() {
 
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Authentication failed. Please try again.');
+      setError(apiErrorMessage(err, 'Authentication failed. Please try again.'));
     } finally {
       setSubmitting(false);
     }
