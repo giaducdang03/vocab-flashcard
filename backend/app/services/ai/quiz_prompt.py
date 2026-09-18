@@ -5,14 +5,22 @@ Thuần: không chạm DB, không gọi mạng. Mọi thứ model trả ra đi q
 tính năng, nên phần kiểm tra ở đây cố tình chi tiết và bảo thủ.
 """
 import json
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from random import Random
 from typing import Any
 
 from app.services.quiz_generator import AI_QUESTION_TYPES, GeneratedQuestion, _normalize
 
 CLOZE_BLANK = "___"
-REQUIRED_OPTION_COUNT = 4
+MIN_OPTION_COUNT = 2
+MAX_OPTION_COUNT = 4
+
+# Dạng nào có số phương án cố định thì khai ở đây. Dạng vắng mặt tự ép số
+# phương án trong checker của nó.
+OPTION_COUNT: dict[str, int] = {
+    "cloze": 4,
+    "context": 4,
+}
 
 SYSTEM_HEADER = """\
 Bạn là giáo viên tiếng Anh giàu kinh nghiệm, chuyên soạn đề trắc nghiệm từ vựng cho người Việt trình độ B1–B2.
@@ -177,6 +185,17 @@ def _extract_json(raw: str) -> dict[str, Any]:
     return parsed
 
 
+def _check_cloze(item: dict[str, Any]) -> str | None:
+    if CLOZE_BLANK not in item["prompt_text"]:
+        return "câu cloze không có chỗ trống ___"
+    return None
+
+
+TYPE_CHECKS: dict[str, Callable[[dict[str, Any]], str | None]] = {
+    "cloze": _check_cloze,
+}
+
+
 def _reject_reason(
     item: Any,
     cards_by_id: dict[str, Any],
@@ -200,26 +219,34 @@ def _reject_reason(
     prompt_text = item.get("prompt_text")
     if not isinstance(prompt_text, str) or not prompt_text.strip():
         return "prompt_text rỗng"
-    if question_type == "cloze" and CLOZE_BLANK not in prompt_text:
-        return "câu cloze không có chỗ trống ___"
 
     options = item.get("options")
-    if not isinstance(options, list) or len(options) != REQUIRED_OPTION_COUNT:
-        return f"cần đúng {REQUIRED_OPTION_COUNT} phương án"
+    if not isinstance(options, list):
+        return "options không phải mảng"
+    if not MIN_OPTION_COUNT <= len(options) <= MAX_OPTION_COUNT:
+        return f"số phương án phải từ {MIN_OPTION_COUNT} đến {MAX_OPTION_COUNT}"
     if not all(isinstance(option, str) and option.strip() for option in options):
         return "có phương án rỗng"
-    if len({_normalize(option) for option in options}) != REQUIRED_OPTION_COUNT:
+    if len({_normalize(option) for option in options}) != len(options):
         return "có phương án trùng nhau"
+
+    expected_count = OPTION_COUNT.get(question_type)
+    if expected_count is not None and len(options) != expected_count:
+        return f"cần đúng {expected_count} phương án"
 
     correct_index = item.get("correct_index")
     if not isinstance(correct_index, int) or isinstance(correct_index, bool):
         return "correct_index không phải số nguyên"
-    if not 0 <= correct_index < REQUIRED_OPTION_COUNT:
+    if not 0 <= correct_index < len(options):
         return f"correct_index ngoài khoảng: {correct_index}"
 
     explanation = item.get("explanation")
     if not isinstance(explanation, str) or not explanation.strip():
         return "thiếu explanation"
+
+    check = TYPE_CHECKS.get(question_type)
+    if check is not None:
+        return check(item)
 
     return None
 

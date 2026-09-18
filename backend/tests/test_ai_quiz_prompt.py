@@ -228,6 +228,36 @@ class TestParseAndValidate:
         assert len(questions) == 1
         assert len(rejected) == 1
 
+    def test_rejects_more_options_than_the_maximum(self):
+        cards = make_pool(4)
+        bad = _good_question()
+        bad["options"] = ["word0", "word1", "word2", "word3", "word4"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["cloze"])
+
+        assert questions == []
+        assert len(rejected) == 1
+
+    def test_rejects_fewer_options_than_the_minimum(self):
+        cards = make_pool(4)
+        bad = _good_question()
+        bad["options"] = ["word0"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["cloze"])
+
+        assert questions == []
+        assert len(rejected) == 1
+
+    def test_cloze_still_needs_exactly_four_options(self):
+        cards = make_pool(4)
+        bad = _good_question()
+        bad["options"] = ["word0", "word1", "word2"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["cloze"])
+
+        assert questions == []
+        assert "4 phương án" in rejected[0]
+
 
 class TestBuildSystemPrompt:
     def test_system_prompt_only_describes_the_requested_types(self):
