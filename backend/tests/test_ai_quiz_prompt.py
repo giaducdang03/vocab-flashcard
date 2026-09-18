@@ -424,7 +424,7 @@ def _word_stress_question(card_id: str = "card-0") -> dict:
         "prompt_text": "comfortable",
         "options": ["1 — com", "2 — for", "3 — ta", "4 — ble"],
         "correct_index": 0,
-        "explanation": "Hậu tố -able không làm đổi trọng âm, nên trọng âm giữ ở âm tiết đầu.",
+        "explanation": "/ˈkʌmftəbl/ - Hậu tố -able không làm đổi trọng âm, nên trọng âm giữ ở âm tiết đầu.",
     }
 
 
@@ -560,6 +560,30 @@ class TestWordStress:
 
         assert questions[0].prompt_phonetic is None
 
+    def test_rejects_an_explanation_without_a_stress_marked_ipa(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["explanation"] = "Hậu tố -able không làm đổi trọng âm."
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["word_stress"]
+        )
+
+        assert questions == []
+        assert "IPA" in rejected[0]
+
+    def test_accepts_an_explanation_with_the_stress_mark_anywhere(self):
+        cards = make_pool(4)
+        item = _word_stress_question()
+        item["explanation"] = "Trọng âm rơi vào âm tiết đầu: /ˈkʌmftəbl/."
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([item]), cards, ["word_stress"]
+        )
+
+        assert rejected == []
+        assert len(questions) == 1
+
     def test_build_prompt_accepts_it_as_an_ai_type(self):
         cards = make_pool(4)
 
@@ -567,3 +591,10 @@ class TestWordStress:
 
         assert "Trọng âm từ" in system
         assert "Chia thì động từ" not in system
+
+    def test_prompt_requires_ipa_in_the_word_stress_explanation(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
+
+        assert "IPA" in system

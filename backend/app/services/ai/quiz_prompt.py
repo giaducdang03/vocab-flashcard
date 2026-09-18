@@ -24,8 +24,10 @@ OPTION_COUNT: dict[str, int] = {
     "verb_tense": 4,
 }
 
-# Dấu trọng âm IPA: xuất hiện trong prompt_text là lộ đáp án.
-STRESS_MARKS = ("ˈ", "ˌ")
+# Dấu trọng âm IPA: xuất hiện trong prompt_text là lộ đáp án, nhưng lại là
+# yêu cầu bắt buộc trong explanation (chỉ hiện sau khi người học đã trả lời).
+PRIMARY_STRESS_MARK = "ˈ"
+STRESS_MARKS = (PRIMARY_STRESS_MARK, "ˌ")
 STRESS_OPTION_RE = re.compile(r"^(\d+) — (.+)$")
 
 SYSTEM_HEADER = """\
@@ -68,7 +70,7 @@ TYPE_RULES: dict[str, str] = {
    • Ghép các âm tiết trong phương án lại theo đúng thứ tự PHẢI cho ra CHÍNH XÁC prompt_text.
      Ví dụ với prompt_text "comfortable": ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable).
    • correct_index trỏ vào âm tiết mang TRỌNG ÂM CHÍNH.
-   • explanation phải nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
+   • explanation phải bắt đầu bằng phiên âm IPA đầy đủ của từ, có đánh dấu trọng âm chính bằng ˈ ngay trước âm tiết được nhấn (ví dụ: "/kəmˈfɜːrtəbl/" nếu trọng âm rơi vào âm tiết 2, hoặc "/ˈkʌmftəbl/" nếu rơi vào âm tiết 1), rồi mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
 }
 
 WORD_DISTRACTOR_RULES = """\
@@ -287,6 +289,11 @@ def _check_word_stress(item: dict[str, Any]) -> str | None:
 
     if "".join(syllables) != prompt_text:
         return "các âm tiết trong phương án ghép lại không khớp với prompt_text"
+
+    # An toàn để lộ ở đây: explanation chỉ hiện sau khi người học đã trả lời
+    # (xem AnswerSubmitResponse.explanation), khác với prompt_text ở trên.
+    if PRIMARY_STRESS_MARK not in item["explanation"]:
+        return "explanation thiếu phiên âm IPA có đánh dấu trọng âm (ˈ)"
 
     return None
 
