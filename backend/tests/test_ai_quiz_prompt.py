@@ -75,6 +75,17 @@ def _good_question(card_id: str = "card-0") -> dict:
     }
 
 
+def _verb_tense_question(card_id: str = "card-0") -> dict:
+    return {
+        "card_id": card_id,
+        "question_type": "verb_tense",
+        "prompt_text": "By the time we arrived, the meeting ___ (finish) already.",
+        "options": ["finished", "had finished", "has finished", "was finishing"],
+        "correct_index": 1,
+        "explanation": "Hành động kết thúc trước một mốc quá khứ nên dùng past perfect.",
+    }
+
+
 class TestParseAndValidate:
     def test_accepts_a_well_formed_question(self):
         cards = make_pool(4)
@@ -292,3 +303,79 @@ class TestBuildSystemPrompt:
         assert "QUY TẮC GIẢI THÍCH" in system
         assert "RÀNG BUỘC KỸ THUẬT" in system
         assert "ĐỊNH DẠNG" in system
+
+
+class TestVerbTense:
+    def test_accepts_a_well_formed_question(self):
+        cards = make_pool(4)
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([_verb_tense_question()]), cards, ["verb_tense"]
+        )
+
+        assert rejected == []
+        assert len(questions) == 1
+        assert questions[0].question_type == "verb_tense"
+        assert questions[0].correct_index == 1
+
+    def test_rejects_a_prompt_without_a_blank(self):
+        cards = make_pool(4)
+        bad = _verb_tense_question()
+        bad["prompt_text"] = "By the time we arrived, the meeting had finished (finish)."
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["verb_tense"]
+        )
+
+        assert questions == []
+        assert "___" in rejected[0]
+
+    def test_rejects_a_prompt_without_the_base_verb_in_parentheses(self):
+        cards = make_pool(4)
+        bad = _verb_tense_question()
+        bad["prompt_text"] = "By the time we arrived, the meeting ___ already."
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["verb_tense"]
+        )
+
+        assert questions == []
+        assert "ngoặc" in rejected[0]
+
+    def test_rejects_non_letter_content_in_the_parentheses(self):
+        cards = make_pool(4)
+        bad = _verb_tense_question()
+        bad["prompt_text"] = "By the time we arrived, the meeting ___ (1999) already."
+
+        questions, _ = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["verb_tense"])
+
+        assert questions == []
+
+    def test_needs_exactly_four_options(self):
+        cards = make_pool(4)
+        bad = _verb_tense_question()
+        bad["options"] = ["finished", "had finished", "has finished"]
+
+        questions, rejected = quiz_prompt.parse_and_validate(
+            _raw([bad]), cards, ["verb_tense"]
+        )
+
+        assert questions == []
+        assert "4 phương án" in rejected[0]
+
+    def test_carries_no_phonetic(self):
+        cards = make_pool(4)
+
+        questions, _ = quiz_prompt.parse_and_validate(
+            _raw([_verb_tense_question()]), cards, ["verb_tense"]
+        )
+
+        assert questions[0].prompt_phonetic is None
+
+    def test_build_prompt_accepts_it_as_an_ai_type(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["verb_tense"], 2, max_cards=10)
+
+        assert "Chia thì động từ" in system
+        assert "Điền từ vào chỗ trống" not in system

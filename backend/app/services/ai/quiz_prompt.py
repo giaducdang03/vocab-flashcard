@@ -5,6 +5,7 @@ Thuần: không chạm DB, không gọi mạng. Mọi thứ model trả ra đi q
 tính năng, nên phần kiểm tra ở đây cố tình chi tiết và bảo thủ.
 """
 import json
+import re
 from collections.abc import Callable, Sequence
 from random import Random
 from typing import Any
@@ -20,6 +21,7 @@ MAX_OPTION_COUNT = 4
 OPTION_COUNT: dict[str, int] = {
     "cloze": 4,
     "context": 4,
+    "verb_tense": 4,
 }
 
 SYSTEM_HEADER = """\
@@ -41,6 +43,16 @@ TYPE_RULES: dict[str, str] = {
    • Tình huống phải đủ chi tiết để phân biệt rõ đáp án đúng với các phương án gần nghĩa.
    • Đáp án đúng là front_text của thẻ.
    • Đúng 4 phương án.""",
+    "verb_tense": """\
+"verb_tense" — Chia thì động từ
+   • CHỈ dùng thẻ mà front_text là một ĐỘNG TỪ. Thẻ không phải động từ thì bỏ qua hoàn toàn, không ép ra đề.
+   • Viết MỘT câu tiếng Anh 12–25 từ, chứa đúng một chỗ trống kí hiệu ___ (ba dấu gạch dưới liền), và ngay sau chỗ trống là động từ nguyên thể đặt trong ngoặc đơn.
+     Ví dụ: "By the time we arrived, the meeting ___ (finish) already."
+   • Trong ngoặc CHỈ được chứa động từ nguyên thể viết bằng chữ cái, không thêm số hay dấu câu.
+   • Câu BẮT BUỘC có dấu hiệu thời gian rõ ràng (by the time, since 2010, while, every morning, this time next year, ...) để chỉ có ĐÚNG MỘT thì đúng.
+   • Đúng 4 phương án, đều là các dạng chia KHÁC NHAU của CHÍNH động từ đó. Không đổi sang động từ khác.
+   • Ba phương án sai phải là những thì mà người học Việt hay nhầm trong đúng ngữ cảnh này (ví dụ present perfect và past simple), không phải dạng vô nghĩa.
+   • explanation phải nêu rõ dấu hiệu thời gian nào quyết định thì đúng.""",
 }
 
 WORD_DISTRACTOR_RULES = """\
@@ -191,8 +203,22 @@ def _check_cloze(item: dict[str, Any]) -> str | None:
     return None
 
 
+# Động từ nguyên thể trong ngoặc, ví dụ "(finish)" hay "(look after)".
+VERB_HINT_RE = re.compile(r"\(\s*[A-Za-z][A-Za-z ]{0,30}\)")
+
+
+def _check_verb_tense(item: dict[str, Any]) -> str | None:
+    prompt_text = item["prompt_text"]
+    if CLOZE_BLANK not in prompt_text:
+        return "câu chia thì không có chỗ trống ___"
+    if VERB_HINT_RE.search(prompt_text) is None:
+        return "câu chia thì thiếu động từ nguyên thể trong ngoặc"
+    return None
+
+
 TYPE_CHECKS: dict[str, Callable[[dict[str, Any]], str | None]] = {
     "cloze": _check_cloze,
+    "verb_tense": _check_verb_tense,
 }
 
 
