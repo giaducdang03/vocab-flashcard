@@ -31,9 +31,7 @@ export default function PageHeader({ user, onLogout, streakDays }: PageHeaderPro
             className="flex items-center gap-space-sm"
             onClick={() => navigate('/')}
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[11px] font-bold tracking-[0.08em] text-on-primary">
-              VF
-            </span>
+            <img src="/favicon.ico" alt="" className="h-9 w-9 object-contain" />
             <span className="text-title-md tracking-tight text-ink">VocabFlash</span>
           </button>
 

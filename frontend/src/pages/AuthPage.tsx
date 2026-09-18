@@ -79,7 +79,7 @@ export default function AuthPage() {
     <div className="app-shell auth-shell">
       <div className="auth-panel">
         <div className="brand-block">
-          <div className="brand-mark">VF</div>
+          <img src="/favicon.ico" alt="VocabFlash" className="brand-logo" />
           <div>
             <p className="eyebrow">VocabFlash</p>
             <h1>Build vocabulary sessions that stick.</h1>

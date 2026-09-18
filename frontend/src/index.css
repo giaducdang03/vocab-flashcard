@@ -543,6 +543,13 @@ textarea {
   gap: 16px;
 }
 
+.brand-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .brand-block h1 {
   margin: 0;
   font-size: clamp(2.4rem, 5vw, 4rem);
