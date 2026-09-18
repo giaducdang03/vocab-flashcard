@@ -92,21 +92,40 @@ Viết bằng tiếng Việt, 2–4 câu, theo cấu trúc:
 2. Chọn 1–2 phương án sai dễ nhầm nhất, giải thích ngắn gọn vì sao chúng không phù hợp trong ngữ cảnh này.
 Không viết chung chung kiểu "các phương án kia không đúng". Phải chỉ ra điểm sai cụ thể."""
 
-TECHNICAL_RULES = """\
+def _technical_rules(ordered_types: Sequence[str]) -> str:
+    """Ràng buộc kỹ thuật, với question_type liệt kê đích danh các dạng được yêu cầu.
+
+    Liệt kê đích danh (thay vì nói chung chung "nằm trong danh sách yêu cầu")
+    vì model hay bám vào ví dụ literal trong OUTPUT_FORMAT nếu không có gì cụ
+    thể hơn để neo vào — xem lịch sử: khi chỉ yêu cầu verb_tense/word_stress,
+    model từng trả về toàn "cloze" vì đó là chuỗi literal duy nhất nó thấy.
+    """
+    allowed = ", ".join(f'"{t}"' for t in ordered_types)
+    return f"""\
 ═══ RÀNG BUỘC KỸ THUẬT ═══
 
 - card_id phải là một trong các card_id đã cho — không bịa ra.
 - Không dùng cùng một card_id cho hai câu hỏi.
-- question_type phải nằm trong danh sách question_types được yêu cầu.
+- question_type của MỖI câu PHẢI là một trong đúng các giá trị sau: {allowed}. Không dùng giá trị nào khác, kể cả dạng câu hỏi có thật của hệ thống nhưng không nằm trong danh sách này.
 - correct_index là số nguyên từ 0 đến (số phương án trừ 1), trỏ đúng vào phương án đúng trong mảng options.
 - Không phương án nào được rỗng hay trùng nhau.
 - Vị trí đáp án đúng nên phân bố đều giữa các câu, không luôn đặt ở vị trí 0."""
 
-OUTPUT_FORMAT = """\
+
+def _output_format(ordered_types: Sequence[str]) -> str:
+    """Ví dụ JSON, với question_type minh hoạ bằng MỘT dạng thật sự được yêu cầu.
+
+    Trước đây ví dụ này hardcode "cloze" — khi cloze không nằm trong dạng
+    được yêu cầu, đó là chuỗi "cloze" duy nhất còn sót trong cả prompt, và
+    model bám vào nó thay vì dùng dạng thật.
+    """
+    example_type = ordered_types[0]
+    return f"""\
 ═══ ĐỊNH DẠNG ═══
 
 Trả về DUY NHẤT một JSON object, không kèm markdown, không kèm chữ giải thích bên ngoài:
-{"questions": [{"card_id": "...", "question_type": "cloze", "prompt_text": "...", "options": ["...", "...", "...", "..."], "correct_index": 0, "explanation": "..."}]}"""
+{{"questions": [{{"card_id": "...", "question_type": "{example_type}", "prompt_text": "...", "options": ["...", "...", "...", "..."], "correct_index": 0, "explanation": "..."}}]}}"""
+
 
 # Dạng có luật distractor dùng chung ở WORD_DISTRACTOR_RULES.
 WORD_CHOICE_TYPES = ("cloze", "context")
@@ -129,7 +148,7 @@ def build_system_prompt(ai_types: Sequence[str]) -> str:
     parts = [SYSTEM_HEADER, "═══ DẠNG CÂU HỎI ═══\n\n" + "\n\n".join(blocks)]
     if any(question_type in WORD_CHOICE_TYPES for question_type in ordered):
         parts.append(WORD_DISTRACTOR_RULES)
-    parts.extend([EXPLANATION_RULES, TECHNICAL_RULES, OUTPUT_FORMAT])
+    parts.extend([EXPLANATION_RULES, _technical_rules(ordered), _output_format(ordered)])
 
     return "\n\n".join(parts)
 

@@ -304,6 +304,28 @@ class TestBuildSystemPrompt:
         assert "RÀNG BUỘC KỸ THUẬT" in system
         assert "ĐỊNH DẠNG" in system
 
+    def test_json_example_never_names_a_type_that_was_not_requested(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
+
+        assert "cloze" not in system
+        assert "context" not in system
+
+    def test_json_example_uses_one_of_the_requested_types(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
+
+        assert '"question_type": "word_stress"' in system
+
+    def test_technical_rules_spell_out_the_exact_allowed_type_values(self):
+        cards = make_pool(4)
+
+        system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
+
+        assert "PHẢI là một trong" in system
+
 
 class TestVerbTense:
     def test_accepts_a_well_formed_question(self):
