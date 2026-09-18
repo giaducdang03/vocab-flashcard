@@ -35,7 +35,7 @@ STRESS_OPTION_RE = re.compile(r"^(\d+) — (.+)$")
 # vậy. Chấp nhận các biến thể này, nhưng chỉ khi nằm trong một cặp dấu gạch
 # chéo /.../ — để phân biệt với dấu nháy đơn xuất hiện tình cờ trong câu văn
 # (ví dụ "it's").
-IPA_TRANSCRIPTION_RE = re.compile(r"/[^/\n]*['ˈʼ’][^/\n]*/")
+IPA_TRANSCRIPTION_RE = re.compile(r"/[^/\n]*['ˈʼ’´′][^/\n]*/")
 
 SYSTEM_HEADER = """\
 Bạn là giáo viên tiếng Anh giàu kinh nghiệm, chuyên soạn đề trắc nghiệm từ vựng cho người Việt trình độ B1–B2.
@@ -68,17 +68,29 @@ TYPE_RULES: dict[str, str] = {
    • explanation phải nêu rõ dấu hiệu thời gian nào quyết định thì đúng.""",
     "word_stress": """\
 "word_stress" — Trọng âm từ
-   • CHỈ dùng thẻ mà front_text là MỘT từ đơn có 2–4 âm tiết. Thẻ một âm tiết, trên 4 âm tiết, hoặc là cụm nhiều từ thì bỏ qua hoàn toàn.
-   • prompt_text là NGUYÊN VẸN từ đó, viết liền không tách âm tiết.
-     Ví dụ: "comfortable"
-   • TUYỆT ĐỐI KHÔNG đánh dấu trọng âm hay tách âm tiết trong prompt_text: không dùng ˈ, không dùng ˌ, không viết hoa chữ nào. prompt_text viết thường hoàn toàn, đúng chính tả của từ.
-   • Số phương án đúng bằng số âm tiết của từ (2, 3 hoặc 4) — đây là ngoại lệ duy nhất của quy tắc 4 phương án.
-   • Phương án thứ i có dạng "i — âm tiết thứ i", nối bằng " — " (dấu gạch dài, có một khoảng trắng ở mỗi bên), liệt kê theo đúng thứ tự âm tiết trong từ.
-   • Ghép các âm tiết trong phương án lại theo đúng thứ tự PHẢI cho ra CHÍNH XÁC prompt_text.
-     Ví dụ với prompt_text "comfortable": ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable).
-   • TUYỆT ĐỐI KHÔNG viết hoa âm tiết nào trong options, kể cả âm tiết mang trọng âm — nhiều sách viết hoa âm tiết đúng để nhấn mạnh (ví dụ "COMfortable"), nhưng làm vậy trong options ở đây là lộ đáp án ngay lập tức. Toàn bộ âm tiết trong options viết thường hoàn toàn, giống hệt prompt_text; chỉ correct_index mới được dùng để chỉ ra âm tiết đúng.
-   • correct_index trỏ vào âm tiết mang TRỌNG ÂM CHÍNH.
-   • explanation phải bắt đầu bằng phiên âm đặt trong hai dấu gạch chéo /..../ , có đánh dấu trọng âm chính ngay trước âm tiết được nhấn (dùng ký tự IPA ˈ nếu gõ được, hoặc dấu nháy đơn ' nếu không) — ví dụ: "/kəmˈfɜːrtəbl/" hoặc "/kəm'fɜːrtəbl/" nếu trọng âm rơi vào âm tiết 2, "/ˈkʌmftəbl/" hoặc "/'kʌmftəbl/" nếu rơi vào âm tiết 1 — rồi mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
+   • CHỈ dùng thẻ mà front_text là MỘT từ đơn (một từ, không dấu cách, không gạch nối) có 2–4 âm tiết. Từ một âm tiết, trên 4 âm tiết, hoặc cụm nhiều từ thì bỏ qua hoàn toàn.
+   • prompt_text là NGUYÊN VẸN từ đó, viết thường, viết liền, KHÔNG tách âm tiết, KHÔNG đánh dấu trọng âm (không ˈ, không ˌ), không viết hoa chữ nào. Ví dụ: "comfortable".
+
+   ▲ QUY TẮC QUAN TRỌNG NHẤT — CẮT ÂM TIẾT THEO CHỮ VIẾT, KHÔNG THEO CÁCH ĐỌC ▲
+   • options là kết quả cắt prompt_text thành các khúc chữ liên tiếp. Ghép tất cả các khúc theo đúng thứ tự PHẢI ra ĐÚNG TỪNG KÝ TỰ của prompt_text: không thêm, không bớt, không đổi, không viết lại chữ cái nào.
+   • Đây là cắt theo MẶT CHỮ (như gạch nối trong từ điển: com·fort·a·ble), KHÔNG phải phiên âm theo cách phát âm. Nhiều từ đọc nuốt âm nên số âm tiết NGHE được ít hơn số khúc chữ — kệ cách đọc, cứ cắt sao cho ghép lại đủ mọi chữ cái; chữ câm vẫn phải nằm trong một khúc.
+     ─ "chocolate"   → ["1 — cho", "2 — co", "3 — late"]      (cho+co+late = chocolate), KHÔNG phải ["choc","late"].
+     ─ "comfortable" → ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable), KHÔNG phải ["comf","ta","ble"].
+     ─ "interesting" → ["1 — in", "2 — ter", "3 — est", "4 — ing"] (in+ter+est+ing = interesting).
+     ─ "vegetable"   → ["1 — veg", "2 — e", "3 — ta", "4 — ble"]   (veg+e+ta+ble = vegetable).
+     ─ "business"    → ["1 — busi", "2 — ness"]                    (busi+ness = business).
+   • Số phương án = số khúc chữ vừa cắt (2, 3 hoặc 4) — đây là ngoại lệ duy nhất của quy tắc 4 phương án.
+   • Phương án thứ i có dạng "i — khúc thứ i", nối bằng " — " (dấu gạch dài —, một khoảng trắng mỗi bên), liệt kê đúng thứ tự trái sang phải.
+   • TUYỆT ĐỐI KHÔNG viết hoa khúc nào, kể cả khúc mang trọng âm (viết hoa là lộ đáp án). Mọi khúc viết thường hệt prompt_text; chỉ correct_index mới chỉ ra âm tiết đúng. KHÔNG đưa ˈ, ˌ hay bất kỳ ký tự phiên âm nào vào options — options chỉ gồm các chữ cái lấy nguyên từ prompt_text.
+   • correct_index trỏ vào khúc chứa âm tiết mang TRỌNG ÂM CHÍNH.
+   • TỰ KIỂM TRA trước khi trả: nối các khúc trong options (bỏ phần "i — ") lại; nếu chuỗi thu được KHÁC prompt_text dù chỉ một ký tự thì chia lại. Nếu không có cách nào cắt mà vẫn giữ đủ chữ cái, hãy BỎ thẻ đó, không ép ra đề.
+   • explanation viết bằng tiếng Việt và BẮT BUỘC MỞ ĐẦU bằng phiên âm theo đúng khuôn: một cặp dấu gạch chéo /.../, và NGAY TRƯỚC âm tiết mang trọng âm chính có một dấu trọng âm nằm BÊN TRONG cặp gạch chéo đó.
+     ─ Dấu trọng âm CHỈ được là ký tự IPA ˈ (ưu tiên) hoặc dấu nháy thẳng ' nếu không gõ được ˈ. TUYỆT ĐỐI KHÔNG dùng dấu sắc ´, dấu prime ′, dấu nháy ngược ` hay bất kỳ ký tự nào khác — dùng sai coi như thiếu.
+     ─ Phiên âm phải nằm trong cặp / /, không xuống dòng giữa chừng. Không có / / coi như thiếu.
+     ─ Trọng âm rơi vào âm tiết đầu thì dấu vẫn phải đặt ngay sau dấu / mở.
+       Ví dụ: "/ˈkʌmftəbl/ ..." (nhấn âm 1) hoặc "/kəmˈfɜːrtəbl/ ..." (nhấn âm 2). Nếu không gõ được ˈ: "/'kʌmftəbl/" hoặc "/kəm'fɜːrtəbl/".
+     ─ TỰ KIỂM TRA trước khi trả: trong explanation phải tìm được một đoạn bắt đầu bằng /, kết thúc bằng /, và giữa hai dấu / đó có chứa ˈ hoặc '. Nếu không, viết lại explanation.
+   • Sau phiên âm mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không đổi trọng âm; từ kết thúc -tion nhấn vào âm tiết ngay trước nó).""",
 }
 
 WORD_DISTRACTOR_RULES = """\
