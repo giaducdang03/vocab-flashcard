@@ -39,7 +39,11 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
         onClick={() => setIsOpen(!isOpen)}
         title="User menu"
       >
-        <CircleUser size={18} />
+        {user.avatar_url ? (
+          <img src={user.avatar_url} alt="" className="h-5 w-5 rounded-full object-cover" referrerPolicy="no-referrer" />
+        ) : (
+          <CircleUser size={18} />
+        )}
         <span className="text-sm font-medium">{user.display_name || user.email}</span>
       </button>
 

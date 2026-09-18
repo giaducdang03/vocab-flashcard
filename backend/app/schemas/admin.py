@@ -22,6 +22,9 @@ class AdminUserRow(BaseModel):
     role: Role
     created_at: datetime
     is_config_admin: bool
+    email_verified: bool
+    has_google: bool
+    avatar_url: str | None
     session_count: int
     card_count: int
     quizzes_taken: int

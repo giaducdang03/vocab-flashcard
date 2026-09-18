@@ -133,9 +133,18 @@ export default function AdminUserDetailPage() {
           <section className="mt-6 rounded-xl border border-hairline bg-surface-card p-6 shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex min-w-0 items-start gap-4 sm:items-center">
-                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-muted ring-2 ring-hairline">
-                  <CircleUserRound size={36} strokeWidth={1.5} />
-                </span>
+                {detail.avatar_url ? (
+                  <img
+                    src={detail.avatar_url}
+                    alt=""
+                    referrerPolicy="no-referrer"
+                    className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-hairline"
+                  />
+                ) : (
+                  <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-muted ring-2 ring-hairline">
+                    <CircleUserRound size={36} strokeWidth={1.5} />
+                  </span>
+                )}
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-3">
                     <h1 className="text-headline-md text-ink">{detail.display_name}</h1>
@@ -168,6 +177,20 @@ export default function AdminUserDetailPage() {
                       Joined {formatDate(detail.created_at)}
                     </span>
                   </p>
+                  {(detail.email_verified || detail.has_google) && (
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                      {detail.email_verified && (
+                        <span className="rounded-full border border-hairline px-2 py-0.5 text-caption-uppercase uppercase text-muted">
+                          Verified
+                        </span>
+                      )}
+                      {detail.has_google && (
+                        <span className="rounded-full border border-hairline px-2 py-0.5 text-caption-uppercase uppercase text-muted">
+                          Google
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               <button

@@ -11,6 +11,7 @@ type AuthState = {
 type AuthContextValue = AuthState & {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
+  loginWithGoogleCode: (code: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 };
@@ -68,6 +69,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuth({ user: nextUser, token: nextToken, isLoading: false });
   }, []);
 
+  const loginWithGoogleCode = useCallback(async (code: string) => {
+    const response = await api.post('/auth/google/exchange', { code });
+    const nextToken = response.data.token;
+    const nextUser = response.data.user;
+    setStoredToken(nextToken);
+    setAuth({ user: nextUser, token: nextToken, isLoading: false });
+  }, []);
+
   const logout = useCallback(() => {
     setStoredToken(null);
     setAuth({ user: null, token: null, isLoading: false });
@@ -78,10 +87,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...auth,
       login,
       register,
+      loginWithGoogleCode,
       logout,
       refreshUser,
     }),
-    [auth, login, logout, refreshUser, register],
+    [auth, login, logout, refreshUser, register, loginWithGoogleCode],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -57,12 +57,35 @@ export default function UserTable({ rows, onOpen }: UserTableProps) {
             >
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-caption-uppercase text-ink">
-                    {initials(row.display_name)}
-                  </span>
+                  {row.avatar_url ? (
+                    <img
+                      src={row.avatar_url}
+                      alt=""
+                      referrerPolicy="no-referrer"
+                      className="h-9 w-9 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-hairline-soft text-caption-uppercase text-ink">
+                      {initials(row.display_name)}
+                    </span>
+                  )}
                   <div className="min-w-0">
                     <p className="truncate text-title-sm text-ink">{row.display_name}</p>
                     <p className="truncate text-body-sm text-muted">{row.email}</p>
+                    {(row.email_verified || row.has_google) && (
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {row.email_verified && (
+                          <span className="rounded-full border border-hairline px-2 py-0.5 text-caption-uppercase uppercase text-muted">
+                            Verified
+                          </span>
+                        )}
+                        {row.has_google && (
+                          <span className="rounded-full border border-hairline px-2 py-0.5 text-caption-uppercase uppercase text-muted">
+                            Google
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </td>

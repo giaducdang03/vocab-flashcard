@@ -485,6 +485,25 @@ textarea {
   width: 100%;
 }
 
+.divider-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.divider-text::before,
+.divider-text::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+
 .empty-state {
   display: grid;
   place-items: center;

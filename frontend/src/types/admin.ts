@@ -16,6 +16,9 @@ export type AdminUserRow = {
   role: UserRole;
   created_at: string;
   is_config_admin: boolean;
+  email_verified: boolean;
+  has_google: boolean;
+  avatar_url: string | null;
   session_count: number;
   card_count: number;
   quizzes_taken: number;

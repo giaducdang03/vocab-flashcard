@@ -15,6 +15,11 @@ class Settings(BaseSettings):
     AI_DAILY_QUIZ_LIMIT: int = 20
     AI_TIMEOUT_SECONDS: int = 90
 
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = ""
+    FRONTEND_URL: str = "http://localhost:5173"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
