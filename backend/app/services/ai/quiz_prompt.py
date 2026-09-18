@@ -24,7 +24,6 @@ OPTION_COUNT: dict[str, int] = {
     "verb_tense": 4,
 }
 
-SYLLABLE_SEPARATOR = "·"
 # Dấu trọng âm IPA: xuất hiện trong prompt_text là lộ đáp án.
 STRESS_MARKS = ("ˈ", "ˌ")
 STRESS_OPTION_RE = re.compile(r"^(\d+) — (.+)$")
@@ -61,12 +60,13 @@ TYPE_RULES: dict[str, str] = {
     "word_stress": """\
 "word_stress" — Trọng âm từ
    • CHỈ dùng thẻ mà front_text là MỘT từ đơn có 2–4 âm tiết. Thẻ một âm tiết, trên 4 âm tiết, hoặc là cụm nhiều từ thì bỏ qua hoàn toàn.
-   • prompt_text là chính từ đó đã tách âm tiết, nối bằng " · " (dấu chấm giữa, có một khoảng trắng ở mỗi bên).
-     Ví dụ: "com · for · ta · ble"
-   • TUYỆT ĐỐI KHÔNG đánh dấu trọng âm trong prompt_text: không dùng ˈ, không dùng ˌ, không viết hoa âm tiết nào. prompt_text viết thường hoàn toàn.
-   • Số phương án đúng bằng số âm tiết (2, 3 hoặc 4) — đây là ngoại lệ duy nhất của quy tắc 4 phương án.
-   • Phương án thứ i có dạng "i — âm tiết thứ i", nối bằng " — " (dấu gạch dài, có một khoảng trắng ở mỗi bên), và phải liệt kê theo đúng thứ tự âm tiết.
-     Ví dụ với "com · for · ta · ble": ["1 — com", "2 — for", "3 — ta", "4 — ble"]
+   • prompt_text là NGUYÊN VẸN từ đó, viết liền không tách âm tiết.
+     Ví dụ: "comfortable"
+   • TUYỆT ĐỐI KHÔNG đánh dấu trọng âm hay tách âm tiết trong prompt_text: không dùng ˈ, không dùng ˌ, không viết hoa chữ nào. prompt_text viết thường hoàn toàn, đúng chính tả của từ.
+   • Số phương án đúng bằng số âm tiết của từ (2, 3 hoặc 4) — đây là ngoại lệ duy nhất của quy tắc 4 phương án.
+   • Phương án thứ i có dạng "i — âm tiết thứ i", nối bằng " — " (dấu gạch dài, có một khoảng trắng ở mỗi bên), liệt kê theo đúng thứ tự âm tiết trong từ.
+   • Ghép các âm tiết trong phương án lại theo đúng thứ tự PHẢI cho ra CHÍNH XÁC prompt_text.
+     Ví dụ với prompt_text "comfortable": ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable).
    • correct_index trỏ vào âm tiết mang TRỌNG ÂM CHÍNH.
    • explanation phải nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không làm đổi trọng âm; từ kết thúc bằng -tion nhấn vào âm tiết ngay trước nó).""",
 }
@@ -252,35 +252,31 @@ def _check_verb_tense(item: dict[str, Any]) -> str | None:
 
 
 def _check_word_stress(item: dict[str, Any]) -> str | None:
+    """Kiểm tra câu word_stress.
+
+    prompt_text là nguyên từ, không tách âm tiết — âm tiết chỉ xuất hiện
+    trong options. Ghép các âm tiết trong options lại theo đúng thứ tự phải
+    cho ra chính xác prompt_text; đây vừa là cách xác nhận model chia âm tiết
+    đúng chính tả, vừa thay cho việc so khớp từng âm tiết một.
+    """
     prompt_text = item["prompt_text"]
 
     if any(mark in prompt_text for mark in STRESS_MARKS):
         return "prompt_text chứa dấu trọng âm, lộ đáp án"
+    if prompt_text != prompt_text.lower():
+        return "prompt_text viết hoa, lộ đáp án"
 
-    syllables = [part.strip() for part in prompt_text.split(SYLLABLE_SEPARATOR)]
-
-    if not all(syllables):
-        return "có âm tiết rỗng"
-    if any(syllable.isupper() and len(syllable) > 1 for syllable in syllables):
-        return "âm tiết viết hoa, lộ đáp án"
-    if not MIN_OPTION_COUNT <= len(syllables) <= MAX_OPTION_COUNT:
-        return (
-            f"cần {MIN_OPTION_COUNT}–{MAX_OPTION_COUNT} âm tiết, "
-            f"nhận được {len(syllables)}"
-        )
-
-    options = item["options"]
-    if len(options) != len(syllables):
-        return f"cần đúng {len(syllables)} phương án, bằng số âm tiết"
-
-    for number, (option, syllable) in enumerate(zip(options, syllables), start=1):
+    syllables: list[str] = []
+    for number, option in enumerate(item["options"], start=1):
         match = STRESS_OPTION_RE.match(option.strip())
         if match is None:
             return f"phương án {number} sai định dạng 'N — âm tiết'"
         if match.group(1) != str(number):
             return f"phương án {number} đánh số sai"
-        if match.group(2).strip() != syllable:
-            return f"phương án {number} không khớp âm tiết thứ {number}"
+        syllables.append(match.group(2).strip())
+
+    if "".join(syllables) != prompt_text:
+        return "các âm tiết trong phương án ghép lại không khớp với prompt_text"
 
     return None
 

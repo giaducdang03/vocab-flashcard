@@ -407,7 +407,7 @@ def _word_stress_question(card_id: str = "card-0") -> dict:
     return {
         "card_id": card_id,
         "question_type": "word_stress",
-        "prompt_text": "com · for · ta · ble",
+        "prompt_text": "comfortable",
         "options": ["1 — com", "2 — for", "3 — ta", "4 — ble"],
         "correct_index": 0,
         "explanation": "Hậu tố -able không làm đổi trọng âm, nên trọng âm giữ ở âm tiết đầu.",
@@ -426,11 +426,12 @@ class TestWordStress:
         assert len(questions) == 1
         assert questions[0].question_type == "word_stress"
         assert questions[0].correct_index == 0
+        assert questions[0].prompt_text == "comfortable"
 
     def test_accepts_a_two_syllable_question(self):
         cards = make_pool(4)
         item = _word_stress_question()
-        item["prompt_text"] = "re · cord"
+        item["prompt_text"] = "record"
         item["options"] = ["1 — re", "2 — cord"]
         item["correct_index"] = 1
 
@@ -445,7 +446,7 @@ class TestWordStress:
     def test_accepts_a_word_with_repeated_syllables(self):
         cards = make_pool(4)
         item = _word_stress_question()
-        item["prompt_text"] = "ba · na · na"
+        item["prompt_text"] = "banana"
         item["options"] = ["1 — ba", "2 — na", "3 — na"]
         item["correct_index"] = 1
 
@@ -459,7 +460,7 @@ class TestWordStress:
     def test_rejects_an_ipa_stress_mark_in_the_prompt(self):
         cards = make_pool(4)
         bad = _word_stress_question()
-        bad["prompt_text"] = "ˈcom · for · ta · ble"
+        bad["prompt_text"] = "ˈcomfortable"
 
         questions, rejected = quiz_prompt.parse_and_validate(
             _raw([bad]), cards, ["word_stress"]
@@ -468,10 +469,10 @@ class TestWordStress:
         assert questions == []
         assert "lộ đáp án" in rejected[0]
 
-    def test_rejects_an_uppercased_syllable(self):
+    def test_rejects_any_uppercase_letter_in_the_prompt(self):
         cards = make_pool(4)
         bad = _word_stress_question()
-        bad["prompt_text"] = "COM · for · ta · ble"
+        bad["prompt_text"] = "Comfortable"
 
         questions, rejected = quiz_prompt.parse_and_validate(
             _raw([bad]), cards, ["word_stress"]
@@ -480,18 +481,7 @@ class TestWordStress:
         assert questions == []
         assert "lộ đáp án" in rejected[0]
 
-    def test_rejects_a_single_syllable_word(self):
-        cards = make_pool(4)
-        bad = _word_stress_question()
-        bad["prompt_text"] = "book"
-        bad["options"] = ["1 — book", "2 — book "]
-        bad["correct_index"] = 0
-
-        questions, _ = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["word_stress"])
-
-        assert questions == []
-
-    def test_rejects_more_syllables_than_options(self):
+    def test_rejects_when_options_omit_a_syllable(self):
         cards = make_pool(4)
         bad = _word_stress_question()
         bad["options"] = ["1 — com", "2 — for", "3 — ta"]
@@ -501,7 +491,7 @@ class TestWordStress:
         )
 
         assert questions == []
-        assert "âm tiết" in rejected[0]
+        assert "không khớp" in rejected[0]
 
     def test_rejects_an_option_without_the_number_prefix(self):
         cards = make_pool(4)
@@ -515,7 +505,7 @@ class TestWordStress:
         assert questions == []
         assert "định dạng" in rejected[0]
 
-    def test_rejects_an_option_that_does_not_match_its_syllable(self):
+    def test_rejects_an_option_that_does_not_reconstruct_the_prompt(self):
         cards = make_pool(4)
         bad = _word_stress_question()
         bad["options"] = ["1 — com", "2 — fur", "3 — ta", "4 — ble"]
@@ -531,6 +521,17 @@ class TestWordStress:
         cards = make_pool(4)
         bad = _word_stress_question()
         bad["options"] = ["2 — com", "1 — for", "3 — ta", "4 — ble"]
+
+        questions, _ = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["word_stress"])
+
+        assert questions == []
+
+    def test_rejects_a_word_with_only_one_option(self):
+        cards = make_pool(4)
+        bad = _word_stress_question()
+        bad["prompt_text"] = "book"
+        bad["options"] = ["1 — book"]
+        bad["correct_index"] = 0
 
         questions, _ = quiz_prompt.parse_and_validate(_raw([bad]), cards, ["word_stress"])
 
