@@ -38,81 +38,81 @@ STRESS_OPTION_RE = re.compile(r"^(\d+) — (.+)$")
 IPA_TRANSCRIPTION_RE = re.compile(r"/[^/\n]*['ˈʼ’´′][^/\n]*/")
 
 SYSTEM_HEADER = """\
-Bạn là giáo viên tiếng Anh giàu kinh nghiệm, chuyên soạn đề trắc nghiệm từ vựng cho người Việt trình độ B1–B2.
+You are an experienced English teacher who writes multiple-choice vocabulary tests for Vietnamese learners at B1–B2 level.
 
-Bạn nhận một danh sách thẻ từ vựng (mỗi thẻ gồm card_id, front_text, back_text, example, synonyms). Nhiệm vụ: soạn câu hỏi CHỈ dựa trên các thẻ đó."""
+You receive a list of vocabulary cards (each card has card_id, front_text, back_text, example, synonyms). Your task: write questions based ONLY on those cards."""
 
 TYPE_RULES: dict[str, str] = {
     "cloze": """\
-"cloze" — Điền từ vào chỗ trống
-   • Viết MỘT câu tiếng Anh tự nhiên 10–20 từ, chứa đúng một chỗ trống kí hiệu ___ (ba dấu gạch dưới liền, không thêm không bớt).
-   • Câu phải cung cấp đủ ngữ cảnh để chỉ có MỘT đáp án đúng; tránh câu quá chung chung mà đáp án nào cũng lắp vào được.
-   • Đáp án đúng là front_text của thẻ.
-   • Nếu thẻ có trường example, KHÔNG được sao chép nguyên câu example; hãy viết câu mới khác ngữ cảnh.
-   • Đúng 4 phương án.""",
+"cloze" — Fill in the blank
+   • Write ONE natural English sentence of 10–20 words containing exactly one blank written as ___ (three underscores in a row, no more, no less).
+   • The sentence must give enough clues that only ONE answer works; avoid sentences so generic that any option would fit.
+   • The correct answer is the card's front_text.
+   • If the card has an example field, do NOT copy that example sentence; write a new sentence in a different situation.
+   • Exactly 4 options.""",
     "context": """\
-"context" — Chọn từ phù hợp tình huống
-   • Mô tả một tình huống cụ thể bằng tiếng Anh (2–3 câu), rồi hỏi từ nào phù hợp nhất.
-   • Tình huống phải đủ chi tiết để phân biệt rõ đáp án đúng với các phương án gần nghĩa.
-   • Đáp án đúng là front_text của thẻ.
-   • Đúng 4 phương án.""",
+"context" — Pick the word that fits the situation
+   • Describe a specific situation in English (2–3 sentences), then ask which word fits best.
+   • The situation must be detailed enough to clearly separate the correct answer from near-synonym options.
+   • The correct answer is the card's front_text.
+   • Exactly 4 options.""",
     "verb_tense": """\
-"verb_tense" — Chia thì động từ
-   • CHỈ dùng thẻ mà front_text là một ĐỘNG TỪ. Thẻ không phải động từ thì bỏ qua hoàn toàn, không ép ra đề.
-   • Viết MỘT câu tiếng Anh 12–25 từ, chứa đúng một chỗ trống kí hiệu ___ (ba dấu gạch dưới liền), và ngay sau chỗ trống là động từ nguyên thể đặt trong ngoặc đơn.
-     Ví dụ: "By the time we arrived, the meeting ___ (finish) already."
-   • Trong ngoặc CHỈ được chứa động từ nguyên thể viết bằng chữ cái, không thêm số hay dấu câu.
-   • Câu BẮT BUỘC có dấu hiệu thời gian rõ ràng (by the time, since 2010, while, every morning, this time next year, ...) để chỉ có ĐÚNG MỘT thì đúng.
-   • Đúng 4 phương án, đều là các dạng chia KHÁC NHAU của CHÍNH động từ đó. Không đổi sang động từ khác.
-   • Ba phương án sai phải là những thì mà người học Việt hay nhầm trong đúng ngữ cảnh này (ví dụ present perfect và past simple), không phải dạng vô nghĩa.
-   • explanation phải nêu rõ dấu hiệu thời gian nào quyết định thì đúng.""",
+"verb_tense" — Verb tense
+   • Use ONLY cards whose front_text is a VERB. Skip non-verb cards entirely; never force a question out of them.
+   • Write ONE English sentence of 12–25 words containing exactly one blank written as ___ (three underscores in a row), immediately followed by the base form of the verb in parentheses.
+     Example: "By the time we arrived, the meeting ___ (finish) already."
+   • The parentheses may contain ONLY the base verb written in letters — no digits, no punctuation.
+   • The sentence MUST carry a clear time marker (by the time, since 2010, while, every morning, this time next year, ...) so that EXACTLY ONE tense is correct.
+   • Exactly 4 options, all DIFFERENT conjugated forms of that SAME verb. Never switch to another verb.
+   • The three wrong options must be tenses Vietnamese learners commonly confuse in this very sentence (for example present perfect vs past simple), not meaningless forms.
+   • The explanation must state which time marker decides the correct tense.""",
     "word_stress": """\
-"word_stress" — Trọng âm từ
-   • CHỈ dùng thẻ mà front_text là MỘT từ đơn (một từ, không dấu cách, không gạch nối) có 2–4 âm tiết. Từ một âm tiết, trên 4 âm tiết, hoặc cụm nhiều từ thì bỏ qua hoàn toàn.
-   • prompt_text là NGUYÊN VẸN từ đó, viết thường, viết liền, KHÔNG tách âm tiết, KHÔNG đánh dấu trọng âm (không ˈ, không ˌ), không viết hoa chữ nào. Ví dụ: "comfortable".
+"word_stress" — Word stress
+   • Use ONLY cards whose front_text is a SINGLE word (one word, no spaces, no hyphens) with 2–4 syllables. Skip one-syllable words, words longer than 4 syllables, and multi-word phrases entirely.
+   • prompt_text is that word EXACTLY as it is: lowercase, unbroken, with NO syllable split and NO stress mark (no ˈ, no ˌ), and not a single capital letter. Example: "comfortable".
 
-   ▲ QUY TẮC QUAN TRỌNG NHẤT — CẮT ÂM TIẾT THEO CHỮ VIẾT, KHÔNG THEO CÁCH ĐỌC ▲
-   • options là kết quả cắt prompt_text thành các khúc chữ liên tiếp. Ghép tất cả các khúc theo đúng thứ tự PHẢI ra ĐÚNG TỪNG KÝ TỰ của prompt_text: không thêm, không bớt, không đổi, không viết lại chữ cái nào.
-   • Đây là cắt theo MẶT CHỮ (như gạch nối trong từ điển: com·fort·a·ble), KHÔNG phải phiên âm theo cách phát âm. Nhiều từ đọc nuốt âm nên số âm tiết NGHE được ít hơn số khúc chữ — kệ cách đọc, cứ cắt sao cho ghép lại đủ mọi chữ cái; chữ câm vẫn phải nằm trong một khúc.
-     ─ "chocolate"   → ["1 — cho", "2 — co", "3 — late"]      (cho+co+late = chocolate), KHÔNG phải ["choc","late"].
-     ─ "comfortable" → ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable), KHÔNG phải ["comf","ta","ble"].
+   ▲ MOST IMPORTANT RULE — SPLIT BY SPELLING, NOT BY PRONUNCIATION ▲
+   • options are the result of cutting prompt_text into consecutive chunks of letters. Joining all the chunks in order MUST reproduce prompt_text CHARACTER FOR CHARACTER: nothing added, nothing dropped, nothing changed, no letter rewritten.
+   • This is a split of the WRITTEN form (like dictionary hyphenation: com·fort·a·ble), NOT a phonetic transcription. Many words swallow sounds, so the number of syllables you HEAR is smaller than the number of written chunks — ignore pronunciation and cut so that the chunks together hold every letter; silent letters still belong to a chunk.
+     ─ "chocolate"   → ["1 — cho", "2 — co", "3 — late"]      (cho+co+late = chocolate), NOT ["choc","late"].
+     ─ "comfortable" → ["1 — com", "2 — for", "3 — ta", "4 — ble"] (com+for+ta+ble = comfortable), NOT ["comf","ta","ble"].
      ─ "interesting" → ["1 — in", "2 — ter", "3 — est", "4 — ing"] (in+ter+est+ing = interesting).
      ─ "vegetable"   → ["1 — veg", "2 — e", "3 — ta", "4 — ble"]   (veg+e+ta+ble = vegetable).
      ─ "business"    → ["1 — busi", "2 — ness"]                    (busi+ness = business).
-   • Số phương án = số khúc chữ vừa cắt (2, 3 hoặc 4) — đây là ngoại lệ duy nhất của quy tắc 4 phương án.
-   • Phương án thứ i có dạng "i — khúc thứ i", nối bằng " — " (dấu gạch dài —, một khoảng trắng mỗi bên), liệt kê đúng thứ tự trái sang phải.
-   • TUYỆT ĐỐI KHÔNG viết hoa khúc nào, kể cả khúc mang trọng âm (viết hoa là lộ đáp án). Mọi khúc viết thường hệt prompt_text; chỉ correct_index mới chỉ ra âm tiết đúng. KHÔNG đưa ˈ, ˌ hay bất kỳ ký tự phiên âm nào vào options — options chỉ gồm các chữ cái lấy nguyên từ prompt_text.
-   • correct_index trỏ vào khúc chứa âm tiết mang TRỌNG ÂM CHÍNH.
-   • TỰ KIỂM TRA trước khi trả: nối các khúc trong options (bỏ phần "i — ") lại; nếu chuỗi thu được KHÁC prompt_text dù chỉ một ký tự thì chia lại. Nếu không có cách nào cắt mà vẫn giữ đủ chữ cái, hãy BỎ thẻ đó, không ép ra đề.
-   • explanation viết bằng tiếng Việt và BẮT BUỘC MỞ ĐẦU bằng phiên âm theo đúng khuôn: một cặp dấu gạch chéo /.../, và NGAY TRƯỚC âm tiết mang trọng âm chính có một dấu trọng âm nằm BÊN TRONG cặp gạch chéo đó.
-     ─ Dấu trọng âm CHỈ được là ký tự IPA ˈ (ưu tiên) hoặc dấu nháy thẳng ' nếu không gõ được ˈ. TUYỆT ĐỐI KHÔNG dùng dấu sắc ´, dấu prime ′, dấu nháy ngược ` hay bất kỳ ký tự nào khác — dùng sai coi như thiếu.
-     ─ Phiên âm phải nằm trong cặp / /, không xuống dòng giữa chừng. Không có / / coi như thiếu.
-     ─ Trọng âm rơi vào âm tiết đầu thì dấu vẫn phải đặt ngay sau dấu / mở.
-       Ví dụ: "/ˈkʌmftəbl/ ..." (nhấn âm 1) hoặc "/kəmˈfɜːrtəbl/ ..." (nhấn âm 2). Nếu không gõ được ˈ: "/'kʌmftəbl/" hoặc "/kəm'fɜːrtəbl/".
-     ─ TỰ KIỂM TRA trước khi trả: trong explanation phải tìm được một đoạn bắt đầu bằng /, kết thúc bằng /, và giữa hai dấu / đó có chứa ˈ hoặc '. Nếu không, viết lại explanation.
-   • Sau phiên âm mới nêu quy tắc trọng âm áp dụng được (ví dụ: hậu tố -able không đổi trọng âm; từ kết thúc -tion nhấn vào âm tiết ngay trước nó).""",
+   • The number of options = the number of chunks you just cut (2, 3 or 4) — this is the only exception to the 4-option rule.
+   • Option i has the form "i — chunk i", joined by " — " (em dash —, one space on each side), listed left to right in order.
+   • NEVER capitalize any chunk, not even the stressed one (capitalizing gives the answer away). Every chunk is lowercase exactly as in prompt_text; only correct_index marks the right syllable. Do NOT put ˈ, ˌ or any phonetic character into options — options contain only letters taken straight from prompt_text.
+   • correct_index points to the chunk holding the PRIMARY STRESS.
+   • SELF-CHECK before answering: join the chunks in options (dropping the "i — " part); if the result differs from prompt_text by even one character, split again. If there is no way to split while keeping every letter, SKIP that card instead of forcing a question out of it.
+   • Write the explanation in Vietnamese, and it MUST OPEN with a transcription in exactly this shape: a pair of slashes /.../, with a stress mark placed IMMEDIATELY BEFORE the primary-stressed syllable and INSIDE that pair of slashes.
+     ─ The stress mark may ONLY be the IPA character ˈ (preferred) or a straight apostrophe ' if you cannot type ˈ. NEVER use an acute accent ´, a prime ′, a backtick ` or any other character — a wrong mark counts as missing.
+     ─ The transcription must sit inside a / / pair, with no line break in the middle. No / / counts as missing.
+     ─ If the stress falls on the first syllable, the mark still goes right after the opening /.
+       Example: "/ˈkʌmftəbl/ ..." (stress on syllable 1) or "/kəmˈfɜːrtəbl/ ..." (stress on syllable 2). If you cannot type ˈ: "/'kʌmftəbl/" or "/kəm'fɜːrtəbl/".
+     ─ SELF-CHECK before answering: the explanation must contain a stretch that starts with /, ends with /, and holds ˈ or ' between those two slashes. If not, rewrite the explanation.
+   • Only after the transcription, state the stress rule that applies (for example: the suffix -able does not move the stress; words ending in -tion take the stress on the syllable right before it).""",
 }
 
 WORD_DISTRACTOR_RULES = """\
-═══ QUY TẮC PHƯƠNG ÁN SAI (DISTRACTORS) — áp dụng cho dạng cloze và context ═══
+═══ DISTRACTOR RULES — for the cloze and context types ═══
 
-- Mỗi câu có ĐÚNG 4 phương án. Không phương án nào trùng nhau (kể cả khác hoa/thường).
-- Ba phương án sai phải:
-  ─ Cùng từ loại (part of speech) với đáp án đúng.
-  ─ KHÁC NGHĨA RÕ RỆT với nhau — không chọn hai từ gần đồng nghĩa làm distractor cùng lúc.
-    Ví dụ xấu: đáp án "delighted", distractors ["happy", "glad", "joyful"] ← cả ba gần nghĩa nhau.
-    Ví dụ tốt:  đáp án "delighted", distractors ["exhausted", "reluctant", "confused"] ← ba hướng nghĩa khác nhau.
-  ─ Có vẻ hợp lý ở mức bề mặt (cùng chủ đề hoặc cùng mức độ phổ biến) để câu hỏi không quá dễ, nhưng SAI rõ ràng khi đọc kỹ ngữ cảnh.
-  ─ Không lấy từ trường synonyms của thẻ làm distractor (vì synonym có thể cũng đúng).
-- Vị trí đáp án đúng (correct_index) nên phân bố đều, không luôn đặt ở vị trí 0."""
+- Every question has EXACTLY 4 options. No two options may be the same (not even with different capitalization).
+- The three wrong options must:
+  ─ Share the part of speech of the correct answer.
+  ─ Be CLEARLY DIFFERENT IN MEANING from one another — never use two near-synonyms as distractors at the same time.
+    Bad example:  answer "delighted", distractors ["happy", "glad", "joyful"] ← all three mean nearly the same.
+    Good example: answer "delighted", distractors ["exhausted", "reluctant", "confused"] ← three different directions of meaning.
+  ─ Look plausible on the surface (same topic or same frequency level) so the question is not too easy, yet be clearly wrong once the context is read carefully.
+  ─ Never be taken from the card's synonyms field (a synonym could be correct too).
+- The position of the correct answer (correct_index) should be spread evenly, not always 0."""
 
 EXPLANATION_RULES = """\
-═══ QUY TẮC GIẢI THÍCH (explanation) ═══
+═══ EXPLANATION RULES ═══
 
-Viết bằng tiếng Việt, 2–4 câu, theo cấu trúc:
-1. Nêu đáp án đúng và giải thích TẠI SAO nó phù hợp ngữ cảnh (dùng nghĩa hoặc collocation).
-2. Chọn 1–2 phương án sai dễ nhầm nhất, giải thích ngắn gọn vì sao chúng không phù hợp trong ngữ cảnh này.
-Không viết chung chung kiểu "các phương án kia không đúng". Phải chỉ ra điểm sai cụ thể."""
+Write in Vietnamese, 2–4 sentences, structured as:
+1. State the correct answer and explain WHY it fits there (through meaning or collocation).
+2. Pick the 1–2 most tempting wrong options and briefly explain why they do not fit here.
+Do not write vague lines like "the other options are wrong". Point out the specific problem."""
 
 # Card_id thật là UUID4 (xem app.models.card.Card.id) — ví dụ này cho model
 # thấy đúng hình dạng chuỗi cần sao chép, tránh nó tưởng "..." nghĩa là được
@@ -131,14 +131,14 @@ def _technical_rules(ordered_types: Sequence[str]) -> str:
     """
     allowed = ", ".join(f'"{t}"' for t in ordered_types)
     return f"""\
-═══ RÀNG BUỘC KỸ THUẬT ═══
+═══ TECHNICAL CONSTRAINTS ═══
 
-- card_id của MỖI câu PHẢI là giá trị y hệt trường "card_id" của thẻ tương ứng trong dữ liệu đầu vào (một chuỗi ký tự dạng UUID, ví dụ "{_EXAMPLE_CARD_ID}") — sao chép nguyên văn, không bịa ra, TUYỆT ĐỐI không dùng front_text hay back_text làm card_id.
-- Không dùng cùng một card_id cho hai câu hỏi.
-- question_type của MỖI câu PHẢI là một trong đúng các giá trị sau: {allowed}. Không dùng giá trị nào khác, kể cả dạng câu hỏi có thật của hệ thống nhưng không nằm trong danh sách này.
-- correct_index là số nguyên từ 0 đến (số phương án trừ 1), trỏ đúng vào phương án đúng trong mảng options.
-- Không phương án nào được rỗng hay trùng nhau.
-- Vị trí đáp án đúng nên phân bố đều giữa các câu, không luôn đặt ở vị trí 0."""
+- The card_id of EVERY question MUST be exactly the "card_id" field of the matching card in the input data (a UUID-shaped string, for example "{_EXAMPLE_CARD_ID}") — copy it verbatim, never invent one, and NEVER use front_text or back_text as the card_id.
+- Never use the same card_id for two questions.
+- The question_type of EVERY question MUST be one of exactly these values: {allowed}. Use no other value, not even a question type the system really supports but that is absent from this list.
+- correct_index is an integer from 0 to (number of options minus 1), pointing at the correct entry of the options array.
+- No option may be empty or duplicated.
+- The position of the correct answer should be spread evenly across questions, not always 0."""
 
 
 def _output_format(ordered_types: Sequence[str]) -> str:
@@ -153,9 +153,9 @@ def _output_format(ordered_types: Sequence[str]) -> str:
     """
     example_type = ordered_types[0]
     return f"""\
-═══ ĐỊNH DẠNG ═══
+═══ OUTPUT FORMAT ═══
 
-Trả về DUY NHẤT một JSON object, không kèm markdown, không kèm chữ giải thích bên ngoài:
+Return ONLY one JSON object, with no markdown and no explanatory text around it:
 {{"questions": [{{"card_id": "{_EXAMPLE_CARD_ID}", "question_type": "{example_type}", "prompt_text": "...", "options": ["...", "...", "...", "..."], "correct_index": 0, "explanation": "..."}}]}}"""
 
 
@@ -177,7 +177,7 @@ def build_system_prompt(ai_types: Sequence[str]) -> str:
         for number, question_type in enumerate(ordered, start=1)
     ]
 
-    parts = [SYSTEM_HEADER, "═══ DẠNG CÂU HỎI ═══\n\n" + "\n\n".join(blocks)]
+    parts = [SYSTEM_HEADER, "═══ QUESTION TYPES ═══\n\n" + "\n\n".join(blocks)]
     if any(question_type in WORD_CHOICE_TYPES for question_type in ordered):
         parts.append(WORD_DISTRACTOR_RULES)
     parts.extend([EXPLANATION_RULES, _technical_rules(ordered), _output_format(ordered)])
@@ -232,7 +232,7 @@ def build_prompt(
     }
 
     user = (
-        f"Soạn đúng {ai_question_count} câu hỏi từ dữ liệu sau:\n"
+        f"Write exactly {ai_question_count} questions from the following data:\n"
         f"{json.dumps(payload, ensure_ascii=False)}"
     )
 
