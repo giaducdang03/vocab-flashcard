@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthPage from './pages/AuthPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 import DashboardPage from './pages/DashboardPage';
+import LandingPage from './pages/LandingPage';
+import ChangelogPage from './pages/ChangelogPage';
 import SessionsPage from './pages/SessionsPage';
 import SessionDetailPage from './pages/SessionDetailPage';
 import StudyPage from './pages/StudyPage';
@@ -47,6 +49,16 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function HomeRoute() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="app-shell center-block">Loading…</div>;
+  }
+
+  return user ? <DashboardPage /> : <LandingPage />;
+}
+
 function AppRoutes() {
   const { user } = useAuth();
 
@@ -54,14 +66,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <AuthPage />} />
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/" element={<HomeRoute />} />
+      <Route path="/changelog" element={<ChangelogPage />} />
       <Route
         path="/sessions"
         element={

@@ -30,6 +30,13 @@ export default {
         'muted-soft': '#a09c92',
         'secondary-fixed': '#94f6ca',
         'primary-fixed': '#ffdbd0',
+        'surface-container-low': '#f8f3e8',
+        'surface-container-high': '#ece8dd',
+        'on-surface': '#1d1c15',
+        'on-surface-variant': '#5c4038',
+        'on-primary-fixed': '#390b00',
+        'on-secondary-fixed': '#002115',
+        'error-container': '#ffdad6',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -46,6 +53,7 @@ export default {
         'caption-uppercase': ['11px', { lineHeight: '16px', letterSpacing: '0.08em', fontWeight: '600' }],
         'code-phonetic': ['14px', { lineHeight: '20px', fontWeight: '400' }],
         'code-sm': ['12px', { lineHeight: '16px', fontWeight: '400' }],
+        button: ['14px', { lineHeight: '14px', fontWeight: '500' }],
       },
       spacing: {
         gutter: '1.25rem',

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"primary-fixed-dim":"#ffb59d","on-primary":"#ffffff","on-background":"#1d1c15","hairline-strong":"#cfcdc4","secondary-container":"#91f3c7","surface-container-highest":"#e6e2d7","inverse-on-surface":"#f5f0e5","primary-fixed":"#ffdbd0","on-primary-container":"#fffbff","secondary-fixed-dim":"#78d9af","canvas":"#f7f7f4","surface-variant":"#e6e2d7","ink":"#26251e","on-primary-fixed-variant":"#832600","canvas-soft":"#fafaf7","surface-card":"#ffffff","muted-soft":"#a09c92","surface-container-lowest":"#ffffff","surface":"#fef9ee","secondary":"#006c4c","semantic-error":"#cf2d56","surface-dim":"#dedacf","on-secondary":"#ffffff","on-surface":"#1d1c15","learned-surface":"#ebf6f1","primary-container":"#d24200","on-error-container":"#93000a","background":"#fef9ee","on-surface-variant":"#5c4038","on-tertiary-fixed-variant":"#484741","on-secondary-container":"#007150","hairline-soft":"#efeee8","surface-container-low":"#f8f3e8","tertiary":"#5e5c56","inverse-primary":"#ffb59d","body":"#5a5852","inverse-surface":"#323129","tertiary-fixed":"#e6e2da","on-secondary-fixed":"#002115","tertiary-fixed-dim":"#cac6be","outline":"#907066","surface-container-high":"#ece8dd","error":"#ba1a1a","surface-bright":"#fef9ee","tertiary-container":"#77746e","muted":"#807d72","surface-container":"#f2eee2","outline-variant":"#e5beb2","on-tertiary":"#ffffff","primary":"#a83300","hairline":"#e6e5e0","on-tertiary-fixed":"#1d1c17","secondary-fixed":"#94f6ca","error-container":"#ffdad6","surface-tint":"#ac3400","on-tertiary-container":"#fffbff","primary-active":"#d04200","on-error":"#ffffff","on-secondary-fixed-variant":"#005139","on-primary-fixed":"#390b00"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1.25rem","space-xs":"0.25rem","space-md":"1rem","space-lg":"1.5rem","margin":"2rem","space-sm":"0.5rem","space-xl":"2rem"},"fontFamily":{"headline-md":["Inter"],"headline-lg":["Inter"],"title-sm":["Inter"],"code-phonetic":["JetBrains Mono"],"code-sm":["JetBrains Mono"],"title-md":["Inter"],"body-sm":["Inter"],"display-hero":["Inter"],"headline-lg-mobile":["Inter"],"caption-uppercase":["Inter"],"display-hero-mobile":["Inter"],"body-md":["Inter"],"button":["Inter"]},"fontSize":{"headline-md":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"500"}],"headline-lg":["32px",{"lineHeight":"38px","letterSpacing":"-0.02em","fontWeight":"400"}],"title-sm":["15px",{"lineHeight":"22px","fontWeight":"600"}],"code-phonetic":["14px",{"lineHeight":"20px","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"title-md":["18px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"600"}],"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"display-hero":["48px",{"lineHeight":"54px","letterSpacing":"-0.03em","fontWeight":"400"}],"headline-lg-mobile":["24px",{"lineHeight":"30px","letterSpacing":"-0.015em","fontWeight":"400"}],"caption-uppercase":["11px",{"lineHeight":"16px","letterSpacing":"0.08em","fontWeight":"600"}],"display-hero-mobile":["32px",{"lineHeight":"38px","letterSpacing":"-0.02em","fontWeight":"400"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"button":["14px",{"lineHeight":"14px","fontWeight":"500"}]}}}};</script></head><body class="bg-surface font-body-md text-body antialiased min-h-screen flex flex-col justify-between"><header class="fixed top-0 left-0 right-0 w-full z-50 bg-surface/90 backdrop-blur-md border-b border-hairline"><div class="h-16 max-w-[1120px] mx-auto px-margin flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="dashboard" href="#"><img alt="Brand logo. - Primary color: #f54e00
+- Font: inter
+- Mode: light
+- Roundness: rounded-md
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Xa4My3uBkxykMRfttJrnLgrHa4UHrhCSVXHUm4JT1e0wWPx6FnjVv2TmnvZKkgwMT-n31_r3NFk-EHUgBgy5i4w2S-8h5_TMOMwYTzhe4SVwyDQNQF__yUHEpet_V5zN-xGThdbr0wP1ZjHHGUHHdwTQFc9XVmM0WRb9xB5KA6fU_REksoc4p0i1Faqt9Eowrw4AXA_dwzQpRO2_xsFiRoNL0vX_jC2ZafLqrVBm4EDJ99FVR8NPpb1rDV"/><span class="font-title-md text-title-md text-ink tracking-tight">VocabFlash</span></a><nav class="hidden md:flex items-center gap-space-lg h-16" data-active-classes="text-ink font-semibold border-b-2 border-primary"><a class="h-full inline-flex items-center font-button text-button text-muted hover:text-ink transition-colors" data-path="dashboard" href="#">Dashboard</a><a class="h-full inline-flex items-center font-button text-button text-muted hover:text-ink transition-colors" data-path="sessions" href="#">Sessions</a><a class="h-full inline-flex items-center font-button text-button text-muted hover:text-ink transition-colors" data-path="quizzes" href="#">Quizzes</a></nav></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm pl-space-md py-space-xs rounded-lg hover:bg-canvas transition-colors cursor-pointer"><img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-hairline" src="https://lh3.googleusercontent.com/aida/AEtjO1XXhw-TDXloGYM4-iLRx3vB9uk2iL_HupIbVDWkqZjFAfe9gQ2VWZg6kaDv4QdaUgHvk5Mc7ww4YBi1cpPtA3xUOWYttxRO-h6QctpuzPUajd_tSylFkQ2oXGrNYJBu0onK1cfHa4XL_KmNDc5t28GkgDN5_WLr4ZfIykdayGvk-NLJ3GIbiP9F2w2CcTxJz_Jbb4PsccnCLI1KfIIoi_xQkQmJWLeNQgfbZRzwpCBBLpfJ9AWRzG2tG-JM"/><span class="hidden sm:inline font-button text-button text-ink">Duc Dang</span><span class="material-symbols-outlined text-muted text-body-sm">expand_more</span></div></div></div></header><main class="w-full pt-16 bg-surface flex-1"><div class="flex flex-col w-full">
+<!-- Subtle Atmospheric Accent -->
+<div class="max-w-[1120px] mx-auto px-margin w-full py-space-xl">
+<!-- Header / Editorial Intro Block -->
+<div class="mb-space-xl border-b border-hairline pb-space-lg">
+<div class="flex flex-wrap items-center gap-2 mb-space-sm">
+<span class="font-caption-uppercase text-caption-uppercase tracking-widest text-primary uppercase bg-primary-fixed/40 px-2.5 py-1 rounded">
+          VOCABFLASH / UPDATES
+        </span>
+<span class="text-hairline-strong">•</span>
+<span class="font-caption-uppercase text-caption-uppercase text-muted uppercase">
+          NHẬT KÝ PHÁT TRIỂN &amp; PHIÊN BẢN
+        </span>
+</div>
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
+<div class="max-w-3xl">
+<h1 class="font-display-hero text-display-hero text-ink tracking-tight mb-space-sm font-normal">
+            Có gì mới ở VocabFlash
+          </h1>
+<p class="font-body-md text-body-md text-muted leading-relaxed">
+            Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở trên cùng. Theo dõi hành trình hoàn thiện VocabFlash từ các tính năng cốt lõi đến các cải tiến AI và trải nghiệm học tập tập trung không phân tâm.
+          </p>
+</div>
+<!-- Quick Status Metrics / Pills -->
+<div class="flex flex-wrap items-center gap-space-sm shrink-0">
+<div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-learned-surface text-secondary text-body-sm font-medium">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span>v2.0.0 (Mới nhất)</span>
+</div>
+<div class="px-3 py-1.5 rounded-full bg-canvas text-tertiary text-body-sm">
+            19/09/2026
+          </div>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white hover:bg-canvas-soft text-ink text-button font-button transition-colors" id="btn-rss-copy" onclick="copyFeedUrl()">
+<span class="material-symbols-outlined text-base text-muted">rss_feed</span>
+<span id="rss-text">RSS Feed</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Main Content Layout with Sticky Index Sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl relative items-start">
+<!-- Timeline Main Stream (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-xl">
+<!-- ======================= RELEASE 2.0.0 ======================= -->
+<article class="relative pl-6 sm:pl-8 before:absolute before:left-0 before:top-3 before:bottom-0 before:w-px before:bg-hairline" id="v2-0-0">
+<!-- Marker Dot -->
+<div class="absolute -left-[5px] top-3 w-3 h-3 rounded-full bg-primary-active ring-4 ring-background"></div>
+<div class="bg-surface-card rounded-xl p-6 sm:p-8 shadow-sm">
+<!-- Header Meta -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-code-phonetic text-code-phonetic font-medium text-white bg-primary px-2.5 py-1 rounded">
+                  v2.0.0
+                </span>
+<span class="font-caption-uppercase text-caption-uppercase bg-surface-container-high text-ink px-2.5 py-1 rounded font-semibold tracking-wider">
+                  LỚN / BỘ MẶT MỚI
+                </span>
+</div>
+<time class="font-code-sm text-code-sm text-muted">19/09/2026</time>
+</div>
+<!-- Title & Subtitle -->
+<h2 class="font-headline-lg text-headline-lg text-ink mb-space-sm">
+              Bộ mặt mới &amp; Đăng nhập bằng Google
+            </h2>
+<p class="font-body-md text-body-md text-ink/90 leading-relaxed mb-space-lg">
+              Từ trước đến nay, ai mở VocabFlash lần đầu cũng chỉ thấy đúng một thứ: ô đăng nhập. Bản 2.0.0 thay đổi điều đó — app giờ có <strong class="text-ink font-semibold">trang giới thiệu</strong> để bạn xem app làm được gì trước khi tạo tài khoản, và <strong class="text-ink font-semibold">đăng nhập bằng Google</strong> để vào học chỉ trong một cú bấm, không cần nghĩ mật khẩu mới.
+            </p>
+<!-- Có gì mới Block -->
+<div class="mb-space-lg">
+<div class="flex items-center gap-2 mb-space-md">
+<span class="material-symbols-outlined text-primary text-xl">auto_awesome</span>
+<h3 class="font-title-md text-title-md text-ink">Có gì mới</h3>
+</div>
+<div class="grid grid-cols-1 gap-space-sm">
+<div class="p-4 rounded-lg bg-canvas hover:bg-canvas-soft transition-colors">
+<div class="font-title-sm text-title-sm text-ink mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">web</span>
+                    Trang giới thiệu tương tác
+                  </div>
+<p class="font-body-sm text-body-sm text-body">
+                    Mở vocabflash lên là thấy ngay app làm được gì — thẻ từ vựng lật thử được tại chỗ, một câu quiz bấm chọn đáp án được luôn, cùng ba trụ cột của app và ba bước học. Bạn xem xong rồi mới quyết định đăng ký. Khi đã đăng nhập, trang chủ vẫn là trang tổng quan như cũ, không có gì thay đổi.
+                  </p>
+</div>
+<div class="p-4 rounded-lg bg-canvas hover:bg-canvas-soft transition-colors">
+<div class="font-title-sm text-title-sm text-ink mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">login</span>
+                    Đăng nhập bằng Google
+                  </div>
+<p class="font-body-sm text-body-sm text-body">
+                    Bấm <em>Continue with Google</em> là vào được, không cần đặt và nhớ thêm một mật khẩu mới.
+                  </p>
+</div>
+<div class="p-4 rounded-lg bg-canvas hover:bg-canvas-soft transition-colors">
+<div class="font-title-sm text-title-sm text-ink mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-sm">account_circle</span>
+                    Tài khoản cũ tự nhận diện thông minh
+                  </div>
+<p class="font-body-sm text-body-sm text-body">
+                    Nếu bạn từng đăng ký bằng email và giờ đăng nhập bằng Google cùng email đó, app tự nhận ra đúng tài khoản của bạn — toàn bộ bộ thẻ, buổi học và lịch sử quiz còn nguyên, không bị tạo thành tài khoản thứ hai.
+                  </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm mt-1">
+<div class="p-3.5 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1 text-sm">Vẫn giữ cả hai đường vào</div>
+<p class="font-body-sm text-body-sm text-muted text-xs">
+                      Sau khi liên kết Google, mật khẩu cũ vẫn dùng được. Mất quyền Gmail vẫn đăng nhập bình thường.
+                    </p>
+</div>
+<div class="p-3.5 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1 text-sm">Ảnh đại diện từ Google</div>
+<p class="font-body-sm text-body-sm text-muted text-xs">
+                      Tài khoản Google sẽ lấy tự động ảnh đại diện, người dùng không cần tải file lên thủ công.
+                    </p>
+</div>
+<div class="p-3.5 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1 text-sm">Nhận diện mới</div>
+<p class="font-body-sm text-body-sm text-muted text-xs">
+                      Logo và favicon mới đồng nhất, kèm OpenGraph metadata chuẩn khi chia sẻ link lên mạng xã hội.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Đã tốt hơn -->
+<div class="mb-space-lg">
+<div class="flex items-center gap-2 mb-space-sm">
+<span class="material-symbols-outlined text-secondary text-xl">upgrade</span>
+<h3 class="font-title-md text-title-md text-ink">Đã tốt hơn</h3>
+</div>
+<ul class="space-y-2.5 font-body-sm text-body-sm text-body">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm shrink-0 mt-0.5">check_circle</span>
+<span><strong>Câu hỏi trọng âm chính xác hơn:</strong> Dạng <em>Word stress</em> giờ hiện từ ở dạng nguyên vẹn thay vì tách âm tiết sẵn, không còn gợi ý lộ đáp án. Phần giải thích kèm phiên âm có đánh dấu trọng âm đối chiếu, phương án không còn lộ qua cách viết hoa.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-sm shrink-0 mt-0.5">check_circle</span>
+<span><strong>Báo lỗi đúng chuyện đang xảy ra:</strong> Khi có sự cố, app hiện đúng lý do từ hệ thống thay vì câu báo lỗi chung chung không giúp được gì.</span>
+</li>
+</ul>
+</div>
+<!-- Lưu ý Notice Box -->
+<div class="p-4 rounded-lg bg-surface-container-low border-l-2 border-primary-container">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-base">info</span>
+<h4 class="font-title-sm text-title-sm text-ink">Lưu ý quan trọng</h4>
+</div>
+<ul class="space-y-1.5 text-xs text-muted leading-normal">
+<li>• Đăng nhập Google cần được cấu hình trên hệ thống mới hiện ra. Chưa cấu hình thì trang đăng nhập vẫn chỉ có email và mật khẩu như trước.</li>
+<li>• Tài khoản đăng ký bằng mật khẩu vẫn chưa có bước xác thực email; chỉ tài khoản vào bằng Google được đánh dấu là đã xác thực.</li>
+</ul>
+</div>
+</div>
+</article>
+<!-- ======================= RELEASE 1.1.1 ======================= -->
+<article class="relative pl-6 sm:pl-8 before:absolute before:left-0 before:top-3 before:bottom-0 before:w-px before:bg-hairline" id="v1-1-1">
+<div class="absolute -left-[5px] top-3 w-3 h-3 rounded-full bg-hairline-strong ring-4 ring-background"></div>
+<div class="bg-surface-card rounded-xl p-6 sm:p-8 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-canvas-soft px-2.5 py-1 rounded">
+                  v1.1.1
+                </span>
+<span class="font-caption-uppercase text-caption-uppercase bg-secondary-container/40 text-secondary px-2.5 py-1 rounded font-semibold tracking-wider">
+                  CẢI TIẾN AI
+                </span>
+</div>
+<time class="font-code-sm text-code-sm text-muted">18/09/2026</time>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-ink mb-space-sm">
+              Thêm hai dạng câu hỏi AI mới
+            </h2>
+<div class="p-4 rounded-lg bg-canvas text-body font-body-sm leading-relaxed mb-space-md">
+              Thêm hai dạng câu hỏi AI thông minh:
+              <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div class="p-3 bg-white rounded-lg">
+<div class="font-title-sm text-title-sm text-ink mb-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-sm">timelapse</span>
+                    Verb tense
+                  </div>
+<p class="text-xs text-muted">Điền dạng chia đúng của động từ vào câu có mốc thời gian rõ ràng, giúp củng cố ngữ pháp trong ngữ cảnh thực tế.</p>
+</div>
+<div class="p-3 bg-white rounded-lg">
+<div class="font-title-sm text-title-sm text-ink mb-1 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-sm">record_voice_over</span>
+                    Word stress
+                  </div>
+<p class="text-xs text-muted">Chọn âm tiết mang trọng âm. Dạng đầu tiên linh hoạt số phương án bằng số âm tiết (2–4) thay vì cố định 4 đáp án.</p>
+</div>
+</div>
+<div class="mt-3 text-xs text-muted italic">
+                * Cả hai dạng câu hỏi này chỉ hiển thị với tài khoản đã được bật phân quyền tính năng AI.
+              </div>
+</div>
+</div>
+</article>
+<!-- ======================= RELEASE 1.1.0 ======================= -->
+<article class="relative pl-6 sm:pl-8 before:absolute before:left-0 before:top-3 before:bottom-0 before:w-px before:bg-hairline" id="v1-1-0">
+<div class="absolute -left-[5px] top-3 w-3 h-3 rounded-full bg-hairline-strong ring-4 ring-background"></div>
+<div class="bg-surface-card rounded-xl p-6 sm:p-8 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-canvas-soft px-2.5 py-1 rounded">
+                  v1.1.0
+                </span>
+<span class="font-caption-uppercase text-caption-uppercase bg-primary-fixed/60 text-primary-active px-2.5 py-1 rounded font-semibold tracking-wider">
+                  TÍNH NĂNG MỚI
+                </span>
+</div>
+<time class="font-code-sm text-code-sm text-muted">16/09/2026</time>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-ink mb-space-sm">
+              Soạn đề bằng AI
+            </h2>
+<p class="font-body-md text-body-md text-ink/90 leading-relaxed mb-space-lg">
+              Quiz giờ không chỉ là chọn nghĩa nữa. Bạn có thể nhờ <strong class="text-ink font-semibold">AI soạn đề</strong> từ chính bộ thẻ của mình, với hai dạng câu hỏi mà trước đây app không làm được, và có giải thích chi tiết cho từng đáp án đúng.
+            </p>
+<!-- Highlights Grid -->
+<div class="mb-space-lg">
+<h3 class="font-title-md text-title-md text-ink mb-space-sm">Có gì mới</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm">
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1">Hai dạng câu hỏi mới</div>
+<p class="font-body-sm text-body-sm text-muted"><em>Fill in the blank</em> &amp; <em>Choose the word in context</em>. Có gắn nhãn AI riêng biệt, giữ nguyên thể thức trắc nghiệm 4 đáp án quen thuộc.</p>
+</div>
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1">Giải thích sau mỗi câu</div>
+<p class="font-body-sm text-body-sm text-muted">Câu nào do AI soạn cũng kèm giải thích vì sao đáp án đó đúng. Đọc được ngay sau khi trả lời và xem lại trong trang kết quả.</p>
+</div>
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1">Dựa trên bộ thẻ của bạn</div>
+<p class="font-body-sm text-body-sm text-muted">Câu hỏi dựa chính xác trên những từ vựng bạn đã lưu — AI tuyệt đối không tự nghĩ ra từ mới hay chủ đề lạ.</p>
+</div>
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1">Soạn đề chạy nền thông minh</div>
+<p class="font-body-sm text-body-sm text-muted">Chỉ mất 10–40 giây. Bạn có thể đóng cửa sổ làm việc khác, đề tự sẵn sàng trong danh sách khi hoàn tất.</p>
+</div>
+</div>
+</div>
+<!-- AI Guardrails Notice Strip -->
+<div class="p-4 rounded-lg bg-canvas-soft mb-space-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-base">verified</span>
+<span><strong>Hạn mức sử dụng:</strong> 20 đề AI / 24 giờ mỗi tài khoản. Thử lại tối đa 3 lần nếu có lỗi kết nối.</span>
+</div>
+<span class="bg-white px-2 py-1 rounded text-ink font-code-sm shrink-0">Nhãn [AI-generated]</span>
+</div>
+<!-- Dành cho quản trị viên -->
+<div class="pt-space-md border-t border-hairline">
+<div class="font-title-sm text-title-sm text-ink mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-muted text-base">admin_panel_settings</span>
+                Dành cho quản trị viên
+              </div>
+<p class="font-body-sm text-body-sm text-body">
+                Trang quản lý người dùng với thống kê buổi học, số thẻ, số quiz và mức tiêu thụ AI. Hỗ trợ tìm kiếm, lọc theo vai trò và tùy chỉnh hạn mức riêng biệt cho từng người dùng.
+              </p>
+</div>
+</div>
+</article>
+<!-- ======================= RELEASE 1.0.0 ======================= -->
+<article class="relative pl-6 sm:pl-8 before:absolute before:left-0 before:top-3 before:bottom-0 before:w-px before:bg-hairline" id="v1-0-0">
+<div class="absolute -left-[5px] top-3 w-3 h-3 rounded-full bg-primary ring-4 ring-background"></div>
+<div class="bg-surface-card rounded-xl p-6 sm:p-8 shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-surface-container-high px-2.5 py-1 rounded">
+                  v1.0.0
+                </span>
+<span class="font-caption-uppercase text-caption-uppercase bg-canvas text-ink px-2.5 py-1 rounded font-semibold tracking-wider">
+                  CỘT MỐC CHÍNH THỨC
+                </span>
+</div>
+<time class="font-code-sm text-code-sm text-muted">14/09/2026</time>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-ink mb-space-sm">
+              Giao diện mới &amp; Ôn nhanh
+            </h2>
+<p class="font-body-md text-body-md text-ink/90 leading-relaxed mb-space-lg">
+              Đây là lần "thay áo" lớn nhất của VocabFlash. Toàn bộ giao diện được làm lại cho gọn gàng, dễ nhìn hơn, và có thêm <strong class="text-ink font-semibold">Ôn nhanh</strong> để bạn luyện tập tức thì chỉ với một cú bấm.
+            </p>
+<!-- Grid highlights -->
+<div class="space-y-space-sm mb-space-lg">
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-base">bolt</span>
+                  Tính năng Ôn nhanh (Quick Review)
+                </div>
+<p class="font-body-sm text-body-sm text-body">
+                  Mở bất kỳ bộ thẻ nào và bấm <em>Ôn nhanh</em> là vào luyện ngay, không cần cấu hình tạo bài quiz. Tự do chọn ôn tất cả, chỉ từ chưa thuộc hoặc từ đã thuộc. Biết đúng sai tức thì sau mỗi câu, cuối buổi có bảng tổng kết mà không gây áp lực điểm số. (Yêu cầu tối thiểu 4 từ).
+                </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1">Giao diện dịu mắt &amp; Chuỗi ngày</div>
+<p class="font-body-sm text-body-sm text-muted">Màu nền cream thư giãn, thanh điều hướng cố định trên cùng kèm streak học liên tục không gián đoạn.</p>
+</div>
+<div class="p-4 rounded-lg bg-canvas">
+<div class="font-title-sm text-title-sm text-ink mb-1">Quản lý kho thẻ nâng cao</div>
+<p class="font-body-sm text-body-sm text-muted">Bộ lọc từ khóa nhanh, phân nhóm tình trạng thẻ, sắp xếp linh hoạt và thao tác đánh dấu/xóa hàng loạt.</p>
+</div>
+</div>
+</div>
+<!-- Bug fixes accordion style -->
+<div class="pt-space-md border-t border-hairline">
+<div class="flex items-center gap-2 mb-space-sm">
+<span class="material-symbols-outlined text-muted text-base">build</span>
+<h3 class="font-title-sm text-title-sm text-ink">Đã sửa lỗi</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted">
+<div class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span>Vào thẳng Ôn nhanh không còn trắng trang</div>
+<div class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span>Chặn việc trả lời hai lần cho cùng một câu</div>
+<div class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span>Bộ lọc trong danh sách thẻ luôn đồng bộ</div>
+<div class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span>Nút quay lại đưa về đúng vị trí kho bộ thẻ</div>
+<div class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span>Sửa lỗi tràn bố cục trên màn hình di động nhỏ</div>
+<div class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-primary"></span>Thẻ đã thuộc có độ tương phản cao, dễ đọc</div>
+</div>
+</div>
+</div>
+</article>
+<!-- ======================= OLDER RELEASES ACCORDION ======================= -->
+<div class="relative pl-6 sm:pl-8 before:absolute before:left-0 before:top-3 before:bottom-0 before:w-px before:bg-hairline">
+<div class="absolute -left-[5px] top-3 w-3 h-3 rounded-full bg-hairline-strong"></div>
+<div class="bg-surface-card rounded-xl p-6 sm:p-8 shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<h3 class="font-headline-md text-headline-md text-ink">Các bản tiền phát hành (v0.1.0 – v0.4.0)</h3>
+<span class="font-caption-uppercase text-caption-uppercase text-muted">ARCHIVE</span>
+</div>
+<!-- Version 0.4.0 -->
+<div class="py-space-md border-b border-hairline" id="v0-4-0">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-canvas px-2 py-0.5 rounded">v0.4.0</span>
+<span class="font-title-sm text-title-sm text-ink">Quiz trắc nghiệm</span>
+</div>
+<span class="font-code-sm text-code-sm text-muted">10/09/2026</span>
+</div>
+<p class="font-body-sm text-body-sm text-body mb-2">
+                Tự tạo đề trắc nghiệm từ bộ thẻ với 3 kiểu câu hỏi (Anh → Việt, Việt → Anh, từ đồng nghĩa). Chấm điểm công bằng, lưu lịch sử tiến bộ và bảo tồn nguyên vẹn bài quiz cũ kể cả khi bạn chỉnh sửa thẻ sau này.
+              </p>
+<div class="text-xs text-muted">
+<strong>Đã sửa:</strong> Nút xem lại mở đúng bài, nhãn NEW không đè chữ, click vào tên bộ thẻ mở trực tiếp bộ học.
+              </div>
+</div>
+<!-- Version 0.3.0 -->
+<div class="py-space-md border-b border-hairline" id="v0-3-0">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-canvas px-2 py-0.5 rounded">v0.3.0</span>
+<span class="font-title-sm text-title-sm text-ink">Dashboard &amp; Biểu đồ tiến độ</span>
+</div>
+<span class="font-code-sm text-code-sm text-muted">09/09/2026</span>
+</div>
+<p class="font-body-sm text-body-sm text-body mb-2">
+                Theo dõi số liệu thực với bảng thống kê từ vựng, mức độ thành thạo và chuỗi ngày học theo đúng múi giờ cá nhân. Biểu đồ 7 ngày và 30 ngày trực quan.
+              </p>
+<div class="text-xs text-muted">
+<strong>Đã sửa:</strong> Tên bộ thẻ quá dài không làm vỡ biểu đồ, tự cuộn trang lên đầu khi vào phiên học.
+              </div>
+</div>
+<!-- Version 0.2.0 -->
+<div class="py-space-md border-b border-hairline" id="v0-2-0">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-canvas px-2 py-0.5 rounded">v0.2.0</span>
+<span class="font-title-sm text-title-sm text-ink">Phát âm &amp; Tùy biến thẻ học</span>
+</div>
+<span class="font-code-sm text-code-sm text-muted">08/09/2026</span>
+</div>
+<p class="font-body-sm text-body-sm text-body mb-2">
+                Tích hợp phát âm chuẩn (giọng nam/nữ, Anh-Anh/Anh-Mỹ), tùy chọn hiển thị phiên âm/ví dụ/đồng nghĩa và tạo sẵn định dạng dữ liệu nhờ AI.
+              </p>
+<div class="text-xs text-muted">
+<strong>Đã sửa:</strong> Khắc phục lỗi chọn giọng nam, sửa lỗi xem trước trong hộp thoại nhập từ.
+              </div>
+</div>
+<!-- Version 0.1.0 -->
+<div class="pt-space-md" id="v0-1-0">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code-phonetic text-code-phonetic font-medium text-ink bg-canvas px-2 py-0.5 rounded">v0.1.0</span>
+<span class="font-title-sm text-title-sm text-ink">Bản đầu tiên</span>
+</div>
+<span class="font-code-sm text-code-sm text-muted">17/08/2026</span>
+</div>
+<p class="font-body-sm text-body-sm text-body">
+                Nền tảng khởi đầu: Đăng ký tài khoản cá nhân, tạo bộ thẻ tùy ý, thẻ lật 2 mặt kèm phím tắt tiện lợi (<kbd class="px-1.5 py-0.5 bg-canvas rounded text-xs font-mono">Space</kbd>, <kbd class="px-1.5 py-0.5 bg-canvas rounded text-xs font-mono">←</kbd> <kbd class="px-1.5 py-0.5 bg-canvas rounded text-xs font-mono">→</kbd>) và công cụ nhập hàng loạt từ Excel/CSV.
+              </p>
+</div>
+</div>
+</div>
+<!-- ======================= UPCOMING ROADMAP ======================= -->
+<div class="p-6 sm:p-8 rounded-xl bg-surface-container-high relative overflow-hidden" id="roadmap">
+<div class="flex items-center justify-between gap-2 mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">explore</span>
+<h2 class="font-headline-md text-headline-md text-ink">Sắp có trên VocabFlash</h2>
+</div>
+<span class="font-caption-uppercase text-caption-uppercase text-primary font-bold">LỘ TRÌNH PHÁT TRIỂN</span>
+</div>
+<p class="font-body-sm text-body-sm text-muted mb-space-md">
+            Những tính năng đang được tinh chỉnh và thử nghiệm trong phòng nghiên cứu của VocabFlash:
+          </p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="p-4 rounded-lg bg-surface-card flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-primary text-base">spellcheck</span>
+</div>
+<div>
+<h4 class="font-title-sm text-title-sm text-ink mb-0.5">Tự điền phiên âm IPA</h4>
+<p class="font-body-sm text-body-sm text-muted text-xs">Tự nhận diện phiên âm quốc tế chuẩn mà bạn không cần phải gõ tay thủ công.</p>
+</div>
+</div>
+<div class="p-4 rounded-lg bg-surface-card flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-secondary text-base">update</span>
+</div>
+<div>
+<h4 class="font-title-sm text-title-sm text-ink mb-0.5">Ôn theo lịch ngắt quãng</h4>
+<p class="font-body-sm text-body-sm text-muted text-xs">Thuật toán Spaced Repetition thông minh nhắc bạn ôn lại đúng lúc sắp quên.</p>
+</div>
+</div>
+<div class="p-4 rounded-lg bg-surface-card flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-tertiary text-base">keyboard</span>
+</div>
+<div>
+<h4 class="font-title-sm text-title-sm text-ink mb-0.5">Câu hỏi tự gõ đáp án</h4>
+<p class="font-body-sm text-body-sm text-muted text-xs">Thử thách nhớ từ chủ động (Active Recall) bằng việc tự nhập ký tự thay vì trắc nghiệm.</p>
+</div>
+</div>
+<div class="p-4 rounded-lg bg-surface-card flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-primary text-base">ios_share</span>
+</div>
+<div>
+<h4 class="font-title-sm text-title-sm text-ink mb-0.5">Xuất bộ thẻ ra file</h4>
+<p class="font-body-sm text-body-sm text-muted text-xs">Sao lưu hoặc chia sẻ nhanh chóng với định dạng linh hoạt XLSX, CSV và JSON.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Editorial Navigation / Index Sidebar (4 cols) -->
+<aside class="lg:col-span-4 sticky top-24 space-y-space-md hidden lg:block">
+<!-- Table of contents card -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm">
+<div class="font-caption-uppercase text-caption-uppercase text-muted uppercase mb-space-sm tracking-wider">
+            CHUYỂN NHANH ĐẾN BẢN CẬP NHẬT
+          </div>
+<nav class="flex flex-col space-y-1">
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-ink hover:bg-canvas text-body-sm font-medium transition-colors group" href="#v2-0-0">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-active"></span>
+                v2.0.0 — Bộ mặt mới
+              </span>
+<span class="text-xs text-muted font-code-sm group-hover:text-primary">19/09</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body hover:bg-canvas hover:text-ink text-body-sm transition-colors group" href="#v1-1-1">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-hairline-strong"></span>
+                v1.1.1 — Hai dạng câu hỏi AI
+              </span>
+<span class="text-xs text-muted font-code-sm">18/09</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body hover:bg-canvas hover:text-ink text-body-sm transition-colors group" href="#v1-1-0">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-hairline-strong"></span>
+                v1.1.0 — Soạn đề bằng AI
+              </span>
+<span class="text-xs text-muted font-code-sm">16/09</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body hover:bg-canvas hover:text-ink text-body-sm transition-colors group" href="#v1-0-0">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-hairline-strong"></span>
+                v1.0.0 — Giao diện mới &amp; Ôn nhanh
+              </span>
+<span class="text-xs text-muted font-code-sm">14/09</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-body hover:bg-canvas hover:text-ink text-body-sm transition-colors group" href="#v0-4-0">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-hairline-strong"></span>
+                v0.4.0 — Quiz trắc nghiệm
+              </span>
+<span class="text-xs text-muted font-code-sm">10/09</span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg text-primary hover:bg-canvas text-body-sm font-medium transition-colors group mt-2 pt-2 border-t border-hairline" href="#roadmap">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">rocket_launch</span>
+                Kế hoạch sắp có
+              </span>
+<span class="text-xs font-semibold">Roadmap</span>
+</a>
+</nav>
+</div>
+<!-- Release cadence note card -->
+<div class="bg-surface-card rounded-xl p-5 shadow-sm">
+<h4 class="font-title-sm text-title-sm text-ink mb-1">Quy tắc đặt phiên bản</h4>
+<p class="font-body-sm text-body-sm text-muted text-xs leading-relaxed mb-3">
+            VocabFlash tuân thủ chuẩn SemVer (<span class="font-code-sm">MAJOR.MINOR.PATCH</span>). Các cập nhật giao diện và tính năng học được đóng gói theo tuần để duy trì độ tin cậy cao nhất cho người học.
+          </p>
+<div class="flex items-center gap-2 text-xs text-secondary font-medium">
+<span class="material-symbols-outlined text-sm">shield_with_heart</span>
+<span>Không bao giờ làm mất dữ liệu học</span>
+</div>
+</div>
+<!-- Feedback callout -->
+<div class="bg-canvas rounded-xl p-5 text-center">
+<div class="w-10 h-10 mx-auto mb-2 rounded-full bg-surface-card flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">feedback</span>
+</div>
+<h4 class="font-title-sm text-title-sm text-ink mb-1">Góp ý tính năng mới</h4>
+<p class="font-body-sm text-body-sm text-muted text-xs mb-3">
+            Bạn muốn cải thiện trải nghiệm học hay phát hiện điều bất thường?
+          </p>
+<a class="inline-flex items-center justify-center w-full py-2 px-3 rounded-lg bg-surface-card hover:bg-white text-ink font-button text-button transition-colors" href="mailto:feedback@vocabflash.app">
+            Gửi phản hồi cho tác giả
+          </a>
+</div>
+</aside>
+</div>
+</div>
+<!-- Interactive script for toast and micro-interactions -->
+<script>
+    function copyFeedUrl() {
+      const btnText = document.getElementById('rss-text');
+      navigator.clipboard.writeText(window.location.origin + '/changelog.xml').then(() => {
+        const originalText = btnText.innerText;
+        btnText.innerText = 'Đã chép link!';
+        setTimeout(() => {
+          btnText.innerText = originalText;
+        }, 2000);
+      }).catch(() => {
+        btnText.innerText = 'vocabflash.app/feed';
+        setTimeout(() => {
+          btnText.innerText = 'RSS Feed';
+        }, 2000);
+      });
+    }
+
+    // Smooth active anchor highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('aside nav a');
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          links.forEach(l => l.classList.remove('bg-canvas', 'font-semibold'));
+          link.classList.add('bg-canvas', 'font-semibold');
+        });
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-canvas border-t border-hairline mt-auto"><div class="max-w-[1120px] mx-auto px-margin py-space-xl"><div class="flex flex-col sm:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm"><img alt="Brand logo. - Primary color: #f54e00
+- Font: inter
+- Mode: light
+- Roundness: rounded-md
+" class="h-6 w-auto object-contain opacity-80" src="https://lh3.googleusercontent.com/aida/AEtjO1Xa4My3uBkxykMRfttJrnLgrHa4UHrhCSVXHUm4JT1e0wWPx6FnjVv2TmnvZKkgwMT-n31_r3NFk-EHUgBgy5i4w2S-8h5_TMOMwYTzhe4SVwyDQNQF__yUHEpet_V5zN-xGThdbr0wP1ZjHHGUHHdwTQFc9XVmM0WRb9xB5KA6fU_REksoc4p0i1Faqt9Eowrw4AXA_dwzQpRO2_xsFiRoNL0vX_jC2ZafLqrVBm4EDJ99FVR8NPpb1rDV"/><span class="font-title-sm text-title-sm text-ink">VocabFlash</span><span class="text-hairline-strong mx-space-xs">|</span><p class="font-body-sm text-body-sm text-muted">© 2024 VocabFlash. All rights reserved.</p></div><nav class="flex items-center gap-space-lg"><a class="font-body-sm text-body-sm text-muted hover:text-ink transition-colors" data-path="changelog-and-release-notes" href="#">Changelog</a><a class="font-body-sm text-body-sm text-muted hover:text-ink transition-colors" data-path="docs" href="#">Documentation</a><a class="font-body-sm text-body-sm text-muted hover:text-ink transition-colors" data-path="privacy" href="#">Privacy</a><a class="font-body-sm text-body-sm text-muted hover:text-ink transition-colors" data-path="terms" href="#">Terms</a></nav></div></div></footer></body></html>

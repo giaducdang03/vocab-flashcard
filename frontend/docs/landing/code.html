@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary": "#006c4c", "secondary-fixed-dim": "#78d9af", "on-primary-fixed": "#390b00", "muted": "#807d72", "tertiary-fixed": "#e6e2da", "surface-card": "#ffffff", "tertiary-container": "#77746e", "primary-container": "#d24200", "inverse-primary": "#ffb59d", "surface": "#fef9ee", "outline-variant": "#e5beb2", "hairline": "#e6e5e0", "outline": "#907066", "surface-container-highest": "#e6e2d7", "muted-soft": "#a09c92", "on-background": "#1d1c15", "error": "#ba1a1a", "surface-container": "#f2eee2", "on-tertiary": "#ffffff", "inverse-on-surface": "#f5f0e5", "surface-dim": "#dedacf", "surface-container-low": "#f8f3e8", "on-tertiary-fixed-variant": "#484741", "on-secondary-fixed-variant": "#005139", "surface-tint": "#ac3400", "on-primary-container": "#fffbff", "hairline-strong": "#cfcdc4", "primary-fixed": "#ffdbd0", "on-tertiary-container": "#fffbff", "body": "#5a5852", "secondary-fixed": "#94f6ca", "on-error-container": "#93000a", "on-secondary": "#ffffff", "secondary-container": "#91f3c7", "inverse-surface": "#323129", "hairline-soft": "#efeee8", "surface-variant": "#e6e2d7", "on-tertiary-fixed": "#1d1c17", "on-primary": "#ffffff", "semantic-error": "#cf2d56", "learned-surface": "#ebf6f1", "primary": "#a83300", "primary-fixed-dim": "#ffb59d", "on-surface": "#1d1c15", "surface-container-lowest": "#ffffff", "surface-container-high": "#ece8dd", "tertiary": "#5e5c56", "on-surface-variant": "#5c4038", "ink": "#26251e", "background": "#fef9ee", "on-secondary-container": "#007150", "canvas-soft": "#fafaf7", "canvas": "#f7f7f4", "tertiary-fixed-dim": "#cac6be", "on-primary-fixed-variant": "#832600", "on-error": "#ffffff", "error-container": "#ffdad6", "surface-bright": "#fef9ee", "primary-active": "#d04200", "on-secondary-fixed": "#002115" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xs": "0.25rem", "gutter": "1.25rem", "margin": "2rem", "space-sm": "0.5rem", "space-xl": "2rem", "space-lg": "1.5rem" }, "fontFamily": { "display-hero": [ "Inter" ], "headline-lg": [ "Inter" ], "body-md": [ "Inter" ], "title-md": [ "Inter" ], "headline-lg-mobile": [ "Inter" ], "code-sm": [ "JetBrains Mono" ], "caption-uppercase": [ "Inter" ], "body-sm": [ "Inter" ], "headline-md": [ "Inter" ], "title-sm": [ "Inter" ], "button": [ "Inter" ], "code-phonetic": [ "JetBrains Mono" ], "display-hero-mobile": [ "Inter" ] }, "fontSize": { "display-hero": [ "48px", { "lineHeight": "54px", "letterSpacing": "-0.03em", "fontWeight": "400" } ], "headline-lg": [ "32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "400" } ], "body-md": [ "16px", { "lineHeight": "24px", "fontWeight": "400" } ], "title-md": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "headline-lg-mobile": [ "24px", { "lineHeight": "30px", "letterSpacing": "-0.015em", "fontWeight": "400" } ], "code-sm": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "caption-uppercase": [ "11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600" } ], "body-sm": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "headline-md": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" } ], "title-sm": [ "15px", { "lineHeight": "22px", "fontWeight": "600" } ], "button": [ "14px", { "lineHeight": "14px", "fontWeight": "500" } ], "code-phonetic": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "display-hero-mobile": [ "32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "400" } ] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-[1120px] mx-auto px-space-xl flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="landing-page" href="#"><img alt="Brand logo. - Primary color: #f54e00
+- Font: inter
+- Mode: light
+- Roundness: rounded-md
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Xa4My3uBkxykMRfttJrnLgrHa4UHrhCSVXHUm4JT1e0wWPx6FnjVv2TmnvZKkgwMT-n31_r3NFk-EHUgBgy5i4w2S-8h5_TMOMwYTzhe4SVwyDQNQF__yUHEpet_V5zN-xGThdbr0wP1ZjHHGUHHdwTQFc9XVmM0WRb9xB5KA6fU_REksoc4p0i1Faqt9Eowrw4AXA_dwzQpRO2_xsFiRoNL0vX_jC2ZafLqrVBm4EDJ99FVR8NPpb1rDV"/><span class="font-title-md text-title-md text-ink tracking-tight">VocabFlash</span><span class="bg-primary-fixed text-on-primary-fixed font-caption-uppercase text-caption-uppercase px-2 py-0.5 rounded-full">PRO</span></a><nav class="hidden md:flex items-center gap-space-lg ml-space-md" data-active-classes="text-ink font-title-sm"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-ink transition-colors" data-path="features" href="#">Features</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-ink transition-colors" data-path="method" href="#">Method</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-ink transition-colors" data-path="quizzes" href="#">Quizzes</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-ink transition-colors" data-path="pricing" href="#">Pricing</a></nav></div><div class="flex items-center gap-space-md"><a class="font-button text-button text-body hover:text-ink transition-colors px-space-xs py-space-sm" data-path="sign-in" href="#">Sign in</a><a class="font-button text-button text-on-primary bg-primary hover:bg-primary-active transition-colors px-4 py-2.5 rounded-lg flex items-center justify-center" data-path="get-started" href="#">Get started</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
+<!-- Top Subtle Announcement Bar -->
+<section class="w-full bg-surface-container-low border-b border-hairline py-2.5 px-space-md">
+<div class="max-w-[1120px] mx-auto flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-space-sm text-body">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary/10 text-primary font-caption-uppercase text-caption-uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+          Lexical Engine v2.4
+        </span>
+<span class="hidden sm:inline text-ink font-medium">IELTS &amp; Academic Collocation Packs</span>
+<span class="hidden sm:inline text-muted-soft">·</span>
+<span class="hidden md:inline text-muted">Real-time phonetic IPA synthesis with dynamic zero-latency quizzes.</span>
+</div>
+<a class="inline-flex items-center gap-1 text-primary hover:text-primary-active font-button text-button transition-colors" data-path="changelog" href="#">
+        Read Colophon <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+</section>
+<!-- Hero Section -->
+<section class="w-full py-16 md:py-24 px-space-md lg:px-space-xl overflow-hidden relative">
+<div class="max-w-[1120px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+<!-- Left: Editorial Content -->
+<div class="lg:col-span-6 flex flex-col items-start">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container border border-hairline mb-6">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-caption-uppercase text-caption-uppercase tracking-wider text-ink font-semibold">AI-ASSISTED LEXICAL MASTERY</span>
+</div>
+<h1 class="font-display-hero text-display-hero text-ink mb-6 tracking-tight">
+            Build vocabulary sessions that stick.
+          </h1>
+<p class="font-body-md text-body-md text-body max-w-xl mb-8 leading-relaxed">
+            Curate personal word decks, master nuanced synonyms with authentic IPA phonetic precision, and lock in memory traces through distraction-free, AI-calibrated quizzes.
+          </p>
+<div class="flex flex-wrap items-center gap-3 w-full sm:w-auto mb-6">
+<a class="h-11 px-6 bg-primary hover:bg-primary-active text-on-primary font-button text-button rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm" data-path="get-started" href="#">
+<span>Start learning for free</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button class="h-11 px-5 bg-surface-card hover:bg-surface-container-low border border-hairline-strong text-ink font-button text-button rounded-lg flex items-center justify-center gap-2 transition-colors" id="hero-quick-demo-btn">
+<span class="material-symbols-outlined text-[18px] text-primary">play_circle</span>
+<span>Flip active card</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<div class="flex -space-x-2">
+<div class="w-7 h-7 rounded-full bg-surface-container-high border border-surface-card flex items-center justify-center text-[10px] font-mono text-ink">JW</div>
+<div class="w-7 h-7 rounded-full bg-primary-fixed border border-surface-card flex items-center justify-center text-[10px] font-mono text-on-primary-fixed font-bold">AL</div>
+<div class="w-7 h-7 rounded-full bg-secondary-fixed border border-surface-card flex items-center justify-center text-[10px] font-mono text-on-secondary-fixed font-bold">KT</div>
+</div>
+<p class="font-body-sm text-body-sm text-muted">
+              Joined by <span class="text-ink font-medium">1,200+</span> academic researchers and IELTS 8.0+ candidates.
+            </p>
+</div>
+</div>
+<!-- Right: Interactive Hero Card Stage -->
+<div class="lg:col-span-6 relative">
+<!-- Atmospheric backdrop element -->
+<div class="absolute -top-12 -right-12 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-8 -left-8 w-64 h-64 bg-secondary/5 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Metas & Badges floating around card -->
+<div class="relative flex flex-col gap-3">
+<!-- Top stats ribbon -->
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="font-caption-uppercase text-caption-uppercase text-muted">DECK:</span>
+<span class="font-code-sm text-code-sm text-ink bg-surface-container px-2 py-0.5 rounded">IELTS-Band8-Lexicon</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 text-[12px] font-code-sm text-secondary bg-learned-surface px-2.5 py-0.5 rounded-full border border-secondary/20">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> 94% Retention
+                </span>
+<span class="inline-flex items-center gap-1 text-[12px] font-code-sm text-primary bg-primary-fixed/50 px-2.5 py-0.5 rounded-full">
+                  🔥 7-Day Streak
+                </span>
+</div>
+</div>
+<!-- The Tactile Flashcard Component -->
+<div class="w-full min-h-[420px] bg-surface-card border border-hairline rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 shadow-[0_4px_24px_rgba(38,37,30,0.04)] relative cursor-pointer select-none" id="hero-flashcard">
+<!-- Top bar of card -->
+<div class="flex items-center justify-between pb-4 border-b border-hairline-soft">
+<div class="flex items-center gap-2">
+<span class="bg-ink text-surface-card font-caption-uppercase text-caption-uppercase px-2 py-0.5 rounded">ADJECTIVE</span>
+<span class="font-code-sm text-code-sm text-muted">CEFR C1 · ACADEMIC</span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Audio Pronunciation" class="w-8 h-8 rounded-lg border border-hairline flex items-center justify-center hover:bg-surface-container transition-colors text-ink" type="button">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1 rounded-md border border-hairline bg-surface-container-low hover:bg-surface-container transition-colors text-body font-button text-button" id="hero-flip-pill" type="button">
+<span class="material-symbols-outlined text-[16px] transition-transform duration-300" id="hero-flip-icon">cached</span>
+<span id="hero-flip-text">Flip to Meaning</span>
+</button>
+</div>
+</div>
+<!-- Card Face: Word / Meaning toggleable container -->
+<div class="my-6">
+<!-- Front Content -->
+<div class="flex flex-col items-center text-center space-y-3 py-4" id="card-front-content">
+<span class="font-display-hero text-display-hero text-ink font-normal tracking-tight">resilient</span>
+<div class="flex items-center gap-2 text-muted font-code-phonetic text-code-phonetic">
+<span>/rɪˈzɪl.i.ənt/</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-hairline-strong"></span>
+<span class="text-body-sm font-body-sm text-muted">UK / US</span>
+</div>
+<p class="font-body-md text-body-md text-body max-w-md mt-2 italic">
+                    “Able to withstand or recover quickly from difficult conditions, shocks, or systemic disruptions.”
+                  </p>
+</div>
+<!-- Back Content (Initially Hidden) -->
+<div class="hidden flex flex-col items-center text-center space-y-3 py-4" id="card-back-content">
+<div class="inline-block px-3 py-1 rounded-full bg-learned-surface text-secondary font-code-sm text-code-sm font-medium mb-1">
+                    VIETNAMESE DEFINITION
+                  </div>
+<span class="font-headline-lg text-headline-lg text-ink font-medium tracking-tight">kiên cường, có sức bật</span>
+<p class="font-body-md text-body-md text-body max-w-md">
+                    Khả năng phục hồi nhanh chóng sau biến cố lớn hoặc áp lực ngoại cảnh; dẻo dai bền bỉ.
+                  </p>
+</div>
+<!-- Contextual academic sentence -->
+<div class="mt-4 p-4 rounded-xl bg-canvas-soft border border-hairline text-left">
+<div class="flex items-center gap-1.5 text-primary mb-1">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span class="font-caption-uppercase text-caption-uppercase font-semibold">IELTS Contextual Collocation</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink leading-relaxed">
+                    “Developing a <span class="font-semibold text-primary underline decoration-primary-fixed decoration-2 underline-offset-4">resilient economic infrastructure</span> is paramount for island economies vulnerable to climate volatility.”
+                  </p>
+</div>
+</div>
+<!-- Bottom of card: Synonyms & Navigation -->
+<div class="pt-4 border-t border-hairline-soft">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-caption-uppercase text-caption-uppercase text-muted mr-1">SYNONYMS:</span>
+<span class="px-2.5 py-1 rounded border border-hairline bg-surface-card text-body font-body-sm text-body-sm hover:border-hairline-strong transition-colors">tenacious</span>
+<span class="px-2.5 py-1 rounded border border-hairline bg-surface-card text-body font-body-sm text-body-sm hover:border-hairline-strong transition-colors">durable</span>
+<span class="px-2.5 py-1 rounded border border-hairline bg-surface-card text-body font-body-sm text-body-sm hover:border-hairline-strong transition-colors">adaptable</span>
+</div>
+<span class="font-code-sm text-code-sm text-muted">Card 14 of 46</span>
+</div>
+</div>
+</div>
+<!-- Card Bottom Bar Controls -->
+<div class="flex items-center justify-between px-2 pt-1">
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-lg border border-hairline bg-surface-card hover:bg-surface-container text-ink font-code-sm text-code-sm inline-flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">keyboard</span> [Space] Flip
+                </button>
+<button class="px-3 py-1.5 rounded-lg border border-hairline bg-surface-card hover:bg-surface-container text-ink font-code-sm text-code-sm inline-flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">arrow_right_alt</span> [→] Next
+                </button>
+</div>
+<div class="flex items-center gap-1 text-muted font-body-sm text-body-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>Spaced Repetition: Leitner Box 4</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Editorial Credo / Metric Strip -->
+<section class="w-full border-y border-hairline bg-canvas-soft py-10 px-space-md">
+<div class="max-w-[1120px] mx-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="flex flex-col space-y-1">
+<span class="font-display-hero text-headline-lg font-normal text-ink">94.2%</span>
+<span class="font-title-sm text-title-sm text-ink">30-Day Retention</span>
+<p class="font-body-sm text-body-sm text-muted leading-snug">Calculated through active recall decay testing.</p>
+</div>
+<div class="flex flex-col space-y-1">
+<span class="font-display-hero text-headline-lg font-normal text-ink">&lt; 150ms</span>
+<span class="font-title-sm text-title-sm text-ink">Zero Latency Feedback</span>
+<p class="font-body-sm text-body-sm text-muted leading-snug">Instant answer verification with IPA rendering.</p>
+</div>
+<div class="flex flex-col space-y-1">
+<span class="font-display-hero text-headline-lg font-normal text-ink">10,000+</span>
+<span class="font-title-sm text-title-sm text-ink">Collocation Mappings</span>
+<p class="font-body-sm text-body-sm text-muted leading-snug">Curated specifically for academic and business mastery.</p>
+</div>
+<div class="flex flex-col space-y-1">
+<span class="font-display-hero text-headline-lg font-normal text-ink">0% Noise</span>
+<span class="font-title-sm text-title-sm text-ink">Pure Editorial Focus</span>
+<p class="font-body-sm text-body-sm text-muted leading-snug">No intrusive gamified bells, badges, or distracting popups.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Three Core Pillars (Bento-styled Feature Grid) -->
+<section class="w-full py-20 md:py-28 px-space-md lg:px-space-xl">
+<div class="max-w-[1120px] mx-auto">
+<div class="max-w-2xl mb-14">
+<span class="font-caption-uppercase text-caption-uppercase text-primary font-semibold tracking-wider block mb-2">SYSTEM ARCHITECTURE</span>
+<h2 class="font-display-hero text-headline-lg text-ink tracking-tight mb-4">
+          Engineered for cognitive bandwidth, not infinite scrolling.
+        </h2>
+<p class="font-body-md text-body-md text-body leading-relaxed">
+          Traditional flashcard apps confuse chaotic activity with durable memory. VocabFlash structures your lexical inputs into disciplined, distraction-free acquisition loops.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Pillar 1 -->
+<div class="bg-surface-card border border-hairline rounded-xl p-8 flex flex-col justify-between hover:border-hairline-strong transition-colors">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[24px]">folder_special</span>
+</div>
+<span class="font-caption-uppercase text-caption-uppercase text-muted block mb-1">PILLAR 01</span>
+<h3 class="font-title-md text-title-md text-ink mb-3">Session-Based Focus</h3>
+<p class="font-body-sm text-body-sm text-body leading-relaxed mb-6">
+              Group vocabulary by authentic academic domains, IELTS band criteria, or your bespoke reading list. Import effortlessly from XLSX or CSV spreadsheets with zero reformatting.
+            </p>
+</div>
+<!-- Visual snippet -->
+<div class="bg-canvas-soft rounded-lg p-3.5 border border-hairline font-code-sm text-code-sm text-ink space-y-2">
+<div class="flex items-center justify-between text-muted text-[11px] pb-1 border-b border-hairline">
+<span>ACTIVE DECK</span>
+<span>ITEMS</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary"></span>IELTS_Environment.csv</span>
+<span class="text-muted">48 cards</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary"></span>Philosophy_Epistemology.xlsx</span>
+<span class="text-muted">32 cards</span>
+</div>
+</div>
+</div>
+<!-- Pillar 2 -->
+<div class="bg-surface-card border border-hairline rounded-xl p-8 flex flex-col justify-between hover:border-hairline-strong transition-colors">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[24px]">quiz</span>
+</div>
+<span class="font-caption-uppercase text-caption-uppercase text-muted block mb-1">PILLAR 02</span>
+<h3 class="font-title-md text-title-md text-ink mb-3">Instant 4-Option Quizzes</h3>
+<p class="font-body-sm text-body-sm text-body leading-relaxed mb-6">
+              Dynamically generate multiple-choice challenges across three directional modes: <code class="font-code-sm text-[12px] bg-surface-container px-1 py-0.5 rounded">en_to_vi</code>, <code class="font-code-sm text-[12px] bg-surface-container px-1 py-0.5 rounded">vi_to_en</code>, and synonym discernment with instant recall scoring.
+            </p>
+</div>
+<!-- Visual snippet -->
+<div class="bg-canvas-soft rounded-lg p-3.5 border border-hairline space-y-1.5">
+<div class="flex items-center justify-between text-[11px] font-code-sm text-muted">
+<span>QUIZ GENERATION</span>
+<span class="text-secondary font-medium">Auto-calibrated</span>
+</div>
+<div class="w-full bg-hairline-soft h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 75%"></div>
+</div>
+<div class="flex justify-between items-center text-[12px] pt-1">
+<span class="text-ink font-medium">Synonym Precision Mode</span>
+<span class="font-code-sm text-secondary">3/4 Completed</span>
+</div>
+</div>
+</div>
+<!-- Pillar 3 -->
+<div class="bg-surface-card border border-hairline rounded-xl p-8 flex flex-col justify-between hover:border-hairline-strong transition-colors">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary mb-6">
+<span class="material-symbols-outlined text-[24px]">insights</span>
+</div>
+<span class="font-caption-uppercase text-caption-uppercase text-muted block mb-1">PILLAR 03</span>
+<h3 class="font-title-md text-title-md text-ink mb-3">Immutable Learning Curves</h3>
+<p class="font-body-sm text-body-sm text-body leading-relaxed mb-6">
+              Observe dense daily retention data mapped against modified Ebbinghaus curves. Identify persistent blind spots without opaque algorithms holding your word list hostage.
+            </p>
+</div>
+<!-- Visual snippet -->
+<div class="bg-canvas-soft rounded-lg p-3.5 border border-hairline flex flex-col gap-2">
+<div class="flex items-center justify-between text-[11px] font-code-sm text-muted">
+<span>RETENTION TELEMETRY</span>
+<span>30 DAYS</span>
+</div>
+<!-- Minimal SVG sparkline chart -->
+<svg class="w-full h-10 text-primary" fill="none" preserveaspectratio="none" viewbox="0 0 100 25">
+<path d="M0,20 Q15,18 25,12 T50,10 T75,5 T100,2" stroke="currentColor" stroke-linecap="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<path d="M0,20 Q15,18 25,12 T50,10 T75,5 T100,2 L100,25 L0,25 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+<div class="flex justify-between items-center text-[11px] font-code-sm text-muted-soft">
+<span>Day 1 (45%)</span>
+<span class="text-ink font-semibold">Day 30 (94.2%)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Live Quiz Experience Section -->
+<section class="w-full py-20 bg-surface-container-low border-y border-hairline px-space-md lg:px-space-xl">
+<div class="max-w-[1120px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Left explanation -->
+<div class="lg:col-span-5">
+<span class="font-caption-uppercase text-caption-uppercase text-primary font-semibold tracking-wider block mb-2">PRACTICE ARENA</span>
+<h2 class="font-display-hero text-headline-lg text-ink tracking-tight mb-4">
+            Zero friction, 4-option verification.
+          </h2>
+<p class="font-body-md text-body-md text-body mb-6 leading-relaxed">
+            Test yourself with precision. Answers are verified in milliseconds, providing the phonetic transcription alongside contextual feedback so you learn the nuance, not just the translation.
+          </p>
+<ul class="space-y-3 font-body-sm text-body-sm text-ink mb-8">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">check_circle</span>
+<span><strong>Directional testing:</strong> Toggle between English-to-Vietnamese, Vietnamese-to-English, or nuance synonym matching.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">check_circle</span>
+<span><strong>Keyboard-first speed:</strong> Press keys 1, 2, 3, or 4 for instantaneous, fluid testing workflows.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">check_circle</span>
+<span><strong>Mistake-driven recycling:</strong> Incorrect selections are queued back into the active review box.</span>
+</li>
+</ul>
+<div class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-card border border-hairline text-body font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-muted">terminal</span>
+<span>Try selecting the correct meaning in the live card →</span>
+</div>
+</div>
+<!-- Right: Interactive mini-quiz preview widget -->
+<div class="lg:col-span-7">
+<div class="bg-surface-card border border-hairline rounded-2xl p-6 sm:p-8 shadow-[0_4px_24px_rgba(38,37,30,0.03)]">
+<!-- Header of Quiz widget -->
+<div class="flex items-center justify-between pb-4 border-b border-hairline mb-6">
+<div class="flex items-center gap-2">
+<span class="font-caption-uppercase text-caption-uppercase bg-surface-container px-2 py-1 rounded text-ink font-medium">MODE: EN → VI</span>
+<span class="font-code-sm text-code-sm text-muted">Question 1 of 5</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-code-sm text-secondary font-medium">Score: 4/4</span>
+<span class="w-1.5 h-1.5 rounded-full bg-hairline-strong"></span>
+<button class="font-button text-button text-muted hover:text-ink transition-colors" id="quiz-reset-btn" type="button">Reset</button>
+</div>
+</div>
+<!-- Quiz prompt -->
+<div class="mb-6">
+<div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-2">
+<span class="font-headline-lg text-headline-lg text-ink font-medium">financially</span>
+<span class="font-code-phonetic text-code-phonetic text-muted">/faɪˈnæn.ʃəl.i/</span>
+<span class="font-caption-uppercase text-caption-uppercase text-muted-soft">(adv)</span>
+</div>
+<p class="font-body-sm text-body-sm text-body">
+                Select the most accurate Vietnamese contextual translation for this word:
+              </p>
+</div>
+<!-- Quiz options list -->
+<div class="space-y-2.5" id="quiz-options-container">
+<!-- Option A (Wrong) -->
+<button class="quiz-option w-full p-4 rounded-xl border border-hairline bg-surface-card hover:bg-canvas-soft flex items-center justify-between text-left transition-all group" data-correct="false" type="button">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-lg bg-surface-container group-hover:bg-surface-container-high border border-hairline flex items-center justify-center font-code-sm text-code-sm text-ink">1</span>
+<span class="font-body-md text-body-md text-ink">đông đúc, tắc nghẽn</span>
+</div>
+<span class="feedback-indicator hidden text-error font-body-sm text-body-sm font-medium">Incorrect</span>
+</button>
+<!-- Option B (Correct) -->
+<button class="quiz-option w-full p-4 rounded-xl border border-hairline bg-surface-card hover:bg-canvas-soft flex items-center justify-between text-left transition-all group" data-correct="true" type="button">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-lg bg-surface-container group-hover:bg-surface-container-high border border-hairline flex items-center justify-center font-code-sm text-code-sm text-ink">2</span>
+<span class="font-body-md text-body-md text-ink">về mặt tài chính</span>
+</div>
+<span class="feedback-indicator hidden text-secondary font-body-sm text-body-sm font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check</span> Correct
+                </span>
+</button>
+<!-- Option C (Wrong) -->
+<button class="quiz-option w-full p-4 rounded-xl border border-hairline bg-surface-card hover:bg-canvas-soft flex items-center justify-between text-left transition-all group" data-correct="false" type="button">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-lg bg-surface-container group-hover:bg-surface-container-high border border-hairline flex items-center justify-center font-code-sm text-code-sm text-ink">3</span>
+<span class="font-body-md text-body-md text-ink">sự áp đặt, gánh nặng</span>
+</div>
+<span class="feedback-indicator hidden text-error font-body-sm text-body-sm font-medium">Incorrect</span>
+</button>
+<!-- Option D (Wrong) -->
+<button class="quiz-option w-full p-4 rounded-xl border border-hairline bg-surface-card hover:bg-canvas-soft flex items-center justify-between text-left transition-all group" data-correct="false" type="button">
+<div class="flex items-center gap-3">
+<span class="w-7 h-7 rounded-lg bg-surface-container group-hover:bg-surface-container-high border border-hairline flex items-center justify-center font-code-sm text-code-sm text-ink">4</span>
+<span class="font-body-md text-body-md text-ink">tắc nghẽn giao thông</span>
+</div>
+<span class="feedback-indicator hidden text-error font-body-sm text-body-sm font-medium">Incorrect</span>
+</button>
+</div>
+<!-- Quiz dynamic feedback card -->
+<div class="mt-4 p-4 rounded-xl bg-learned-surface border border-secondary/20 hidden" id="quiz-feedback-box">
+<div class="flex items-center gap-2 text-secondary font-title-sm text-title-sm mb-1">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Spot on. Mastered collocation:</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink">
+                “The startup became <strong>financially viable</strong> after their series A expansion.”
+              </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Step-by-Step Workflow Section (The Method) -->
+<section class="w-full py-20 md:py-28 px-space-md lg:px-space-xl">
+<div class="max-w-[1120px] mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+<div>
+<span class="font-caption-uppercase text-caption-uppercase text-primary font-semibold tracking-wider block mb-2">THREE-STEP DISCIPLINE</span>
+<h2 class="font-display-hero text-headline-lg text-ink tracking-tight">
+            How serious learners study with VocabFlash.
+          </h2>
+</div>
+<p class="font-body-sm text-body-sm text-body max-w-md">
+          A seamless flow designed to minimize friction between discovering a new academic word and locking it into long-term recall.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+<!-- Step 1 -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-1 bg-primary-fixed/40 rounded">STEP 01</span>
+<span class="h-[1px] flex-1 bg-hairline"></span>
+</div>
+<h3 class="font-title-md text-title-md text-ink">Capture &amp; Import</h3>
+<p class="font-body-sm text-body-sm text-body leading-relaxed">
+            Drag and drop your spreadsheet or input words directly. VocabFlash automatically supplements missing IPA phonetics, parts of speech, and nuance synonyms via lexical intelligence.
+          </p>
+<div class="p-4 rounded-xl bg-surface-card border border-hairline text-[12px] font-code-sm space-y-1.5 text-muted">
+<div class="text-ink font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">check</span> CSV Parsed: 120 rows
+            </div>
+<div class="text-body-sm text-muted-soft truncate">Column mapping: [Word, Part of Speech, Context, Meaning]</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-1 bg-primary-fixed/40 rounded">STEP 02</span>
+<span class="h-[1px] flex-1 bg-hairline"></span>
+</div>
+<h3 class="font-title-md text-title-md text-ink">Spaced Card Review</h3>
+<p class="font-body-sm text-body-sm text-body leading-relaxed">
+            Enter distraction-free study mode. Utilize keyboard shortcuts to flip, pronounce, and rate difficulty. Leitner intervals automatically space upcoming reviews to peak retention curves.
+          </p>
+<div class="p-4 rounded-xl bg-surface-card border border-hairline text-[12px] font-code-sm space-y-1.5 text-muted">
+<div class="flex justify-between items-center text-ink font-semibold">
+<span>Shortcuts Active</span>
+<span class="text-secondary">Ready</span>
+</div>
+<div class="text-body-sm text-muted-soft">Space = Flip · 1 = Again · 2 = Hard · 3 = Good</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center gap-3">
+<span class="font-code-sm text-code-sm text-primary font-bold px-2 py-1 bg-primary-fixed/40 rounded">STEP 03</span>
+<span class="h-[1px] flex-1 bg-hairline"></span>
+</div>
+<h3 class="font-title-md text-title-md text-ink">Challenge &amp; Verify</h3>
+<p class="font-body-sm text-body-sm text-body leading-relaxed">
+            End each review block with a calibrated quiz session. Snapshot your historical velocity and witness active vocabulary transition into permanent natural intuition.
+          </p>
+<div class="p-4 rounded-xl bg-surface-card border border-hairline text-[12px] font-code-sm space-y-1.5 text-muted">
+<div class="flex justify-between items-center text-ink font-semibold">
+<span>Deck Mastery</span>
+<span class="text-secondary font-bold">88.4%</span>
+</div>
+<div class="text-body-sm text-muted-soft">42 Mastered · 4 In Review · 0 New</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Editorial Testimonial / Community Quote -->
+<section class="w-full py-16 bg-surface-container-low border-y border-hairline px-space-md lg:px-space-xl">
+<div class="max-w-[800px] mx-auto text-center flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-[36px] mb-6 opacity-80">format_quote</span>
+<blockquote class="font-headline-lg text-headline-lg text-ink font-normal tracking-tight leading-snug mb-8">
+        “Most vocabulary apps look like children’s slot machines. VocabFlash feels like sitting in an Oxford library with high-grade indexing cards. My IELTS band score went from 7.0 to 8.5 strictly because of the collocations nuance.”
+      </blockquote>
+<div class="flex flex-col items-center">
+<span class="font-title-sm text-title-sm text-ink">Dr. Linh Nguyen</span>
+<span class="font-body-sm text-body-sm text-muted">Postdoctoral Researcher &amp; IELTS 8.5 Academic Candidate</span>
+</div>
+</div>
+</section>
+<!-- Pre-Footer CTA Band -->
+<section class="w-full py-20 md:py-24 px-space-md lg:px-space-xl">
+<div class="max-w-[1120px] mx-auto">
+<div class="bg-surface-card border border-hairline rounded-3xl p-8 md:p-14 text-center flex flex-col items-center relative overflow-hidden shadow-[0_8px_30px_rgba(38,37,30,0.03)]">
+<!-- Subtle warm orange accent glow -->
+<div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-body font-caption-uppercase text-caption-uppercase mb-4">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          GET STARTED IN SECONDS
+        </span>
+<h2 class="font-display-hero text-headline-lg md:text-display-hero text-ink tracking-tight mb-4 max-w-2xl">
+          Ready to transform your English vocabulary?
+        </h2>
+<p class="font-body-md text-body-md text-body max-w-xl mb-8 leading-relaxed">
+          Create your first personalized study session in under 30 seconds. No bloated setup, no distracting ads.
+        </p>
+<div class="flex flex-col sm:flex-row items-center gap-3 mb-4">
+<a class="h-12 px-8 bg-primary hover:bg-primary-active text-on-primary font-button text-button rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm" data-path="get-started" href="#">
+<span>Get started for free</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="h-12 px-6 bg-surface-card hover:bg-surface-container border border-hairline text-ink font-button text-button rounded-lg flex items-center justify-center transition-colors" data-path="curriculum" href="#">
+            Browse Academic Decks
+          </a>
+</div>
+<p class="font-code-sm text-code-sm text-muted">
+          Free tier includes unlimited custom flashcard decks and 50 AI enrichment requests/day.
+        </p>
+</div>
+</div>
+</section>
+</div>
+<!-- Inline Interaction Logic (Vanilla JS) -->
+<script>
+  (function() {
+    // 1. Hero Card Flip Interaction
+    const heroCard = document.getElementById('hero-flashcard');
+    const frontContent = document.getElementById('card-front-content');
+    const backContent = document.getElementById('card-back-content');
+    const flipText = document.getElementById('hero-flip-text');
+    const flipIcon = document.getElementById('hero-flip-icon');
+    const quickDemoBtn = document.getElementById('hero-quick-demo-btn');
+    const flipPill = document.getElementById('hero-flip-pill');
+
+    let isFlipped = false;
+
+    function toggleHeroFlip() {
+      isFlipped = !isFlipped;
+      if (isFlipped) {
+        frontContent.classList.add('hidden');
+        backContent.classList.remove('hidden');
+        flipText.textContent = 'Flip to Word';
+        if (flipIcon) flipIcon.style.transform = 'rotate(180deg)';
+        heroCard.classList.add('bg-canvas-soft');
+      } else {
+        backContent.classList.add('hidden');
+        frontContent.classList.remove('hidden');
+        flipText.textContent = 'Flip to Meaning';
+        if (flipIcon) flipIcon.style.transform = 'rotate(0deg)';
+        heroCard.classList.remove('bg-canvas-soft');
+      }
+    }
+
+    if (heroCard) {
+      heroCard.addEventListener('click', function(e) {
+        // Prevent toggle if clicking an inner button directly
+        if (e.target.closest('button')) return;
+        toggleHeroFlip();
+      });
+    }
+
+    if (flipPill) {
+      flipPill.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleHeroFlip();
+      });
+    }
+
+    if (quickDemoBtn) {
+      quickDemoBtn.addEventListener('click', function() {
+        toggleHeroFlip();
+        heroCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+
+    // 2. Interactive Quiz Simulator
+    const quizOptions = document.querySelectorAll('.quiz-option');
+    const quizFeedback = document.getElementById('quiz-feedback-box');
+    const quizResetBtn = document.getElementById('quiz-reset-btn');
+
+    quizOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        // Reset previous feedback on all options
+        quizOptions.forEach(btn => {
+          btn.classList.remove('border-secondary', 'bg-learned-surface', 'border-error', 'bg-error-container/20');
+          const ind = btn.querySelector('.feedback-indicator');
+          if (ind) ind.classList.add('hidden');
+        });
+
+        const isCorrect = this.getAttribute('data-correct') === 'true';
+        const indicator = this.querySelector('.feedback-indicator');
+
+        if (isCorrect) {
+          this.classList.add('border-secondary', 'bg-learned-surface');
+          if (indicator) indicator.classList.remove('hidden');
+          if (quizFeedback) quizFeedback.classList.remove('hidden');
+        } else {
+          this.classList.add('border-error', 'bg-error-container/20');
+          if (indicator) indicator.classList.remove('hidden');
+          if (quizFeedback) quizFeedback.classList.add('hidden');
+        }
+      });
+    });
+
+    if (quizResetBtn) {
+      quizResetBtn.addEventListener('click', function() {
+        quizOptions.forEach(btn => {
+          btn.classList.remove('border-secondary', 'bg-learned-surface', 'border-error', 'bg-error-container/20');
+          const ind = btn.querySelector('.feedback-indicator');
+          if (ind) ind.classList.add('hidden');
+        });
+        if (quizFeedback) quizFeedback.classList.add('hidden');
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)] mt-space-xl"><div class="max-w-[1120px] mx-auto px-space-xl py-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-space-xl mb-space-xl"><div class="space-y-space-sm"><div class="flex items-center gap-space-sm"><span class="font-title-md text-title-md text-ink tracking-tight">VocabFlash</span><span class="bg-learned-surface text-secondary font-caption-uppercase text-caption-uppercase px-2 py-0.5 rounded-full">v2.4</span></div><p class="font-body-sm text-body-sm text-body max-w-xs">An editorial-grade vocabulary acceleration system engineered for linguistic precision, retention telemetry, and distraction-free study.</p></div><div><h4 class="font-title-sm text-title-sm text-ink mb-space-sm">Product</h4><ul class="space-y-space-xs font-body-sm text-body-sm"><li class="text-body hover:text-ink transition-colors cursor-pointer">Spaced Repetition</li><li class="text-body hover:text-ink transition-colors cursor-pointer">Phonetic Synthesis</li><li class="text-body hover:text-ink transition-colors cursor-pointer">Editorial Lexicons</li><li class="text-body hover:text-ink transition-colors cursor-pointer">Desktop Application</li></ul></div><div><h4 class="font-title-sm text-title-sm text-ink mb-space-sm">Methodology</h4><ul class="space-y-space-xs font-body-sm text-body-sm"><li class="text-body hover:text-ink transition-colors cursor-pointer">Cognitive Load Theory</li><li class="text-body hover:text-ink transition-colors cursor-pointer">Leitner Scheduling</li><li class="text-body hover:text-ink transition-colors cursor-pointer">Contextual Embeddings</li><li class="text-body hover:text-ink transition-colors cursor-pointer">Research Papers</li></ul></div><div><h4 class="font-title-sm text-title-sm text-ink mb-space-sm">Principles</h4><p class="font-body-sm text-body-sm text-body mb-space-sm">Built on the conviction that deep acquisition requires tactile calmness, broadsheet typography, and zero artificial gamification noise.</p><div class="flex items-center gap-space-xs text-secondary font-button text-button"><span class="material-symbols-outlined text-[16px]">verified</span><span>Verified Ebbinghaus Model</span></div></div></div><div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-lg"><span class="font-body-sm text-body-sm text-muted">© 2025 VocabFlash Inc. All rights reserved.</span><div class="flex items-center gap-space-lg font-body-sm text-body-sm text-muted"><span class="hover:text-ink cursor-pointer transition-colors">Privacy Policy</span><span class="hover:text-ink cursor-pointer transition-colors">Terms of Service</span><span class="hover:text-ink cursor-pointer transition-colors">Colophon</span></div></div></div></footer></body></html>
