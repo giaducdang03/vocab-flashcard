@@ -3,7 +3,7 @@ import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { api } from '../../api/client';
 import { apiErrorMessage } from '../../api/errors';
 import type { Session, Quiz, QuestionType, QuizCapacity, AiStatus } from '../../types/index';
-import { AI_QUESTION_TYPES, QUESTION_TYPE_LABELS } from '../../types/index';
+import { AI_QUESTION_TYPES, QUESTION_TYPE_HINTS, QUESTION_TYPE_LABELS } from '../../types/index';
 
 type QuizCreateModalProps = {
   isOpen: boolean;
@@ -339,6 +339,7 @@ export default function QuizCreateModal({
                             </span>
                           )}
                         </div>
+                        <p className="choice-row-hint">{QUESTION_TYPE_HINTS[type]}</p>
                       </div>
                       <div className="choice-row-meta">
                         {typeCapacity} cards

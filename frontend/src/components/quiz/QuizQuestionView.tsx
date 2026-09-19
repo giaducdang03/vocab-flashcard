@@ -1,6 +1,6 @@
 import type { AnswerResult, QuizQuestion } from '../../types';
-import { QUESTION_TYPE_LABELS } from '../../types';
-import { Check, Sparkles } from 'lucide-react';
+import { CORRECT_MESSAGES, QUESTION_TYPE_HINTS, WRONG_MESSAGES } from '../../types';
+import { ArrowRight, Check, Sparkles, X } from 'lucide-react';
 
 type QuizQuestionViewProps = {
   question: QuizQuestion;
@@ -12,6 +12,11 @@ type QuizQuestionViewProps = {
   onSelect: (optionIndex: number) => void;
   onNext: () => void;
   isLast: boolean;
+};
+
+const verdictMessage = (isCorrect: boolean, index: number): string => {
+  const messages = isCorrect ? CORRECT_MESSAGES : WRONG_MESSAGES;
+  return messages[index % messages.length];
 };
 
 export default function QuizQuestionView({
@@ -92,7 +97,7 @@ export default function QuizQuestionView({
             </span>
           )}
           <div style={{ flex: 1, paddingTop: question.source === 'ai' ? '20px' : 0 }}>
-            <span className="badge">{QUESTION_TYPE_LABELS[question.question_type]}</span>
+            <p className="quiz-type-hint">{QUESTION_TYPE_HINTS[question.question_type]}</p>
             <h1 className="quiz-prompt">
               {renderPrompt(question.prompt_text, question.question_type)}
             </h1>
@@ -124,41 +129,31 @@ export default function QuizQuestionView({
           })}
         </section>
 
-        {/* Feedback and Next button */}
+        {/* One feedback panel: verdict + explanation on the left, Next on the right */}
         {hasResult && (
-          <>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: '16px',
-                paddingTop: '8px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  color: result.is_correct ? 'var(--success)' : 'var(--error)',
-                }}
-              >
-                {result.is_correct ? 'Correct!' : 'Not quite.'}
-              </span>
-              <button type="button" className="btn btn-primary" onClick={onNext}>
-                {isLast ? 'Finish quiz' : 'Next question'}
-              </button>
-            </div>
-            {result.explanation && (
-              <div className="answer-explanation">
-                <span className="ai-corner-chip" title="AI-generated content may contain mistakes.">
-                  <Sparkles size={12} />
-                  AI-generated
-                </span>
-                <p>{result.explanation}</p>
+          <div
+            className={`feedback-panel ${
+              result.is_correct ? 'feedback-panel--correct' : 'feedback-panel--wrong'
+            }`}
+          >
+            <div className="feedback-panel-body">
+              <div className="feedback-verdict">
+                {result.is_correct ? <Check size={18} /> : <X size={18} />}
+                {verdictMessage(result.is_correct, index)}
+                {result.explanation && (
+                  <span className="ai-chip" title="AI-generated content may contain mistakes.">
+                    <Sparkles />
+                    AI-generated
+                  </span>
+                )}
               </div>
-            )}
-          </>
+              {result.explanation && <p className="feedback-explanation">{result.explanation}</p>}
+            </div>
+            <button type="button" className="btn btn-primary" onClick={onNext}>
+              {isLast ? 'Finish quiz' : 'Next question'}
+              <ArrowRight size={16} />
+            </button>
+          </div>
         )}
       </main>
     </div>
