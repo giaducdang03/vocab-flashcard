@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { api } from '../../api/client';
+import { apiErrorMessage } from '../../api/errors';
 import type { Session, Quiz, QuestionType, QuizCapacity, AiStatus } from '../../types/index';
 import { AI_QUESTION_TYPES, QUESTION_TYPE_LABELS } from '../../types/index';
 
@@ -126,14 +127,7 @@ export default function QuizCreateModal({
       onCreated(response.data);
       onClose();
     } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : typeof err === 'object' && err !== null && 'response' in err
-            ? (err as { response?: { data?: { detail?: string } } }).response
-                ?.data?.detail ?? 'Could not create the quiz.'
-            : 'Could not create the quiz.';
-      setError(errorMessage);
+      setError(apiErrorMessage(err, 'Could not create the quiz.'));
     } finally {
       setCreating(false);
     }
@@ -148,7 +142,15 @@ export default function QuizCreateModal({
   const maxQuestions = capacity?.max_questions ?? 0;
 
   const availableTypes: QuestionType[] = aiStatus?.available && aiStatus.enabled_for_user
-    ? (['en_to_vi', 'vi_to_en', 'synonym', 'cloze', 'context'] as QuestionType[])
+    ? ([
+        'en_to_vi',
+        'vi_to_en',
+        'synonym',
+        'cloze',
+        'context',
+        'verb_tense',
+        'word_stress',
+      ] as QuestionType[])
     : (['en_to_vi', 'vi_to_en', 'synonym'] as QuestionType[]);
 
   return (

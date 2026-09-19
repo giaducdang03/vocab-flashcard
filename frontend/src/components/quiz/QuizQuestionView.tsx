@@ -28,8 +28,10 @@ export default function QuizQuestionView({
   const progressPercent = ((index + 1) / total) * 100;
   const hasResult = result !== null;
 
+  const BLANK_TYPES = ['cloze', 'verb_tense'];
+
   const renderPrompt = (text: string, questionType: string) => {
-    if (questionType !== 'cloze' || !text.includes('___')) {
+    if (!BLANK_TYPES.includes(questionType) || !text.includes('___')) {
       return text;
     }
 

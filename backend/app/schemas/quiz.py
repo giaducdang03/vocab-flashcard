@@ -3,7 +3,9 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-QuestionType = Literal["en_to_vi", "vi_to_en", "synonym", "cloze", "context"]
+QuestionType = Literal[
+    "en_to_vi", "vi_to_en", "synonym", "cloze", "context", "verb_tense", "word_stress"
+]
 
 
 class CapacityRequest(BaseModel):

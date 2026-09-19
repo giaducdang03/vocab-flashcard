@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Upload, X, ChevronDown, Copy, Check, Download } from 'lucide-react';
 import { api } from '../api/client';
+import { apiErrorMessage } from '../api/errors';
 
 type FileData = {
   file: File;
@@ -306,7 +307,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
 
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Import failed');
+      setError(apiErrorMessage(err, 'Import failed'));
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,7 @@ from random import Random
 from typing import Any
 
 QUESTION_TYPES: tuple[str, str, str] = ("en_to_vi", "vi_to_en", "synonym")
-AI_QUESTION_TYPES: tuple[str, str] = ("cloze", "context")
+AI_QUESTION_TYPES: tuple[str, ...] = ("cloze", "context", "verb_tense", "word_stress")
 
 # One correct answer plus three distractors means a question needs four
 # distinct cards to draw from.

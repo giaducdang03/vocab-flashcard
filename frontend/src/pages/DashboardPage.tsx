@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Session } from '../types';
 import StatsSection from '../components/dashboard/StatsSection';
 import PageHeader from '../components/PageHeader';
+import AnnouncementBar from '../components/landing/AnnouncementBar';
 import SessionCard from '../components/SessionCard';
 import SessionCreateModal from '../components/SessionCreateModal';
 
@@ -92,6 +93,7 @@ export default function DashboardPage() {
   return (
     <div className="page-shell">
       <PageHeader user={user} onLogout={handleLogout} streakDays={streakDays} />
+      <AnnouncementBar />
 
       <main className="page-container">
         <section className="rounded-xl border border-hairline bg-surface-card p-space-lg">

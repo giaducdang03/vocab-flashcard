@@ -38,6 +38,8 @@ export default function PracticeSummary({
     synonym: { correct: 0, total: 0 },
     cloze: { correct: 0, total: 0 },
     context: { correct: 0, total: 0 },
+    verb_tense: { correct: 0, total: 0 },
+    word_stress: { correct: 0, total: 0 },
   };
 
   answers.forEach((answer) => {

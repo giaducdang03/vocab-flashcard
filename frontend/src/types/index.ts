@@ -56,9 +56,21 @@ export type DailyStats = {
   current_streak: number;
 };
 
-export type QuestionType = 'en_to_vi' | 'vi_to_en' | 'synonym' | 'cloze' | 'context';
+export type QuestionType =
+  | 'en_to_vi'
+  | 'vi_to_en'
+  | 'synonym'
+  | 'cloze'
+  | 'context'
+  | 'verb_tense'
+  | 'word_stress';
 
-export const AI_QUESTION_TYPES: QuestionType[] = ['cloze', 'context'];
+export const AI_QUESTION_TYPES: QuestionType[] = [
+  'cloze',
+  'context',
+  'verb_tense',
+  'word_stress',
+];
 
 export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   en_to_vi: 'English → Vietnamese',
@@ -66,6 +78,8 @@ export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   synonym: 'Synonym',
   cloze: 'Fill in the blank',
   context: 'Choose the word in context',
+  verb_tense: 'Verb tense',
+  word_stress: 'Word stress',
 };
 
 export type Quiz = {
