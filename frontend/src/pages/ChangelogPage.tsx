@@ -2,36 +2,32 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
 import LandingHeader from '../components/landing/LandingHeader';
-import Footer from '../components/Footer';
-import { loadChangelog, type ChangelogData } from '../lib/changelog';
-import { Sparkles, TrendingUp, Wrench, AlertCircle } from 'lucide-react';
-
-const iconMap = {
-  Sparkles,
-  TrendingUp,
-  Wrench,
-  AlertCircle,
-} as Record<string, typeof Sparkles>;
+import ChangelogSidebar, { versionAnchor } from '../components/changelog/ChangelogSidebar';
+import Markdown from '../components/changelog/Markdown';
+import { loadChangelog, type ChangelogData, type ChangelogVersion } from '../lib/changelog';
+import { AlertCircle } from 'lucide-react';
 
 export default function ChangelogPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [data, setData] = useState<ChangelogData | null>(null);
-  const [activeId, setActiveId] = useState<string>('v2-0-0');
+  const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    loadChangelog().then(setData);
+    loadChangelog().then((result) => {
+      setData(result);
+      setActiveId(result.versions[0] ? versionAnchor(result.versions[0].version) : '');
+    });
   }, []);
 
   if (!data) {
     return <div className="app-shell center-block">Loading…</div>;
   }
 
-  const Header = user ? PageHeader : LandingHeader;
-
   return (
-    <div className="flex flex-col min-h-screen bg-surface">
-      <Header />
-      <main className="flex-1 w-full pt-16">
+    <div className="bg-surface">
+      {user ? <PageHeader user={user} onLogout={logout} /> : <LandingHeader />}
+      {/* LandingHeader is fixed, PageHeader is sticky (in flow) */}
+      <main className={`w-full ${user ? '' : 'pt-16'}`}>
         <div className="mx-auto max-w-[1120px] px-space-md py-space-xl lg:px-space-xl">
           <div className="mb-space-xl">
             <h1 className="text-display-hero font-normal tracking-tight text-ink mb-space-sm">
@@ -46,53 +42,33 @@ export default function ChangelogPage() {
             {/* Timeline */}
             <div className="lg:col-span-8 space-y-space-xl">
               {data.versions.map((v) => (
-                <VersionCard key={v.version} version={v} active={activeId === `v${v.version}`} />
+                <VersionCard key={v.version} version={v} />
               ))}
 
               {/* Roadmap */}
-              <div className="rounded-xl border border-hairline bg-surface-card p-space-lg">
+              <div id="roadmap" className="scroll-mt-24 rounded-xl border border-hairline bg-surface-card p-space-lg">
                 <div className="flex items-center gap-2 mb-space-md">
                   <AlertCircle className="text-primary" size={24} />
                   <h2 className="text-headline-lg text-ink">Sắp có trên VocabFlash</h2>
                 </div>
-                <p className="text-body-md text-body whitespace-pre-line">{data.roadmap}</p>
+                <Markdown content={data.roadmap.replace(/^## .*$/m, '')} />
               </div>
             </div>
 
-            {/* Sidebar */}
-            <div className="hidden lg:block lg:col-span-4">
-              <div className="sticky top-20 space-y-2">
-                {data.versions.map((v) => (
-                  <button
-                    key={v.version}
-                    onClick={() => setActiveId(`v${v.version}`)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                      activeId === `v${v.version}`
-                        ? 'bg-primary-fixed text-primary'
-                        : 'hover:bg-canvas-soft text-body'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-body-sm font-medium">{v.version} — {v.title}</span>
-                      <span className="text-code-sm text-muted">{v.date.slice(0, 5)}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <ChangelogSidebar versions={data.versions} activeId={activeId} onSelect={setActiveId} />
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
 
-function VersionCard({ version, active }: { version: any; active: boolean }) {
-  const Icon = iconMap[version.icon] || Sparkles;
-
+function VersionCard({ version }: { version: ChangelogVersion }) {
   return (
-    <div id={`v${version.version}`} className="rounded-xl border border-hairline bg-surface-card p-space-lg">
+    <div
+      id={versionAnchor(version.version)}
+      className="scroll-mt-24 rounded-xl border border-hairline bg-surface-card p-space-lg"
+    >
       <div className="flex items-start justify-between mb-space-md">
         <div className="flex items-center gap-2">
           <span className="rounded bg-primary text-on-primary px-2.5 py-1 font-mono text-code-sm font-medium">
@@ -107,37 +83,7 @@ function VersionCard({ version, active }: { version: any; active: boolean }) {
         <span className="text-code-sm text-muted">{version.date}</span>
       </div>
       <h3 className="text-headline-lg text-ink mb-space-md">{version.title}</h3>
-      <div className="prose prose-sm text-body-sm text-body">
-        <Markdown content={version.content} />
-      </div>
-    </div>
-  );
-}
-
-function Markdown({ content }: { content: string }) {
-  return (
-    <div className="space-y-2">
-      {content.split('\n\n').map((block, i) => {
-        if (block.startsWith('**') && block.endsWith('**')) {
-          return (
-            <h4 key={i} className="font-semibold text-body-md text-ink mt-space-md">
-              {block.replace(/\*\*/g, '')}
-            </h4>
-          );
-        }
-        if (block.startsWith('- ')) {
-          return (
-            <ul key={i} className="space-y-1 pl-4">
-              {block.split('\n').map((line, j) => (
-                <li key={j} className="list-disc list-outside">
-                  {line.replace(/^- /, '')}
-                </li>
-              ))}
-            </ul>
-          );
-        }
-        return <p key={i} className="leading-relaxed">{block}</p>;
-      })}
+      <Markdown content={version.content} />
     </div>
   );
 }
