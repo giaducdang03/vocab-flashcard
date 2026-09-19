@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { QuizDetail } from '../types';
-import { QUESTION_TYPE_LABELS } from '../types';
+import { QUESTION_TYPE_COLORS, QUESTION_TYPE_LABELS } from '../types';
 import AttemptHistory from '../components/quiz/AttemptHistory';
 import MasteryTrajectory from '../components/quiz/MasteryTrajectory';
 import PageHeader from '../components/PageHeader';
@@ -123,7 +123,7 @@ export default function QuizDetailPage() {
               {uniqueTypes.map((type) => (
                 <span
                   key={type}
-                  className="inline-flex items-center rounded-full bg-ink px-2.5 py-1 text-caption-uppercase uppercase text-surface"
+                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-caption-uppercase uppercase ${QUESTION_TYPE_COLORS[type].bg} ${QUESTION_TYPE_COLORS[type].text}`}
                 >
                   {QUESTION_TYPE_LABELS[type]}
                 </span>

@@ -276,16 +276,16 @@ class TestBuildSystemPrompt:
 
         system, _ = quiz_prompt.build_prompt(cards, ["cloze"], 2, max_cards=10)
 
-        assert "Điền từ vào chỗ trống" in system
-        assert "Chọn từ phù hợp tình huống" not in system
+        assert "Fill in the blank" in system
+        assert "Pick the word that fits the situation" not in system
 
     def test_system_prompt_describes_every_requested_type(self):
         cards = make_pool(4)
 
         system, _ = quiz_prompt.build_prompt(cards, ["cloze", "context"], 2, max_cards=10)
 
-        assert "Điền từ vào chỗ trống" in system
-        assert "Chọn từ phù hợp tình huống" in system
+        assert "Fill in the blank" in system
+        assert "Pick the word that fits the situation" in system
 
     def test_type_blocks_follow_a_stable_order_not_the_caller_order(self):
         cards = make_pool(4)
@@ -300,9 +300,9 @@ class TestBuildSystemPrompt:
 
         system, _ = quiz_prompt.build_prompt(cards, ["cloze"], 2, max_cards=10)
 
-        assert "QUY TẮC GIẢI THÍCH" in system
-        assert "RÀNG BUỘC KỸ THUẬT" in system
-        assert "ĐỊNH DẠNG" in system
+        assert "EXPLANATION RULES" in system
+        assert "TECHNICAL CONSTRAINTS" in system
+        assert "OUTPUT FORMAT" in system
 
     def test_json_example_never_names_a_type_that_was_not_requested(self):
         cards = make_pool(4)
@@ -324,7 +324,7 @@ class TestBuildSystemPrompt:
 
         system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
 
-        assert "PHẢI là một trong" in system
+        assert "MUST be one of" in system
 
     def test_json_example_shows_a_realistic_card_id_not_an_ellipsis(self):
         cards = make_pool(4)
@@ -338,7 +338,7 @@ class TestBuildSystemPrompt:
 
         system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
 
-        assert "không dùng front_text hay back_text làm card_id" in system
+        assert "NEVER use front_text or back_text as the card_id" in system
 
 
 class TestVerbTense:
@@ -413,8 +413,8 @@ class TestVerbTense:
 
         system, _ = quiz_prompt.build_prompt(cards, ["verb_tense"], 2, max_cards=10)
 
-        assert "Chia thì động từ" in system
-        assert "Điền từ vào chỗ trống" not in system
+        assert "Verb tense" in system
+        assert "Fill in the blank" not in system
 
 
 def _word_stress_question(card_id: str = "card-0") -> dict:
@@ -637,8 +637,8 @@ class TestWordStress:
 
         system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
 
-        assert "Trọng âm từ" in system
-        assert "Chia thì động từ" not in system
+        assert "Word stress" in system
+        assert "Verb tense" not in system
 
     def test_prompt_requires_ipa_in_the_word_stress_explanation(self):
         cards = make_pool(4)
@@ -652,4 +652,4 @@ class TestWordStress:
 
         system, _ = quiz_prompt.build_prompt(cards, ["word_stress"], 2, max_cards=10)
 
-        assert "lộ đáp án" in system
+        assert "gives the answer away" in system

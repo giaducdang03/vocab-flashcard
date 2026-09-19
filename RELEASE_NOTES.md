@@ -4,6 +4,24 @@ Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở
 
 ---
 
+## Phiên bản 2.0.1 — 19/09/2026
+### Cải thiện tính năng Quiz (Bài kiểm tra)
+
+Làm quiz giờ rõ ràng hơn ở mỗi bước: bạn biết mình đang được hỏi gì ngay khi nhìn vào câu hỏi, và phần phản hồi sau khi trả lời gọn gàng, đỡ khô khan hơn.
+
+**Có gì mới**
+
+- **Câu hỏi hướng dẫn thay cho nhãn dạng:** Mỗi câu hiện một dòng hỏi ngắn bằng tiếng Anh ngay trên đề, ví dụ *Which syllable carries the main stress?* hay *Which word fills the blank?*, thay cho tên dạng câu hỏi. Không cần đoán dạng nào nghĩa là gì nữa. Áp dụng cho cả bảy dạng câu hỏi.
+- **Giải thích ngay lúc chọn dạng:** Ở bước chọn dạng câu hỏi khi tạo quiz, mỗi dạng có thêm một dòng hỏi mẫu bên dưới tên để bạn biết trước sẽ gặp gì.
+- **Lời phản hồi đa dạng:** Sau mỗi câu, thay vì chỉ *Correct!* hay *Not quite*, app xoay vòng nhiều câu khác nhau như *Nice one!*, *Spot on!*, *Almost there*, *Good try*. Câu sai được nói nhẹ nhàng hơn để việc ôn không nặng nề.
+
+**Đã tốt hơn**
+
+- **Phản hồi gọn trong một khung:** Kết quả đúng/sai, phần giải thích và nút *Next question* giờ nằm chung một khung có màu xanh hoặc đỏ nhạt, giải thích ở bên trái còn nút tiếp theo bên phải, không còn chiếm thêm một hàng riêng bên dưới. Nút *Next* nhỏ lại và có mũi tên.
+- **Màu dạng câu hỏi nhất quán:** Ở trang chi tiết quiz, các dạng câu hỏi dùng đúng màu như ở danh sách quiz, nên nhìn là nhận ra dạng nào.
+
+---
+
 ## Phiên bản 2.0.0 — 19/09/2026
 ### Bộ mặt mới & Đăng nhập bằng Google
 
