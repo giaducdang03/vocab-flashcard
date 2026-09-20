@@ -50,7 +50,7 @@ export default function QuizQuestionView({
     return (
       <>
         {before}
-        <span className="cloze-blank" aria-label="blank" />
+        <span className="cloze-blank" aria-label={t('blankAriaLabel')} />
         {rest.join('___')}
       </>
     );

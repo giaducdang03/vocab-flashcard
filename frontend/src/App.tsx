@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthPage from './pages/AuthPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
@@ -19,9 +20,10 @@ import Footer from './components/Footer';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
-    return <div className="app-shell center-block">Loading…</div>;
+    return <div className="app-shell center-block">{t('common:loading')}</div>;
   }
 
   if (!user) {
@@ -33,9 +35,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
-    return <div className="app-shell center-block">Loading…</div>;
+    return <div className="app-shell center-block">{t('common:loading')}</div>;
   }
 
   if (!user) {
@@ -51,9 +54,10 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 
 function HomeRoute() {
   const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
-    return <div className="app-shell center-block">Loading…</div>;
+    return <div className="app-shell center-block">{t('common:loading')}</div>;
   }
 
   return user ? <DashboardPage /> : <LandingPage />;

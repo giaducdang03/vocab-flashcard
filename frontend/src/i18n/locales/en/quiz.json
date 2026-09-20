@@ -1,4 +1,5 @@
 {
+  "blankAriaLabel": "blank",
   "ai": {
     "badge": "AI-generated",
     "questionsWarning": "Contains AI-generated questions; may contain mistakes.",
