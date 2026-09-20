@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthPage from './pages/AuthPage';
@@ -156,6 +156,11 @@ function AppRoutes() {
   );
 }
 
+function AppFooter() {
+  const { pathname } = useLocation();
+  return pathname === '/login' ? null : <Footer />;
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -163,7 +168,7 @@ export default function App() {
         <div className="flex-1">
           <AppRoutes />
         </div>
-        <Footer />
+        <AppFooter />
       </div>
     </AuthProvider>
   );

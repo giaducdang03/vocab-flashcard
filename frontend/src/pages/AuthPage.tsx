@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import { Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { ArrowRight, Home, Sparkles } from 'lucide-react';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { api, API_BASE_URL } from '../api/client';
@@ -80,6 +80,11 @@ export default function AuthPage() {
 
   return (
     <div className="app-shell auth-shell">
+      <Link to="/" className="auth-back-link">
+        <Home size={16} />
+        <span>{t('backToLanding')}</span>
+      </Link>
+
       <div className="auth-lang-switcher" style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
         <LanguageSwitcher />
       </div>
