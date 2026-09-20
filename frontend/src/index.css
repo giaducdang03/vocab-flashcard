@@ -642,6 +642,20 @@ textarea {
   color: var(--ink);
 }
 
+.auth-toggle--compact {
+  grid-template-columns: repeat(2, auto);
+  width: fit-content;
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 0;
+}
+
+.auth-toggle--compact .tab-button {
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 0.8125rem;
+}
+
 .stack-form {
   display: grid;
   gap: 18px;

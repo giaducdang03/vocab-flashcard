@@ -372,7 +372,7 @@ export default function QuizCreateModal({
                   <div className="field-group">
                     <span>{t('create.types.explanationLanguage.label')}</span>
                     <div
-                      className="auth-toggle"
+                      className="auth-toggle auth-toggle--compact"
                       role="radiogroup"
                       aria-label={t('create.types.explanationLanguage.label')}
                     >
