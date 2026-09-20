@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookMarked, LineChart, ShieldCheck } from 'lucide-react';
 import { api } from '../../api/client';
 import type { DailyStats, Session } from '../../types';
@@ -13,6 +14,7 @@ type StatsSectionProps = {
 };
 
 export default function StatsSection({ sessions, onStreakChange }: StatsSectionProps) {
+  const { t } = useTranslation('dashboard');
   const [stats, setStats] = useState<DailyStats | null>(null);
   const [statsError, setStatsError] = useState(false);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -77,47 +79,51 @@ export default function StatsSection({ sessions, onStreakChange }: StatsSectionP
   if (sessions.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-hairline-strong bg-surface-card p-space-xl text-center text-body-sm text-body">
-        No study data yet. Create your first session to start tracking progress.
+        {t('empty.noStudyData')}
       </div>
     );
   }
 
   const learnedToday = stats ? todayLearned(stats.daily) : 0;
-  const streakValue = statsError ? '—' : statsLoading && !stats ? '…' : (stats?.current_streak ?? 0);
+  const streakValue = statsError
+    ? t('kpi.streakUnavailable')
+    : statsLoading && !stats
+      ? t('kpi.streakLoading')
+      : (stats?.current_streak ?? 0);
 
   return (
     <div className="flex flex-col gap-gutter">
       <div className="grid grid-cols-1 gap-gutter sm:grid-cols-2 lg:grid-cols-4">
         <KpiTile
-          label="Total words"
+          label={t('kpi.totalWords')}
           value={totals.total}
           icon={<BookMarked size={18} />}
-          footnote={`Across ${totals.active} active ${totals.active === 1 ? 'session' : 'sessions'}`}
+          footnote={t('kpi.totalWordsFootnote', { count: totals.active })}
         />
         <KpiTile
-          label="Learned"
+          label={t('kpi.learned')}
           value={totals.learned}
           icon={<ShieldCheck size={18} className="text-secondary" />}
-          badge={totals.total > 0 ? `${totals.percent}% total` : undefined}
+          badge={totals.total > 0 ? t('kpi.learnedBadge', { percent: totals.percent }) : undefined}
           footnote={
             statsError
               ? undefined
-              : `+${learnedToday} ${learnedToday === 1 ? 'word' : 'words'} today`
+              : t('kpi.learnedTodayFootnote', { count: learnedToday })
           }
           accent="secondary"
         />
         <KpiTile
-          label="Overall mastery"
+          label={t('kpi.overallMastery')}
           value={`${totals.percent}%`}
           icon={<LineChart size={18} />}
           progress={totals.percent}
         />
         <KpiTile
-          label="Streak"
+          label={t('kpi.streak')}
           value={streakValue}
-          unit="days"
+          unit={t('kpi.streakUnit')}
           icon={<span className="text-[16px]">🔥</span>}
-          footnote={bestStreak !== null ? `Personal best: ${bestStreak} days` : undefined}
+          footnote={bestStreak !== null ? t('kpi.personalBest', { count: bestStreak }) : undefined}
         />
       </div>
 
@@ -130,7 +136,7 @@ export default function StatsSection({ sessions, onStreakChange }: StatsSectionP
 
       {statsError && (
         <p className="m-0 text-body-sm text-error">
-          Couldn't load daily stats. Your totals are still accurate.
+          {t('stats.loadError')}
         </p>
       )}
     </div>
