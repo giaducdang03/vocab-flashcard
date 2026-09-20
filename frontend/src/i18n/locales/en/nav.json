@@ -1,0 +1,27 @@
+{
+  "items": {
+    "dashboard": "Dashboard",
+    "sessions": "Sessions",
+    "quizzes": "Quizzes"
+  },
+  "badgeNew": "New",
+  "streak": "{{count}}-day streak",
+  "landing": {
+    "features": "Features",
+    "method": "Method",
+    "quizzes": "Quizzes",
+    "pricing": "Pricing",
+    "signIn": "Sign in",
+    "getStarted": "Get started"
+  },
+  "user": {
+    "menu": "User menu",
+    "info": "User info",
+    "userManagement": "User Management",
+    "logout": "Logout"
+  },
+  "footer": {
+    "tagline": "— Mindful vocabulary mastery.",
+    "rights": "© 2026 ducdang. All rights reserved."
+  }
+}

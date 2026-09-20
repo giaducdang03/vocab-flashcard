@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 
 import enCommon from './locales/en/common.json';
 import viCommon from './locales/vi/common.json';
+import enNav from './locales/en/nav.json';
+import viNav from './locales/vi/nav.json';
 
 export type AppLanguage = 'en' | 'vi';
 
@@ -34,8 +36,8 @@ export function getStoredLanguage(): AppLanguage {
 }
 
 export const resources = {
-  en: { common: enCommon },
-  vi: { common: viCommon },
+  en: { common: enCommon, nav: enNav },
+  vi: { common: viCommon, nav: viNav },
 } as const;
 
 void i18n.use(initReactI18next).init({

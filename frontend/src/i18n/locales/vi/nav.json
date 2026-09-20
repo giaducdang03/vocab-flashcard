@@ -1,0 +1,27 @@
+{
+  "items": {
+    "dashboard": "Tổng quan",
+    "sessions": "Bộ từ",
+    "quizzes": "Đề kiểm tra"
+  },
+  "badgeNew": "Mới",
+  "streak": "Chuỗi {{count}} ngày",
+  "landing": {
+    "features": "Tính năng",
+    "method": "Phương pháp",
+    "quizzes": "Đề kiểm tra",
+    "pricing": "Bảng giá",
+    "signIn": "Đăng nhập",
+    "getStarted": "Bắt đầu"
+  },
+  "user": {
+    "menu": "Menu người dùng",
+    "info": "Thông tin tài khoản",
+    "userManagement": "Quản lý người dùng",
+    "logout": "Đăng xuất"
+  },
+  "footer": {
+    "tagline": "— Học từ vựng có chủ đích.",
+    "rights": "© 2026 ducdang. Bảo lưu mọi quyền."
+  }
+}
