@@ -4,6 +4,7 @@ import random
 import pytest
 
 from app.services.ai import quiz_prompt
+from app.services.quiz_generator import AI_QUESTION_TYPES
 from tests.factories import make_pool
 
 
@@ -271,6 +272,14 @@ class TestParseAndValidate:
 
 
 class TestBuildSystemPrompt:
+    @pytest.mark.parametrize("language", ["vi", "en"])
+    def test_explanation_placeholder_is_always_replaced(self, language):
+        system = quiz_prompt.build_system_prompt(
+            list(AI_QUESTION_TYPES), explanation_language=language
+        )
+
+        assert "{explanation_language}" not in system
+
     def test_system_prompt_only_describes_the_requested_types(self):
         cards = make_pool(4)
 
