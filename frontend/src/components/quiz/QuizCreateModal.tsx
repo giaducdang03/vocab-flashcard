@@ -15,13 +15,19 @@ type QuizCreateModalProps = {
 
 const QUESTION_COUNT_PRESETS = [5, 10, 20, 30, 50];
 
+type ExplanationLanguage = 'vi' | 'en';
+const EXPLANATION_LANGUAGES: { value: ExplanationLanguage; label: string }[] = [
+  { value: 'vi', label: 'Tiếng Việt' },
+  { value: 'en', label: 'English' },
+];
+
 export default function QuizCreateModal({
   isOpen,
   sessions,
   onClose,
   onCreated,
 }: QuizCreateModalProps) {
-  const { t } = useTranslation('quiz');
+  const { t, i18n } = useTranslation('quiz');
   const [step, setStep] = useState(0);
   const [sessionIds, setSessionIds] = useState<string[]>([]);
   const [types, setTypes] = useState<QuestionType[]>(['en_to_vi']);
@@ -32,6 +38,9 @@ export default function QuizCreateModal({
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [aiStatus, setAiStatus] = useState<AiStatus | null>(null);
+  const [explanationLanguage, setExplanationLanguage] = useState<ExplanationLanguage>(
+    i18n.language.startsWith('vi') ? 'vi' : 'en',
+  );
 
   // Reset state when modal opens/closes
   useEffect(() => {
@@ -44,6 +53,8 @@ export default function QuizCreateModal({
     setTitle('');
     setCapacity(null);
     setError(null);
+    setExplanationLanguage(i18n.language.startsWith('vi') ? 'vi' : 'en');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   // Fetch capacity when step changes or dependencies update
@@ -125,6 +136,7 @@ export default function QuizCreateModal({
         session_ids: sessionIds,
         question_count: Math.min(questionCount, maxQuestions),
         question_types: types,
+        explanation_language: explanationLanguage,
       });
       onCreated(response.data);
       onClose();
@@ -352,10 +364,36 @@ export default function QuizCreateModal({
                 })}
               </div>
               {types.some((type) => AI_QUESTION_TYPES.includes(type)) && (
-                <p className="ai-note">
-                  <Sparkles size={16} />
-                  <span>{t('create.types.aiNote')}</span>
-                </p>
+                <>
+                  <p className="ai-note">
+                    <Sparkles size={16} />
+                    <span>{t('create.types.aiNote')}</span>
+                  </p>
+                  <div className="field-group">
+                    <span>{t('create.types.explanationLanguage.label')}</span>
+                    <div
+                      className="auth-toggle"
+                      role="radiogroup"
+                      aria-label={t('create.types.explanationLanguage.label')}
+                    >
+                      {EXPLANATION_LANGUAGES.map(({ value, label }) => (
+                        <button
+                          key={value}
+                          type="button"
+                          role="radio"
+                          aria-checked={explanationLanguage === value}
+                          className={explanationLanguage === value ? 'tab-button active' : 'tab-button'}
+                          onClick={() => setExplanationLanguage(value)}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>
+                      {t('create.types.explanationLanguage.hint')}
+                    </p>
+                  </div>
+                </>
               )}
             </div>
           )}
@@ -396,6 +434,13 @@ export default function QuizCreateModal({
                     <>
                       {' '}
                       · {t('create.name.from', { sessions: selectedSessionTitles.join(', ') })}
+                    </>
+                  )}
+                  {types.some((qt) => AI_QUESTION_TYPES.includes(qt)) && (
+                    <>
+                      {' '}
+                      · {t('create.types.explanationLanguage.label')}:{' '}
+                      {EXPLANATION_LANGUAGES.find((l) => l.value === explanationLanguage)?.label}
                     </>
                   )}
                 </div>

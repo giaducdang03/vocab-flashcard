@@ -4,6 +4,24 @@ Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở
 
 ---
 
+## Phiên bản 2.1.1 — 20/09/2026
+### Chọn ngôn ngữ giải thích của AI khi tạo quiz
+
+Khi tạo quiz có câu hỏi do AI sinh, bạn giờ có thể chọn AI giải thích đáp án bằng **tiếng Việt** hoặc **tiếng Anh**.
+
+**Có gì mới**
+
+- **Chọn ngôn ngữ giải thích:** Ở bước chọn dạng câu hỏi, khi bạn chọn ít nhất một dạng do AI tạo sẽ hiện thêm ô chọn "Tiếng Việt" / "English". Lựa chọn cũng được nhắc lại ở bước cuối trước khi tạo quiz.
+- **Mặc định theo giao diện:** Ô này tự chọn sẵn theo ngôn ngữ giao diện bạn đang dùng, bạn vẫn đổi được bất cứ lúc nào trước khi tạo.
+- **Thử lại vẫn đúng ngôn ngữ:** Nếu quiz tạo thất bại rồi bạn bấm thử lại, quiz vẫn được sinh theo ngôn ngữ đã chọn.
+
+**Lưu ý**
+
+- Câu hỏi và các phương án trả lời vẫn luôn bằng tiếng Anh; lựa chọn này chỉ áp dụng cho phần giải thích.
+- Các quiz đã tạo trước đây giữ nguyên phần giải thích bằng tiếng Việt.
+
+---
+
 ## Phiên bản 2.1.0 — 20/09/2026
 ### Giao diện song ngữ Anh – Việt
 

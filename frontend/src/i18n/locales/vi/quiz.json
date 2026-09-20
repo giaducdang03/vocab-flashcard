@@ -94,7 +94,11 @@
       "hint": "Chọn các loại câu hỏi muốn đưa vào",
       "cardsCount_one": "{{count}} thẻ",
       "cardsCount_other": "{{count}} thẻ",
-      "aiNote": "Quiz sẽ được AI tạo ở chế độ nền và mất khoảng 10–40 giây. Bạn có thể đóng cửa sổ này; quiz sẽ tự động xuất hiện trong danh sách khi sẵn sàng. Câu hỏi và giải thích do AI tạo đôi khi có thể có sai sót."
+      "aiNote": "Quiz sẽ được AI tạo ở chế độ nền và mất khoảng 10–40 giây. Bạn có thể đóng cửa sổ này; quiz sẽ tự động xuất hiện trong danh sách khi sẵn sàng. Câu hỏi và giải thích do AI tạo đôi khi có thể có sai sót.",
+      "explanationLanguage": {
+        "label": "Ngôn ngữ giải thích",
+        "hint": "Ngôn ngữ AI dùng để giải thích từng đáp án. Câu hỏi và các phương án vẫn bằng tiếng Anh."
+      }
     },
     "name": {
       "label": "Tên quiz",
