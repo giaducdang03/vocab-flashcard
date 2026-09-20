@@ -1,6 +1,7 @@
 import type { AnswerResult, QuizQuestion } from '../../types';
-import { CORRECT_MESSAGES, QUESTION_TYPE_HINTS, WRONG_MESSAGES } from '../../types';
+import { QUESTION_TYPE_HINTS } from '../../types';
 import { ArrowRight, Check, Sparkles, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type QuizQuestionViewProps = {
   question: QuizQuestion;
@@ -14,11 +15,6 @@ type QuizQuestionViewProps = {
   isLast: boolean;
 };
 
-const verdictMessage = (isCorrect: boolean, index: number): string => {
-  const messages = isCorrect ? CORRECT_MESSAGES : WRONG_MESSAGES;
-  return messages[index % messages.length];
-};
-
 export default function QuizQuestionView({
   question,
   index,
@@ -30,8 +26,17 @@ export default function QuizQuestionView({
   onNext,
   isLast,
 }: QuizQuestionViewProps) {
+  const { t } = useTranslation('quiz');
   const progressPercent = ((index + 1) / total) * 100;
   const hasResult = result !== null;
+
+  const verdictMessage = (isCorrect: boolean, msgIndex: number): string => {
+    const messages = t(
+      isCorrect ? 'take.question.correctMessages' : 'take.question.wrongMessages',
+      { returnObjects: true },
+    ) as string[];
+    return messages[msgIndex % messages.length];
+  };
 
   const BLANK_TYPES = ['cloze', 'verb_tense'];
 
@@ -78,10 +83,10 @@ export default function QuizQuestionView({
         {/* Progress box */}
         <div className="progress-box">
           <div className="progress-box-header">
-            <span>
-              Question {index + 1} of {total}
+            <span>{t('take.question.progress', { current: index + 1, total })}</span>
+            <span className="progress-percent">
+              {t('take.question.percentCompleted', { percent: Math.round(progressPercent) })}
             </span>
-            <span className="progress-percent">{Math.round(progressPercent)}% completed</span>
           </div>
           <div className="progress-bar">
             <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -91,9 +96,9 @@ export default function QuizQuestionView({
         {/* Hero card with question */}
         <section className={question.source === 'ai' ? 'hero-card hero-card--ai' : 'hero-card'}>
           {question.source === 'ai' && (
-            <span className="ai-corner-chip" title="AI-generated question; may contain mistakes.">
+            <span className="ai-corner-chip" title={t('ai.questionWarning')}>
               <Sparkles size={12} />
-              AI-generated
+              {t('ai.badge')}
             </span>
           )}
           <div style={{ flex: 1, paddingTop: question.source === 'ai' ? '20px' : 0 }}>
@@ -141,16 +146,16 @@ export default function QuizQuestionView({
                 {result.is_correct ? <Check size={18} /> : <X size={18} />}
                 {verdictMessage(result.is_correct, index)}
                 {result.explanation && (
-                  <span className="ai-chip" title="AI-generated content may contain mistakes.">
+                  <span className="ai-chip" title={t('ai.contentWarning')}>
                     <Sparkles />
-                    AI-generated
+                    {t('ai.badge')}
                   </span>
                 )}
               </div>
               {result.explanation && <p className="feedback-explanation">{result.explanation}</p>}
             </div>
             <button type="button" className="btn btn-primary" onClick={onNext}>
-              {isLast ? 'Finish quiz' : 'Next question'}
+              {isLast ? t('take.question.finish') : t('take.question.next')}
               <ArrowRight size={16} />
             </button>
           </div>

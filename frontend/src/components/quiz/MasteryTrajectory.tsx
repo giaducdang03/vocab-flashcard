@@ -1,4 +1,5 @@
 import { LineChart, TrendingDown, TrendingUp } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 import type { QuizAttemptSummary } from '../../types';
 import { computeTrajectory, formatDuration } from '../../utils/quizStats';
 
@@ -7,6 +8,7 @@ type MasteryTrajectoryProps = {
 };
 
 export default function MasteryTrajectory({ attempts }: MasteryTrajectoryProps) {
+  const { t } = useTranslation('quiz');
   const trajectory = computeTrajectory(attempts);
 
   // Fewer than two attempts leaves nothing to compare.
@@ -17,6 +19,9 @@ export default function MasteryTrajectory({ attempts }: MasteryTrajectoryProps) 
   const { firstPercent, lastPercent, netGain, secondsFaster } = trajectory;
   const improving = netGain >= 0;
   const paceGained = secondsFaster !== null && secondsFaster > 0;
+  const trend = paceGained
+    ? t(improving ? 'stats.trajectory.increasing' : 'stats.trajectory.moving')
+    : t(improving ? 'stats.trajectory.increased' : 'stats.trajectory.moved');
 
   return (
     <div className="flex flex-col items-start justify-between gap-space-md rounded-xl border border-hairline bg-surface-card p-space-md md:flex-row md:items-center">
@@ -25,20 +30,27 @@ export default function MasteryTrajectory({ attempts }: MasteryTrajectoryProps) 
           <LineChart size={18} />
         </div>
         <div className="flex flex-col">
-          <span className="text-title-sm text-ink">Mastery Trajectory</span>
+          <span className="text-title-sm text-ink">{t('stats.trajectory.title')}</span>
           <span className="text-body-sm text-body">
             {paceGained ? (
-              <>
-                Your completion pace improved by{' '}
-                <strong className="font-medium text-ink">{formatDuration(secondsFaster)}</strong>{' '}
-                from your first attempt to your latest, with accuracy{' '}
-                {improving ? 'increasing' : 'moving'} from {firstPercent}% to {lastPercent}%.
-              </>
+              <Trans
+                t={t}
+                i18nKey="stats.trajectory.paceImproved"
+                values={{
+                  duration: formatDuration(secondsFaster),
+                  trend,
+                  firstPercent,
+                  lastPercent,
+                }}
+                components={{ bold: <strong className="font-medium text-ink" /> }}
+              />
             ) : (
-              <>
-                Across {attempts.length} attempts your accuracy{' '}
-                {improving ? 'increased' : 'moved'} from {firstPercent}% to {lastPercent}%.
-              </>
+              t('stats.trajectory.acrossAttempts', {
+                count: attempts.length,
+                trend,
+                firstPercent,
+                lastPercent,
+              })
             )}
           </span>
         </div>
@@ -51,8 +63,11 @@ export default function MasteryTrajectory({ attempts }: MasteryTrajectoryProps) 
           }`}
         >
           {improving ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-          {improving ? '+' : ''}
-          {netGain}% Net {improving ? 'Gain' : 'Change'}
+          {t('stats.trajectory.netLine', {
+            sign: improving ? '+' : '',
+            value: netGain,
+            label: t(improving ? 'stats.trajectory.netGain' : 'stats.trajectory.netChange'),
+          })}
         </span>
       </div>
     </div>

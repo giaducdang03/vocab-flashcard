@@ -1,4 +1,5 @@
 import { BarChart3, History, ListChecks, Trophy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { QuizAttemptSummary } from '../../types';
 import { computeQuizStats } from '../../utils/quizStats';
 
@@ -17,18 +18,19 @@ const TRACK_CLASS = 'mt-3 h-1 w-full overflow-hidden rounded-full bg-hairline-so
 const ATTEMPT_DOTS = [1, 2, 3, 4];
 
 export default function QuizStatCards({ questionCount, attempts }: QuizStatCardsProps) {
+  const { t } = useTranslation('quiz');
   const stats = computeQuizStats(attempts);
 
   return (
     <div className="grid grid-cols-2 gap-space-sm md:grid-cols-4">
       <div className={CARD_CLASS}>
         <div className={EYEBROW_CLASS}>
-          <span className={LABEL_CLASS}>Total Questions</span>
+          <span className={LABEL_CLASS}>{t('stats.totalQuestions')}</span>
           <ListChecks size={18} />
         </div>
         <div className="flex items-baseline gap-1.5">
           <span className="text-headline-lg text-ink">{questionCount}</span>
-          <span className="font-mono text-code-sm text-muted">items</span>
+          <span className="font-mono text-code-sm text-muted">{t('stats.items')}</span>
         </div>
         <div className={TRACK_CLASS}>
           <div className="h-full w-full rounded-full bg-ink" />
@@ -37,12 +39,12 @@ export default function QuizStatCards({ questionCount, attempts }: QuizStatCards
 
       <div className={CARD_CLASS}>
         <div className={EYEBROW_CLASS}>
-          <span className={LABEL_CLASS}>Total Attempts</span>
+          <span className={LABEL_CLASS}>{t('stats.totalAttempts')}</span>
           <History size={18} />
         </div>
         <div className="flex items-baseline gap-1.5">
           <span className="text-headline-lg text-ink">{stats.attemptCount}</span>
-          <span className="font-mono text-code-sm text-muted">completed</span>
+          <span className="font-mono text-code-sm text-muted">{t('stats.completed')}</span>
         </div>
         <div className="mt-3 flex items-center gap-1">
           {ATTEMPT_DOTS.map((dot) => (
@@ -58,7 +60,7 @@ export default function QuizStatCards({ questionCount, attempts }: QuizStatCards
 
       <div className={CARD_CLASS}>
         <div className={EYEBROW_CLASS}>
-          <span className={LABEL_CLASS}>Best Score</span>
+          <span className={LABEL_CLASS}>{t('stats.bestScore')}</span>
           <Trophy size={18} className={stats.bestPercent === null ? undefined : 'text-secondary'} />
         </div>
         <div className="flex items-baseline gap-2">
@@ -86,7 +88,7 @@ export default function QuizStatCards({ questionCount, attempts }: QuizStatCards
 
       <div className={CARD_CLASS}>
         <div className={EYEBROW_CLASS}>
-          <span className={LABEL_CLASS}>Average Score</span>
+          <span className={LABEL_CLASS}>{t('stats.averageScore')}</span>
           <BarChart3 size={18} />
         </div>
         <div className="flex items-baseline gap-2">
@@ -99,7 +101,7 @@ export default function QuizStatCards({ questionCount, attempts }: QuizStatCards
                 <span className="text-body-sm font-normal text-body">/{questionCount}</span>
               </span>
               <span className="font-mono text-code-sm text-muted">
-                {stats.averagePercent}% avg
+                {stats.averagePercent}% {t('stats.avg')}
               </span>
             </>
           )}

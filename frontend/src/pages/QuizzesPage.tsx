@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ClipboardList, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { apiErrorMessage } from '../api/errors';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuizPolling } from '../hooks/useQuizPolling';
 
 export default function QuizzesPage() {
+  const { t } = useTranslation('quiz');
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -66,7 +68,7 @@ export default function QuizzesPage() {
         current.map((quiz) => (quiz.id === quizId ? response.data : quiz)),
       );
     } catch (err) {
-      setNotice(apiErrorMessage(err, 'Could not retry this quiz.'));
+      setNotice(apiErrorMessage(err, t('list.retryError')));
     }
   };
 
@@ -95,22 +97,20 @@ export default function QuizzesPage() {
       <main className="page-container">
         <section className="hero-card">
           <div>
-            <p className="eyebrow">Quiz Center</p>
-            <h1 className="text-2xl font-light letter-spacing-tight">
-              Challenge yourself with curated quizzes
-            </h1>
+            <p className="eyebrow">{t('list.eyebrow')}</p>
+            <h1 className="text-2xl font-light letter-spacing-tight">{t('list.title')}</h1>
           </div>
         </section>
 
         <section className="section-header">
-          <h2>Quizzes ({quizzes.length})</h2>
+          <h2>{t('list.heading', { count: quizzes.length })}</h2>
           <button
             type="button"
             className="btn btn-primary"
             onClick={() => setShowCreateModal(true)}
           >
             <Plus size={16} />
-            Create quiz
+            {t('list.createQuiz')}
           </button>
         </section>
 
@@ -124,12 +124,12 @@ export default function QuizzesPage() {
         )}
 
         {loading ? (
-          <div className="empty-state">Loading quizzes…</div>
+          <div className="empty-state">{t('list.loading')}</div>
         ) : quizzes.length === 0 ? (
           <div className="empty-state">
             <ClipboardList size={36} />
-            <h3>No quizzes yet</h3>
-            <p>Create your first quiz to start testing your vocabulary knowledge.</p>
+            <h3>{t('list.emptyTitle')}</h3>
+            <p>{t('list.emptyBody')}</p>
           </div>
         ) : (
           <div className="session-grid">

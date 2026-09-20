@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import QuizQuestionView from '../components/quiz/QuizQuestionView';
 import PageHeader from '../components/PageHeader';
 import type { AnswerResult, AttemptStart } from '../types';
 
 export default function TakeQuizPage() {
+  const { t } = useTranslation('quiz');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ export default function TakeQuizPage() {
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch attempt:', err);
-      setError('Failed to start quiz. Please try again.');
+      setError(t('take.startError'));
       setLoading(false);
     }
   };
@@ -64,7 +66,7 @@ export default function TakeQuizPage() {
     } catch (err) {
       console.error('Failed to save answer:', err);
       setSelectedIndex(null);
-      setError('Could not save that answer.');
+      setError(t('take.saveAnswerError'));
     } finally {
       setIsChecking(false);
     }
@@ -88,13 +90,13 @@ export default function TakeQuizPage() {
         navigate(`/attempts/${attempt_id}`, { replace: true });
       } catch (err) {
         console.error('Failed to submit quiz:', err);
-        setError('Failed to submit quiz. Please try again.');
+        setError(t('take.submitError'));
       }
     }
   };
 
   if (loading) {
-    return <div className="app-shell center-block">Loading quiz…</div>;
+    return <div className="app-shell center-block">{t('take.loading')}</div>;
   }
 
   if (!attempt || error) {
@@ -104,18 +106,14 @@ export default function TakeQuizPage() {
         <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
           <Link to="/quizzes" className="inline-link">
             <ArrowLeft size={16} />
-            Back to quizzes
+            {t('take.backLink')}
           </Link>
         </div>
 
         <main className="page-container">
           <div className="empty-state">
-            <h3>{error ? 'Error' : 'Quiz not found'}</h3>
-            <p>
-              {error
-                ? error
-                : "The quiz you're looking for doesn't exist or has no questions."}
-            </p>
+            <h3>{error ? t('take.errorTitle') : t('take.notFoundTitle')}</h3>
+            <p>{error ? error : t('take.notFoundBody')}</p>
           </div>
         </main>
       </div>
@@ -134,7 +132,7 @@ export default function TakeQuizPage() {
             <Link to={`/quizzes/${id}`} className="inline-link quiz-breadcrumb">
               <span className="breadcrumb-exit">
                 <ArrowLeft size={16} />
-                Exit
+                {t('take.exit')}
               </span>
               <span className="breadcrumb-sep">|</span>
               <span className="breadcrumb-title">{attempt.quiz_title}</span>

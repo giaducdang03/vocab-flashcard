@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../../api/client';
 import { apiErrorMessage } from '../../api/errors';
 import type { Session, Quiz, QuestionType, QuizCapacity, AiStatus } from '../../types/index';
@@ -20,6 +21,7 @@ export default function QuizCreateModal({
   onClose,
   onCreated,
 }: QuizCreateModalProps) {
+  const { t } = useTranslation('quiz');
   const [step, setStep] = useState(0);
   const [sessionIds, setSessionIds] = useState<string[]>([]);
   const [types, setTypes] = useState<QuestionType[]>(['en_to_vi']);
@@ -127,7 +129,7 @@ export default function QuizCreateModal({
       onCreated(response.data);
       onClose();
     } catch (err: unknown) {
-      setError(apiErrorMessage(err, 'Could not create the quiz.'));
+      setError(apiErrorMessage(err, t('create.createError')));
     } finally {
       setCreating(false);
     }
@@ -157,7 +159,7 @@ export default function QuizCreateModal({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Create new quiz</h2>
+          <h2>{t('create.title')}</h2>
           <button type="button" className="modal-close" onClick={onClose}>
             <X size={18} />
           </button>
@@ -174,18 +176,16 @@ export default function QuizCreateModal({
               </div>
             ))}
             <span className="flex-1" />
-            <span>
-              Step {step + 1} of 4
-            </span>
+            <span>{t('create.step', { current: step + 1, total: 4 })}</span>
           </div>
 
           {/* Step 0: Select Sessions */}
           {step === 0 && (
             <div className="grid gap-4">
               <div className="field-group">
-                <span>Select sessions</span>
+                <span>{t('create.sessions.label')}</span>
                 <p style={{ margin: '0', fontSize: '12px', color: '#6b7280' }}>
-                  Cards from selected sessions will be used for the quiz
+                  {t('create.sessions.hint')}
                 </p>
               </div>
               <div className="choice-list">
@@ -210,7 +210,7 @@ export default function QuizCreateModal({
                           marginTop: '2px',
                         }}
                       >
-                        {session.total_cards} cards
+                        {t('create.sessions.cardsCount', { count: session.total_cards })}
                       </div>
                     </div>
                   </label>
@@ -223,11 +223,14 @@ export default function QuizCreateModal({
           {step === 1 && (
             <div className="grid gap-4">
               <div className="field-group">
-                <span>Number of questions</span>
+                <span>{t('create.count.label')}</span>
                 <p style={{ margin: '0', fontSize: '12px', color: '#6b7280' }}>
                   {capacity && capacity.total_cards > 0
-                    ? `${capacity.total_cards} cards available · up to ${maxQuestions} questions`
-                    : 'Loading capacity...'}
+                    ? t('create.count.available', {
+                        cards: capacity.total_cards,
+                        max: maxQuestions,
+                      })
+                    : t('create.count.loadingCapacity')}
                 </p>
               </div>
               <div className="question-count-presets">
@@ -259,7 +262,7 @@ export default function QuizCreateModal({
                       setUseCustomCount(false);
                     }}
                   >
-                    All
+                    {t('create.count.all')}
                   </button>
                 )}
                 <button
@@ -267,7 +270,7 @@ export default function QuizCreateModal({
                   className={`preset-button ${useCustomCount ? 'active' : ''}`}
                   onClick={() => setUseCustomCount(true)}
                 >
-                  Custom
+                  {t('create.count.custom')}
                 </button>
               </div>
               {useCustomCount && (
@@ -291,14 +294,14 @@ export default function QuizCreateModal({
                     onBlur={() => {
                       if (questionCount < 1) setQuestionCount(1);
                     }}
-                    placeholder="Enter number of questions"
+                    placeholder={t('create.count.placeholder')}
                     autoFocus
                   />
                 </div>
               )}
               {maxQuestions > 0 && questionCount > maxQuestions && (
                 <div className="inline-error">
-                  Maximum available questions: {maxQuestions}
+                  {t('create.count.maxError', { max: maxQuestions })}
                 </div>
               )}
             </div>
@@ -308,9 +311,9 @@ export default function QuizCreateModal({
           {step === 2 && (
             <div className="grid gap-4">
               <div className="field-group">
-                <span>Question types</span>
+                <span>{t('create.types.label')}</span>
                 <p style={{ margin: '0', fontSize: '12px', color: '#6b7280' }}>
-                  Select the types of questions to include
+                  {t('create.types.hint')}
                 </p>
               </div>
               <div className="choice-list">
@@ -342,7 +345,7 @@ export default function QuizCreateModal({
                         <p className="choice-row-hint">{QUESTION_TYPE_HINTS[type]}</p>
                       </div>
                       <div className="choice-row-meta">
-                        {typeCapacity} cards
+                        {t('create.types.cardsCount', { count: typeCapacity })}
                       </div>
                     </label>
                   );
@@ -351,12 +354,7 @@ export default function QuizCreateModal({
               {types.some((type) => AI_QUESTION_TYPES.includes(type)) && (
                 <p className="ai-note">
                   <Sparkles size={16} />
-                  <span>
-                    The quiz will be generated by AI in the background and takes about
-                    10–40 seconds. You can close this window; it will appear in the
-                    list automatically when ready. AI-generated questions and
-                    explanations may occasionally contain mistakes.
-                  </span>
+                  <span>{t('create.types.aiNote')}</span>
                 </p>
               )}
             </div>
@@ -366,12 +364,12 @@ export default function QuizCreateModal({
           {step === 3 && (
             <div className="grid gap-4">
               <div className="field-group">
-                <span>Quiz name</span>
+                <span>{t('create.name.label')}</span>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., TOEFL Vocabulary Quiz"
+                  placeholder={t('create.name.placeholder')}
                   autoFocus
                 />
               </div>
@@ -385,19 +383,19 @@ export default function QuizCreateModal({
                   padding: '14px 16px',
                 }}
               >
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Summary</div>
+                <div style={{ fontSize: '12px', color: '#6b7280' }}>{t('create.name.summary')}</div>
                 <div style={{ fontSize: '14px', color: '#111827', marginTop: '6px' }}>
-                  {questionCount} questions
+                  {t('create.name.questionsCount', { count: questionCount })}
                   {types.length > 0 && (
                     <>
                       {' '}
-                      · {types.map((t) => QUESTION_TYPE_LABELS[t]).join(', ')}
+                      · {types.map((qt) => QUESTION_TYPE_LABELS[qt]).join(', ')}
                     </>
                   )}
                   {selectedSessionTitles.length > 0 && (
                     <>
                       {' '}
-                      · from {selectedSessionTitles.join(', ')}
+                      · {t('create.name.from', { sessions: selectedSessionTitles.join(', ') })}
                     </>
                   )}
                 </div>
@@ -419,7 +417,7 @@ export default function QuizCreateModal({
               disabled={creating}
             >
               <ChevronLeft size={16} />
-              Back
+              {t('create.back')}
             </button>
           )}
           <div style={{ flex: 1 }} />
@@ -430,7 +428,7 @@ export default function QuizCreateModal({
               onClick={handleNext}
               disabled={!canGoNext() || creating}
             >
-              Next
+              {t('create.next')}
               <ChevronRight size={16} />
             </button>
           )}
@@ -441,7 +439,7 @@ export default function QuizCreateModal({
               onClick={handleCreate}
               disabled={!canGoNext() || creating}
             >
-              {creating ? 'Creating...' : 'Create quiz'}
+              {creating ? t('create.creating') : t('create.create')}
             </button>
           )}
         </div>

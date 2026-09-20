@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, CheckCircle2, RotateCcw, Sparkles, XCircle } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
+import { useFormatters } from '../lib/format';
 import PageHeader from '../components/PageHeader';
 import type { AttemptReview } from '../types';
 
@@ -13,6 +15,8 @@ const formatDuration = (seconds: number | null) => {
 };
 
 export default function AttemptReviewPage() {
+  const { t } = useTranslation('quiz');
+  const { dateTime } = useFormatters();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { id } = useParams();
@@ -40,7 +44,7 @@ export default function AttemptReviewPage() {
         setReview(response.data);
       } catch (err) {
         console.error('Failed to fetch attempt review:', err);
-        setError('Failed to load review. Please try again.');
+        setError(t('review.loadError'));
       } finally {
         setLoading(false);
       }
@@ -50,7 +54,7 @@ export default function AttemptReviewPage() {
   }, [id]);
 
   if (loading) {
-    return <div className="app-shell center-block">Loading review…</div>;
+    return <div className="app-shell center-block">{t('review.loading')}</div>;
   }
 
   if (!review || error) {
@@ -61,15 +65,11 @@ export default function AttemptReviewPage() {
         <main className="page-container">
           <Link to="/quizzes" className="inline-link">
             <ArrowLeft size={16} />
-            Back to quizzes
+            {t('review.backToQuizzes')}
           </Link>
           <div className="empty-state">
-            <h3>{error ? 'Error' : 'Review not found'}</h3>
-            <p>
-              {error
-                ? error
-                : "The review you're looking for doesn't exist."}
-            </p>
+            <h3>{error ? t('review.errorTitle') : t('review.notFoundTitle')}</h3>
+            <p>{error ? error : t('review.notFoundBody')}</p>
           </div>
         </main>
       </div>
@@ -79,11 +79,7 @@ export default function AttemptReviewPage() {
   const percent = review.total_questions > 0
     ? Math.round((review.score / review.total_questions) * 100)
     : 0;
-  const submittedDate = new Date(review.submitted_at).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const submittedDate = dateTime(review.submitted_at);
 
   return (
     <div className="page-shell">
@@ -92,14 +88,18 @@ export default function AttemptReviewPage() {
       <main className="page-container">
         <Link to={`/quizzes/${review.quiz_id}`} className="inline-link">
           <ArrowLeft size={16} />
-          Back to quiz
+          {t('review.backToQuiz')}
         </Link>
         <section className="hero-card">
           <div>
             <p className="eyebrow">{review.quiz_title}</p>
             <div className="mt-3">
               <p className="text-lg font-semibold">
-                {review.score} / {review.total_questions} correct · {percent}%
+                {t('review.scoreLine', {
+                  score: review.score,
+                  total: review.total_questions,
+                  percent,
+                })}
               </p>
               <div style={{ marginTop: '12px' }}>
                 <div
@@ -128,18 +128,21 @@ export default function AttemptReviewPage() {
               </div>
             </div>
             <p className="text-xs text-body mt-3">
-              Finished in {formatDuration(review.duration_seconds)} · {submittedDate}
+              {t('review.finishedIn', {
+                duration: formatDuration(review.duration_seconds),
+                date: submittedDate,
+              })}
             </p>
           </div>
 
           <Link to={`/quizzes/${review.quiz_id}`} className="btn btn-primary">
             <RotateCcw size={16} />
-            Back to quiz
+            {t('review.backToQuiz')}
           </Link>
         </section>
 
         <section className="section-header">
-          <h2>Review ({review.questions.length})</h2>
+          <h2>{t('review.heading', { count: review.questions.length })}</h2>
         </section>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -149,7 +152,7 @@ export default function AttemptReviewPage() {
             const selectedAnswer =
               question.selected_index !== null
                 ? question.options[question.selected_index]
-                : 'Not answered';
+                : t('review.notAnswered');
 
             return (
               <div
@@ -194,10 +197,10 @@ export default function AttemptReviewPage() {
 
                 <div style={{ paddingLeft: '32px' }}>
                   <p style={{ margin: '8px 0', fontSize: '14px', color: 'var(--body)' }}>
-                    <strong>Correct answer:</strong> {correctAnswer}
+                    <strong>{t('review.correctAnswer')}</strong> {correctAnswer}
                   </p>
                   <p style={{ margin: '8px 0', fontSize: '14px', color: 'var(--body)' }}>
-                    <strong>Your answer:</strong>{' '}
+                    <strong>{t('review.yourAnswer')}</strong>{' '}
                     <span style={{ color: isCorrect ? '#16a34a' : '#dc2626' }}>
                       {selectedAnswer}
                     </span>
@@ -205,9 +208,9 @@ export default function AttemptReviewPage() {
                   {question.explanation && (
                     <div className="review-explanation">
                       {question.source === 'ai' && (
-                        <span className="ai-corner-chip" title="AI-generated content may contain mistakes.">
+                        <span className="ai-corner-chip" title={t('ai.contentWarning')}>
                           <Sparkles size={12} />
-                          AI-generated
+                          {t('ai.badge')}
                         </span>
                       )}
                       <p>{question.explanation}</p>
