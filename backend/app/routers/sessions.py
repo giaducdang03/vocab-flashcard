@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database import get_db
 from app.deps import get_current_user
+from app.errors import ErrorCode, api_error
 from app.models.card import Card, Synonym
 from app.models.session import Session
 from app.models.user import User
@@ -54,7 +55,7 @@ async def get_session(session_id: str, current_user: User = Depends(get_current_
     )
     session = result.scalar_one_or_none()
     if not session:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.SESSION_NOT_FOUND, "Session not found")
 
     cards = sorted(session.cards, key=lambda c: (c.position, c.created_at))
 
@@ -73,7 +74,7 @@ async def update_session(session_id: str, payload: SessionUpdate, current_user: 
     result = await db.execute(select(Session).where(Session.id == session_id, Session.user_id == current_user.id))
     session = result.scalar_one_or_none()
     if not session:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.SESSION_NOT_FOUND, "Session not found")
 
     session.title = payload.title
     await db.commit()
@@ -86,7 +87,7 @@ async def delete_session(session_id: str, current_user: User = Depends(get_curre
     result = await db.execute(select(Session).where(Session.id == session_id, Session.user_id == current_user.id))
     session = result.scalar_one_or_none()
     if not session:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.SESSION_NOT_FOUND, "Session not found")
 
     await db.delete(session)
     await db.commit()
@@ -111,24 +112,27 @@ async def start_practice(
     )
     session = result.scalar_one_or_none()
     if not session:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.SESSION_NOT_FOUND, "Session not found")
 
     cards = sorted(session.cards, key=lambda c: (c.position, c.created_at))
 
     # The four-card minimum is a property of the session, not of the chosen
     # pool: distractors are drawn from every card regardless of the pool.
     if len(cards) < quiz_generator.MIN_POOL_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Need at least {quiz_generator.MIN_POOL_SIZE} cards to practice",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.SESSION_POOL_TOO_SMALL,
+            f"Need at least {quiz_generator.MIN_POOL_SIZE} cards to practice",
+            min=quiz_generator.MIN_POOL_SIZE,
         )
 
     practice_cards = quiz_generator.filter_cards_by_pool(cards, payload.pool)
 
     if not practice_cards:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No cards match the selected pool",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_NO_MATCHING_CARDS,
+            "No cards match the selected pool",
         )
 
     try:
@@ -136,12 +140,13 @@ async def start_practice(
             practice_cards, payload.question_types, distractor_pool=cards
         )
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise api_error(status.HTTP_400_BAD_REQUEST, ErrorCode.QUIZ_GENERATION_FAILED, str(e))
 
     if not generated_questions:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Not enough cards for the selected question types",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_NOT_ENOUGH_FOR_TYPES,
+            "Not enough cards for the selected question types",
         )
 
     practice_questions = [

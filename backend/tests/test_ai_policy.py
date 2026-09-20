@@ -7,7 +7,7 @@ import app.models.quiz  # noqa: F401
 import app.models.user  # noqa: F401
 from app.models.ai_policy import UserAiPolicy
 from app.services.ai_policy import (
-    DISABLED_DETAIL,
+    DISABLED_MESSAGE,
     EffectivePolicy,
     apply_policy_update,
     check_creation,
@@ -64,7 +64,7 @@ class TestChecks:
         violation = check_enabled(EffectivePolicy(False, 20, False))
         assert violation is not None
         assert violation.status_code == 403
-        assert violation.detail == DISABLED_DETAIL
+        assert violation.message == DISABLED_MESSAGE
 
     def test_creation_allowed_below_limit(self):
         assert check_creation(EffectivePolicy(True, 3, True), used=2) is None
@@ -73,7 +73,8 @@ class TestChecks:
         violation = check_creation(EffectivePolicy(True, 3, True), used=3)
         assert violation is not None
         assert violation.status_code == 429
-        assert violation.detail == "You have used all 3 AI quiz generations in the last 24 hours"
+        assert violation.message == "You have used all 3 AI quiz generations in the last 24 hours"
+        assert violation.params == {"limit": 3}
 
     def test_zero_limit_blocks_first_quiz(self):
         violation = check_creation(EffectivePolicy(True, 0, True), used=0)

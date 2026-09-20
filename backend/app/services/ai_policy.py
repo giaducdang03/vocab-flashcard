@@ -3,20 +3,20 @@
 Phần đầu là hàm thuần (unit test được); phần sau là wrapper DB mỏng mà router gọi.
 Thiếu dòng `user_ai_policies` luôn nghĩa là mặc định — chỉ `resolve_policy` xử lý điều đó.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 
-from fastapi import HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
+from app.errors import ErrorCode, api_error
 from app.models.ai_policy import UserAiPolicy
 from app.models.quiz import Quiz
 
 ROLLING_WINDOW = timedelta(hours=24)
 MAX_DAILY_LIMIT = 1000
-DISABLED_DETAIL = "AI features are disabled for your account"
+DISABLED_MESSAGE = "AI features are disabled for your account"
 
 
 @dataclass(frozen=True)
@@ -36,7 +36,9 @@ class AiUsage:
 @dataclass(frozen=True)
 class PolicyViolation:
     status_code: int
-    detail: str
+    code: ErrorCode
+    message: str
+    params: dict = field(default_factory=dict)
 
 
 def _as_utc(value: datetime) -> datetime:
@@ -63,7 +65,7 @@ def window_start(now: datetime | None = None) -> datetime:
 
 def check_enabled(policy: EffectivePolicy) -> PolicyViolation | None:
     if not policy.enabled:
-        return PolicyViolation(status_code=403, detail=DISABLED_DETAIL)
+        return PolicyViolation(status_code=403, code=ErrorCode.AI_DISABLED, message=DISABLED_MESSAGE)
     return None
 
 
@@ -74,7 +76,9 @@ def check_creation(policy: EffectivePolicy, used: int) -> PolicyViolation | None
     if used >= policy.limit:
         return PolicyViolation(
             status_code=429,
-            detail=f"You have used all {policy.limit} AI quiz generations in the last 24 hours",
+            code=ErrorCode.AI_QUOTA_EXCEEDED,
+            message=f"You have used all {policy.limit} AI quiz generations in the last 24 hours",
+            params={"limit": policy.limit},
         )
     return None
 
@@ -107,7 +111,7 @@ def apply_policy_update(
 
 def _raise_if(violation: PolicyViolation | None) -> None:
     if violation is not None:
-        raise HTTPException(status_code=violation.status_code, detail=violation.detail)
+        raise api_error(violation.status_code, violation.code, violation.message, **violation.params)
 
 
 async def get_policy(db: AsyncSession, user_id: str) -> EffectivePolicy:

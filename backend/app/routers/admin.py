@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import get_db
 from app.deps import require_admin
+from app.errors import ErrorCode, api_error
 from app.models.ai_policy import UserAiPolicy
 from app.models.card import Card, CardLearnEvent
 from app.models.quiz import Quiz, QuizAnswer, QuizAttempt
@@ -135,7 +136,7 @@ async def _build_detail(db: AsyncSession, user_id: str) -> AdminUserDetailOut:
     result = await db.execute(_user_row_query().where(User.id == user_id))
     row = result.first()
     if row is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.USER_NOT_FOUND, "User not found")
 
     base = _to_row(row)
     policy = ai_policy.resolve_policy(row[1], settings.AI_DAILY_QUIZ_LIMIT)
@@ -288,7 +289,7 @@ async def update_user(
 ) -> AdminUserDetailOut:
     target = await db.get(User, user_id)
     if target is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.USER_NOT_FOUND, "User not found")
 
     fields = payload.model_fields_set
 

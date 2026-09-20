@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import StreamingResponse
 from io import BytesIO
 from sqlalchemy import select
@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.deps import get_current_user
+from app.errors import ErrorCode, api_error
 from app.models.card import Card, Synonym
 from app.models.session import Session
 from app.models.user import User
@@ -26,7 +27,7 @@ async def create_card(
 
     session = await db.get(Session, session_id)
     if not session or session.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.SESSION_NOT_FOUND, "Session not found")
 
     card = Card(
         session_id=session_id,
@@ -68,7 +69,7 @@ async def update_card(
     )
     card = result.scalar_one_or_none()
     if not card:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.CARD_NOT_FOUND, "Card not found")
 
     updates = payload.model_dump(exclude_none=True, exclude={"synonyms", "is_learned"})
     for field, value in updates.items():
@@ -106,7 +107,7 @@ async def toggle_card_learned(
     )
     card = result.scalar_one_or_none()
     if not card:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.CARD_NOT_FOUND, "Card not found")
 
     apply_learned_state(db, card, payload.is_learned)
     await db.commit()
@@ -127,7 +128,7 @@ async def delete_card(
     )
     card = result.scalar_one_or_none()
     if not card:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Card not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.CARD_NOT_FOUND, "Card not found")
 
     await db.delete(card)
     await db.commit()

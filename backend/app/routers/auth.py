@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import get_db
 from app.deps import get_current_user
+from app.errors import ErrorCode, api_error
 from app.models.user import User
 from app.schemas.auth import (
     AuthResponse,
@@ -35,7 +36,7 @@ def _frontend_redirect(**params: str) -> RedirectResponse:
 async def register_user(payload: RegisterRequest, db: AsyncSession = Depends(get_db)) -> AuthResponse:
     existing = await db.execute(select(User).where(User.email == payload.email))
     if existing.scalar_one_or_none():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+        raise api_error(status.HTTP_400_BAD_REQUEST, ErrorCode.EMAIL_ALREADY_REGISTERED, "Email already registered")
 
     user = User(
         email=str(payload.email),
@@ -110,12 +111,12 @@ async def google_callback(
 async def google_exchange(payload: GoogleExchangeRequest, db: AsyncSession = Depends(get_db)) -> AuthResponse:
     user_id = oauth_state.login_code_store.consume(payload.code)
     if user_id is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired code")
+        raise api_error(status.HTTP_401_UNAUTHORIZED, ErrorCode.INVALID_OR_EXPIRED_CODE, "Invalid or expired code")
 
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired code")
+        raise api_error(status.HTTP_401_UNAUTHORIZED, ErrorCode.INVALID_OR_EXPIRED_CODE, "Invalid or expired code")
 
     token = create_access_token(user.id)
     return AuthResponse(user=UserOut.model_validate(user), token=token)
