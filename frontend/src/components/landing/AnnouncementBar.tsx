@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getLatestVersion } from '../../lib/changelog';
 
 const latest = getLatestVersion();
 
 export default function AnnouncementBar() {
+  const { t } = useTranslation('landing');
+
   if (!latest) return null;
 
   return (
@@ -13,19 +16,17 @@ export default function AnnouncementBar() {
         <div className="flex min-w-0 items-center gap-space-sm text-body">
           <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary/10 px-2 py-0.5 text-caption-uppercase text-primary">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-            Phiên bản {latest.version}
+            {t('announcement.version', { version: latest.version })}
           </span>
           <span className="hidden truncate font-medium text-ink sm:inline">{latest.title}</span>
           <span className="hidden text-muted-soft md:inline">·</span>
-          <span className="hidden text-muted md:inline">
-            Xem chi tiết những thay đổi trong bản cập nhật mới nhất.
-          </span>
+          <span className="hidden text-muted md:inline">{t('announcement.description')}</span>
         </div>
         <Link
           to="/changelog"
           className="inline-flex shrink-0 items-center gap-1 text-button text-primary transition-colors hover:text-primary-active"
         >
-          Xem có gì mới <ArrowRight size={15} />
+          {t('announcement.cta')} <ArrowRight size={15} />
         </Link>
       </div>
     </section>
