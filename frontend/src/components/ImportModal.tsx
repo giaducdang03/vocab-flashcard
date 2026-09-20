@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Upload, X, ChevronDown, Copy, Check, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { apiErrorMessage } from '../api/errors';
 
@@ -51,6 +52,7 @@ function parseDelimitedLine(line: string, delimiter: string): string[] {
 }
 
 export default function ImportModal({ sessionId, onSuccess, onClose }: ImportModalProps) {
+  const { t } = useTranslation('session');
   const [fileData, setFileData] = useState<FileData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -187,9 +189,9 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
-      setError('Failed to copy prompt to clipboard');
+      setError(t('import.errorCopy'));
     }
-  }, [csvPrompt]);
+  }, [csvPrompt, t]);
 
   const handleDownloadTemplate = useCallback(async () => {
     try {
@@ -227,17 +229,17 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
 
       setError(
         rows.length - 1 > MAX_IMPORT_ROWS
-          ? `File has ${rows.length - 1} rows, which exceeds the ${MAX_IMPORT_ROWS}-row limit per import. Please split it into smaller files.`
+          ? t('import.errorRowLimit', { count: rows.length - 1, limit: MAX_IMPORT_ROWS })
           : '',
       );
     };
 
     reader.onerror = () => {
-      setError('Failed to read file');
+      setError(t('import.errorReadFile'));
     };
 
     reader.readAsText(file);
-  }, []);
+  }, [t]);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -264,11 +266,11 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
         if (file.name.endsWith('.xlsx') || file.name.endsWith('.csv')) {
           parseFile(file);
         } else {
-          setError('Please upload a .xlsx or .csv file');
+          setError(t('import.errorFileType'));
         }
       }
     },
-    [parseFile],
+    [parseFile, t],
   );
 
   const handleFileSelect = useCallback(
@@ -288,7 +290,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
     }
 
     if (fileData.totalRows - 1 > MAX_IMPORT_ROWS) {
-      setError(`File has ${fileData.totalRows - 1} rows, which exceeds the ${MAX_IMPORT_ROWS}-row limit per import. Please split it into smaller files.`);
+      setError(t('import.errorRowLimit', { count: fileData.totalRows - 1, limit: MAX_IMPORT_ROWS }));
       return;
     }
 
@@ -307,7 +309,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
 
       onSuccess();
     } catch (err) {
-      setError(apiErrorMessage(err, 'Import failed'));
+      setError(apiErrorMessage(err, t('import.errorImportFailed')));
     } finally {
       setLoading(false);
     }
@@ -317,7 +319,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
     <div className="fixed inset-0 bg-ink/50 flex items-center justify-center z-50 animate-fadeIn">
       <div className="bg-canvas border border-hairline rounded-3xl max-w-2xl w-[90vw] max-h-[90vh] flex flex-col animate-slideUp">
         <div className="flex items-center justify-between px-7 py-6 border-b border-hairline">
-          <h2 className="text-2xl font-light letter-spacing-tight text-ink m-0">Import cards</h2>
+          <h2 className="text-2xl font-light letter-spacing-tight text-ink m-0">{t('import.title')}</h2>
           <button
             type="button"
             className="w-9 h-9 border border-hairline rounded-xl bg-transparent text-ink hover:bg-surface-strong transition-all flex items-center justify-center"
@@ -334,7 +336,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
             onClick={() => setShowFormat(!showFormat)}
             className="flex items-center justify-between px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors shrink-0"
           >
-            <span className="text-sm font-semibold text-ink">📋 CSV Format & Prompt</span>
+            <span className="text-sm font-semibold text-ink">📋 {t('import.formatToggle')}</span>
             <ChevronDown size={18} className={`transition-transform ${showFormat ? 'rotate-180' : ''}`} />
           </button>
 
@@ -350,7 +352,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                       onChange={toggleVocab}
                       className="w-4 h-4 accent-primary"
                     />
-                    <span className="text-body">Vocab</span>
+                    <span className="text-body">{t('import.vocabLabel')}</span>
                   </label>
 
                   <label className={`flex items-center gap-2 select-none ${includeVocab ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
@@ -361,7 +363,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                       disabled={!includeVocab}
                       className="w-4 h-4 accent-primary"
                     />
-                    <span className="text-body">Synonyms</span>
+                    <span className="text-body">{t('import.synonymsLabel')}</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -371,7 +373,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                       onChange={toggleCollocation}
                       className="w-4 h-4 accent-primary"
                     />
-                    <span className="text-body">Collocation</span>
+                    <span className="text-body">{t('import.collocationLabel')}</span>
                   </label>
                 </div>
               </div>
@@ -389,12 +391,12 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                   {copied ? (
                     <>
                       <Check size={16} />
-                      Copied!
+                      {t('import.copied')}
                     </>
                   ) : (
                     <>
                       <Copy size={16} />
-                      Copy Prompt
+                      {t('import.copyPrompt')}
                     </>
                   )}
                 </button>
@@ -405,12 +407,12 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                   className="flex items-center gap-1 px-3 py-2 bg-white border border-hairline text-ink hover:border-primary rounded-lg font-semibold transition-all text-sm"
                 >
                   <Download size={16} />
-                  Download Template
+                  {t('import.downloadTemplate')}
                 </button>
               </div>
 
               <div>
-                <p className="font-semibold text-ink mb-2">📌 CSV Header:</p>
+                <p className="font-semibold text-ink mb-2">📌 {t('import.csvHeaderLabel')}</p>
                 <code className="block bg-white p-2 rounded border border-hairline text-gray-700 font-mono text-xs">
                   front_text,phonetic,back_text,example,synonyms
                 </code>
@@ -460,8 +462,8 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
               onDrop={handleDrop}
             >
               <Upload size={24} />
-              <h3 className="text-base font-semibold text-ink m-0">Drag and drop your file</h3>
-              <p className="text-body text-sm m-0">or click to browse</p>
+              <h3 className="text-base font-semibold text-ink m-0">{t('import.dropTitle')}</h3>
+              <p className="text-body text-sm m-0">{t('import.dropSubtitle')}</p>
 
               <input
                 type="file"
@@ -472,10 +474,10 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
               />
 
               <label htmlFor="file-input" className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold cursor-pointer transition-all text-sm">
-                Choose file
+                {t('import.chooseFile')}
               </label>
 
-              <p className="text-xs text-muted m-0">Supported: .xlsx, .csv</p>
+              <p className="text-xs text-muted m-0">{t('import.supportedFormats')}</p>
             </div>
           ) : (
             <div className="flex flex-col gap-4 shrink-0">
@@ -483,7 +485,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                 <div>
                   <p className="font-semibold text-ink m-0 mb-1">{fileData.file.name}</p>
                   <p className="text-sm text-body m-0">
-                    {fileData.totalRows} rows
+                    {t('import.rowCount', { count: fileData.totalRows })}
                   </p>
                 </div>
                 <button
@@ -494,7 +496,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
                     setError('');
                   }}
                 >
-                  Change file
+                  {t('import.changeFile')}
                 </button>
               </div>
 
@@ -524,7 +526,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
               </div>
 
               <p className="text-sm text-body text-center px-4 py-3 bg-green-50/50 border border-green-200 rounded-lg m-0">
-                This will import {Math.max(0, fileData.totalRows - 1)} cards into this session.
+                {t('import.importCount', { count: Math.max(0, fileData.totalRows - 1) })}
               </p>
             </div>
           ))}
@@ -538,7 +540,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
 
         <div className="flex items-center justify-end gap-3 px-7 py-4 border-t border-hairline">
           <button type="button" className="px-4 py-2 bg-white text-ink border border-hairline rounded-lg hover:border-primary font-semibold transition-all" onClick={onClose}>
-            Cancel
+            {t('import.cancel')}
           </button>
 
           {fileData && (
@@ -548,7 +550,7 @@ export default function ImportModal({ sessionId, onSuccess, onClose }: ImportMod
               onClick={handleImport}
               disabled={loading || fileData.totalRows - 1 > MAX_IMPORT_ROWS}
             >
-              {loading ? 'Importing...' : 'Confirm import'}
+              {loading ? t('import.importing') : t('import.confirm')}
             </button>
           )}
         </div>

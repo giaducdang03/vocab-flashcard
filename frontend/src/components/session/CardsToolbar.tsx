@@ -1,21 +1,12 @@
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export type FilterKey = 'all' | 'vocab' | 'collocation' | 'unlearned' | 'learned';
 export type SortKey = 'position' | 'alphabetical' | 'recent';
 
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'vocab', label: 'Vocab' },
-  { key: 'collocation', label: 'Collocations' },
-  { key: 'unlearned', label: 'Unlearned' },
-  { key: 'learned', label: 'Learned' },
-];
+const FILTERS: FilterKey[] = ['all', 'vocab', 'collocation', 'unlearned', 'learned'];
 
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: 'position', label: 'Position (Default)' },
-  { key: 'alphabetical', label: 'Alphabetical (A-Z)' },
-  { key: 'recent', label: 'Recently added' },
-];
+const SORT_OPTIONS: SortKey[] = ['position', 'alphabetical', 'recent'];
 
 type CardsToolbarProps = {
   query: string;
@@ -36,6 +27,7 @@ export default function CardsToolbar({
   sort,
   onSortChange,
 }: CardsToolbarProps) {
+  const { t } = useTranslation('session');
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="relative max-w-lg flex-1">
@@ -44,25 +36,25 @@ export default function CardsToolbar({
           type="text"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search word, phonetic or definition..."
-          aria-label="Search cards"
+          placeholder={t('toolbar.searchPlaceholder')}
+          aria-label={t('toolbar.searchAriaLabel')}
           className="h-11 w-full rounded-lg border border-hairline bg-surface-card pl-11 pr-4 text-body-sm text-ink outline-none placeholder:text-muted focus:ring-1 focus:ring-ink"
         />
       </div>
 
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-        {FILTERS.map((item) => (
+        {FILTERS.map((key) => (
           <button
-            key={item.key}
+            key={key}
             type="button"
-            onClick={() => onFilterChange(item.key)}
+            onClick={() => onFilterChange(key)}
             className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-body-sm font-medium transition-colors ${
-              filter === item.key
+              filter === key
                 ? 'bg-ink text-surface-card'
                 : 'border border-hairline bg-surface-card text-body hover:text-ink'
             }`}
           >
-            {item.label} <span className="ml-1 font-mono text-code-sm opacity-70">{counts[item.key]}</span>
+            {t(`toolbar.filter.${key}`)} <span className="ml-1 font-mono text-code-sm opacity-70">{counts[key]}</span>
           </button>
         ))}
       </div>
@@ -70,15 +62,15 @@ export default function CardsToolbar({
       <div className="flex items-center gap-2 self-end md:self-auto">
         <div className="flex h-10 items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 text-body-sm text-ink">
           <SlidersHorizontal size={16} className="text-muted" />
-          <span className="text-muted">Sort:</span>
+          <span className="text-muted">{t('toolbar.sortLabel')}</span>
           <select
             value={sort}
             onChange={(event) => onSortChange(event.target.value as SortKey)}
             className="cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none"
           >
-            {SORT_OPTIONS.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.label}
+            {SORT_OPTIONS.map((key) => (
+              <option key={key} value={key}>
+                {t(`toolbar.sort.${key}`)}
               </option>
             ))}
           </select>

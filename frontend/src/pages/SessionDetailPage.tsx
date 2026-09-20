@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, BookOpen, Download, Plus, ShieldCheck, Table, Upload, Zap } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import ImportModal from '../components/ImportModal';
@@ -11,21 +12,17 @@ import CardRow from '../components/session/CardRow';
 import AddCardModal, { type CardDraftInput } from '../components/session/AddCardModal';
 import PracticeSetupModal from '../components/session/PracticeSetupModal';
 import { useInfiniteReveal } from '../hooks/useInfiniteReveal';
+import { useFormatters } from '../lib/format';
 import type { Card, SessionDetailResponse } from '../types';
 
 const CARD_BATCH_SIZE = 10;
-
-const formatCreatedAt = (isoDate: string) =>
-  new Date(isoDate).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
 
 export default function SessionDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation('session');
+  const { date } = useFormatters();
 
   const [detail, setDetail] = useState<SessionDetailResponse | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
@@ -161,7 +158,7 @@ export default function SessionDetailPage() {
   };
 
   const deleteCard = async (cardId: string) => {
-    if (!confirm('Delete this card?')) {
+    if (!confirm(t('detail.deleteCardConfirm'))) {
       return;
     }
 
@@ -189,7 +186,7 @@ export default function SessionDetailPage() {
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`Delete ${selectedIds.size} selected card(s)?`)) {
+    if (!confirm(t('detail.deleteBulkConfirm', { count: selectedIds.size }))) {
       return;
     }
 
@@ -200,10 +197,10 @@ export default function SessionDetailPage() {
   };
 
   if (loading) {
-    return <div className="app-shell center-block">Loading session…</div>;
+    return <div className="app-shell center-block">{t('detail.loading')}</div>;
   }
 
-  const createdLabel = detail ? formatCreatedAt(detail.session.created_at) : '';
+  const createdLabel = detail ? date(detail.session.created_at) : '';
 
   return (
     <div className="page-shell">
@@ -212,7 +209,7 @@ export default function SessionDetailPage() {
       <div className="page-toolbar flex items-center">
         <Link to="/sessions" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-muted transition-colors hover:text-ink">
           <ArrowLeft size={16} />
-          Sessions
+          {t('detail.backToSessions')}
         </Link>
       </div>
 
@@ -222,24 +219,26 @@ export default function SessionDetailPage() {
             <div className="max-w-2xl space-y-4">
               <div className="flex flex-wrap items-center gap-2.5">
                 <span className="rounded bg-primary/10 px-2.5 py-1 text-caption-uppercase font-bold uppercase tracking-wider text-primary">
-                  Session detail
+                  {t('detail.badge')}
                 </span>
-                {detail && <span className="font-mono text-code-sm text-muted">Created {createdLabel}</span>}
+                {detail && <span className="font-mono text-code-sm text-muted">{t('detail.createdLabel', { date: createdLabel })}</span>}
               </div>
 
               <h1 className="m-0 text-headline-lg font-medium tracking-tight text-ink">
-                {detail?.session.title || 'Session'}
+                {detail?.session.title || t('detail.titleFallback')}
               </h1>
 
               <div className="pt-2">
                 <div className="mb-2 flex flex-col items-start justify-between gap-1 text-body-sm lg:flex-row lg:items-center">
                   <span className="flex items-center gap-1.5 font-medium text-ink">
                     <ShieldCheck size={18} className="text-secondary" />
-                    Mastery progress
+                    {t('detail.masteryProgress')}
                   </span>
                   <span className="font-mono text-code-sm text-body">
-                    <strong className="font-semibold text-primary">{learnedCount}</strong> of {cards.length} learned (
-                    <span className="font-semibold text-ink">{progressPercent}%</span>)
+                    <strong className="font-semibold text-primary">
+                      {t('detail.learnedOf', { learned: learnedCount, total: cards.length })}
+                    </strong>{' '}
+                    (<span className="font-semibold text-ink">{progressPercent}%</span>)
                   </span>
                 </div>
                 <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-hairline-soft">
@@ -260,7 +259,7 @@ export default function SessionDetailPage() {
                   className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
                 >
                   <BookOpen size={18} />
-                  Study deck
+                  {t('detail.studyDeck')}
                 </Link>
               )}
               {cards.length >= 4 && (
@@ -270,7 +269,7 @@ export default function SessionDetailPage() {
                   className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
                 >
                   <Zap size={18} className="text-secondary" />
-                  Quick practice
+                  {t('detail.quickPractice')}
                 </button>
               )}
               <button
@@ -279,7 +278,7 @@ export default function SessionDetailPage() {
                 className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
               >
                 <Upload size={18} className="text-muted" />
-                Import
+                {t('detail.import')}
               </button>
               <button
                 type="button"
@@ -287,7 +286,7 @@ export default function SessionDetailPage() {
                 className="inline-flex h-10 items-center gap-2 rounded-lg bg-ink px-3.5 text-body-sm font-medium text-surface-card transition-colors hover:bg-ink/85"
               >
                 <Plus size={18} />
-                Add card
+                {t('detail.addCard')}
               </button>
             </div>
           </div>
@@ -319,13 +318,13 @@ export default function SessionDetailPage() {
         <section className="space-y-4">
           {cards.length === 0 ? (
             <div className="empty-state sofa">
-              <h3>No cards yet</h3>
-              <p>Add your first flashcard to start studying this session.</p>
+              <h3>{t('detail.emptyTitle')}</h3>
+              <p>{t('detail.emptyBody')}</p>
             </div>
           ) : sortedFilteredCards.length === 0 ? (
             <div className="empty-state sofa">
-              <h3>No cards match your filters</h3>
-              <p>Try a different search term or clear the active filter.</p>
+              <h3>{t('detail.emptyFilteredTitle')}</h3>
+              <p>{t('detail.emptyFilteredBody')}</p>
             </div>
           ) : (
             <>
@@ -351,9 +350,9 @@ export default function SessionDetailPage() {
               <Table size={22} />
             </span>
             <div>
-              <h4 className="m-0 text-title-sm text-ink">Need to add many words at once?</h4>
+              <h4 className="m-0 text-title-sm text-ink">{t('detail.bulkImportTitle')}</h4>
               <p className="m-0 text-body-sm text-body">
-                Use the bulk import tool with our standardized spreadsheet template to load 50+ definitions in seconds.
+                {t('detail.bulkImportBody')}
               </p>
             </div>
           </div>
@@ -364,7 +363,7 @@ export default function SessionDetailPage() {
               className="inline-flex items-center gap-1.5 text-body-sm font-medium text-ink transition-colors hover:text-primary"
             >
               <Download size={16} />
-              Download .xlsx template
+              {t('detail.downloadTemplate')}
             </a>
             <span className="text-hairline-strong">·</span>
             <button
@@ -372,7 +371,7 @@ export default function SessionDetailPage() {
               onClick={() => setShowImport(true)}
               className="rounded-lg bg-surface-card px-3 py-1.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
             >
-              Open Importer
+              {t('detail.openImporter')}
             </button>
           </div>
         </aside>

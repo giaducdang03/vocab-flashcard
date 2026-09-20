@@ -1,4 +1,5 @@
 import { CheckCircle2, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type BulkActionBarProps = {
   totalVisible: number;
@@ -17,6 +18,7 @@ export default function BulkActionBar({
   onMarkLearned,
   onDelete,
 }: BulkActionBarProps) {
+  const { t } = useTranslation('session');
   const hasSelection = selectedCount > 0;
 
   return (
@@ -30,10 +32,10 @@ export default function BulkActionBar({
             disabled={totalVisible === 0}
             className="h-4 w-4 cursor-pointer rounded text-primary focus:ring-primary focus:ring-offset-0"
           />
-          <span className="font-medium text-ink">Select all {totalVisible} items</span>
+          <span className="font-medium text-ink">{t('bulk.selectAll', { count: totalVisible })}</span>
         </label>
         <span className="text-hairline-strong">|</span>
-        <span className="text-muted">{selectedCount} cards selected</span>
+        <span className="text-muted">{t('bulk.selected', { count: selectedCount })}</span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -44,7 +46,7 @@ export default function BulkActionBar({
           className="inline-flex items-center gap-1.5 rounded bg-surface-card px-2.5 py-1 text-body-sm text-body transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-60"
         >
           <CheckCircle2 size={16} />
-          Mark learned
+          {t('bulk.markLearned')}
         </button>
         <button
           type="button"
@@ -53,7 +55,7 @@ export default function BulkActionBar({
           className="inline-flex items-center gap-1.5 rounded bg-surface-card px-2.5 py-1 text-body-sm text-error transition-colors hover:bg-error/10 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Trash2 size={16} />
-          Delete
+          {t('bulk.delete')}
         </button>
       </div>
     </div>

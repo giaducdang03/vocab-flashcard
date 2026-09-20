@@ -1,5 +1,6 @@
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { PracticeAnswer, PracticePool, QuestionType } from '../../types';
 import { PRACTICE_POOL_LABELS, QUESTION_TYPE_LABELS } from '../../types';
 
@@ -27,6 +28,7 @@ export default function PracticeSummary({
   pool,
   onRestart,
 }: PracticeSummaryProps) {
+  const { t } = useTranslation('session');
   const total = answers.length;
   const correct = answers.filter((a) => a.is_correct).length;
   const percent = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -67,7 +69,7 @@ export default function PracticeSummary({
         <section className="rounded-xl border border-hairline bg-surface-card p-6 sm:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded bg-primary/10 px-2.5 py-1 text-caption-uppercase font-bold uppercase tracking-wider text-primary">
-              Practice complete
+              {t('practice.summary.badge')}
             </span>
             <span className="rounded bg-hairline-soft px-2.5 py-1 text-caption-uppercase font-bold uppercase tracking-wider text-muted">
               {PRACTICE_POOL_LABELS[pool]}
@@ -83,17 +85,17 @@ export default function PracticeSummary({
               <div className="font-mono text-headline-lg font-semibold text-ink">
                 {correct}/{total}
               </div>
-              <div className="text-body-sm text-muted">Correct answers</div>
+              <div className="text-body-sm text-muted">{t('practice.summary.correctAnswers')}</div>
             </div>
             <div>
               <div className="font-mono text-headline-lg font-semibold text-primary">{percent}%</div>
-              <div className="text-body-sm text-muted">Accuracy</div>
+              <div className="text-body-sm text-muted">{t('practice.summary.accuracy')}</div>
             </div>
             <div>
               <div className="font-mono text-headline-lg font-semibold text-ink">
                 {formatDuration(durationSeconds)}
               </div>
-              <div className="text-body-sm text-muted">Time spent</div>
+              <div className="text-body-sm text-muted">{t('practice.summary.timeSpent')}</div>
             </div>
           </div>
 
@@ -113,20 +115,20 @@ export default function PracticeSummary({
               className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
             >
               <RotateCcw size={18} />
-              Practice again
+              {t('practice.summary.practiceAgain')}
             </button>
             <Link
               to={`/sessions/${sessionId}`}
               className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
             >
               <ArrowLeft size={18} className="text-muted" />
-              Back to session
+              {t('practice.summary.backToSession')}
             </Link>
           </div>
         </section>
 
         <section className="rounded-xl border border-hairline bg-surface-card p-6 sm:p-8">
-          <h2 className="m-0 text-headline-md font-medium text-ink">By question type</h2>
+          <h2 className="m-0 text-headline-md font-medium text-ink">{t('practice.summary.byQuestionType')}</h2>
           <div className="mt-4 space-y-3">
             {breakdown.map((row) => {
               const rowPercent = Math.round((row.correct / row.total) * 100);
@@ -152,12 +154,14 @@ export default function PracticeSummary({
 
         <section className="rounded-xl border border-hairline bg-surface-card p-6 sm:p-8">
           <h2 className="m-0 text-headline-md font-medium text-ink">
-            {wrong.length > 0 ? `Review ${wrong.length} missed` : 'Nothing missed'}
+            {wrong.length > 0
+              ? t('practice.summary.reviewMissed', { count: wrong.length })
+              : t('practice.summary.nothingMissed')}
           </h2>
 
           {wrong.length === 0 ? (
             <p className="mb-0 mt-3 text-body-sm text-muted">
-              A clean run — every answer was correct.
+              {t('practice.summary.cleanRun')}
             </p>
           ) : (
             <ul className="m-0 mt-4 list-none space-y-4 p-0">
@@ -176,10 +180,10 @@ export default function PracticeSummary({
                   </div>
                   <div className="space-y-1 text-body-sm">
                     <div className="text-error">
-                      You chose: {answer.question.options[answer.selected_index]}
+                      {t('practice.summary.youChose', { answer: answer.question.options[answer.selected_index] })}
                     </div>
                     <div className="text-success">
-                      Correct: {answer.question.options[answer.question.correct_index]}
+                      {t('practice.summary.correctAnswer', { answer: answer.question.options[answer.question.correct_index] })}
                     </div>
                   </div>
                 </li>

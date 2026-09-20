@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { CardType } from '../../types';
 
 export type CardDraftInput = {
@@ -26,6 +27,7 @@ type AddCardModalProps = {
 };
 
 export default function AddCardModal({ onSubmit, onClose }: AddCardModalProps) {
+  const { t } = useTranslation('session');
   const [draft, setDraft] = useState<CardDraftInput>(emptyDraft);
   const [submitting, setSubmitting] = useState(false);
 
@@ -67,7 +69,7 @@ export default function AddCardModal({ onSubmit, onClose }: AddCardModalProps) {
         className="flex max-h-[90vh] w-[90vw] max-w-2xl flex-col rounded-3xl border border-hairline bg-canvas animate-slideUp"
       >
         <div className="flex items-center justify-between border-b border-hairline px-7 py-6">
-          <h2 className="m-0 text-headline-md font-medium text-ink">Add card</h2>
+          <h2 className="m-0 text-headline-md font-medium text-ink">{t('create.card.title')}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -80,41 +82,41 @@ export default function AddCardModal({ onSubmit, onClose }: AddCardModalProps) {
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-7 py-7">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className="space-y-2 text-body-sm text-ink">
-              <span className="font-semibold">Front text</span>
+              <span className="font-semibold">{t('create.card.frontText')}</span>
               <input
                 value={draft.front_text}
                 onChange={(event) => setDraft({ ...draft, front_text: event.target.value })}
-                placeholder="abundant"
+                placeholder={t('create.card.frontTextPlaceholder')}
                 className="w-full rounded-lg border border-hairline bg-surface-card px-3.5 py-2.5 text-ink outline-none focus:ring-1 focus:ring-ink"
               />
             </label>
 
             <label className="space-y-2 text-body-sm text-ink">
-              <span className="font-semibold">Phonetic</span>
+              <span className="font-semibold">{t('create.card.phonetic')}</span>
               <input
                 value={draft.front_phonetic}
                 onChange={(event) => setDraft({ ...draft, front_phonetic: event.target.value })}
-                placeholder="/əˈbʌndənt/"
+                placeholder={t('create.card.phoneticPlaceholder')}
                 className="w-full rounded-lg border border-hairline bg-surface-card px-3.5 py-2.5 font-mono text-ink outline-none focus:ring-1 focus:ring-ink"
               />
             </label>
 
             <label className="space-y-2 text-body-sm text-ink sm:col-span-2">
-              <span className="font-semibold">Back text</span>
+              <span className="font-semibold">{t('create.card.backText')}</span>
               <textarea
                 value={draft.back_text}
                 onChange={(event) => setDraft({ ...draft, back_text: event.target.value })}
-                placeholder="dồi dào, phong phú"
+                placeholder={t('create.card.backTextPlaceholder')}
                 className="min-h-[72px] w-full resize-y rounded-lg border border-hairline bg-surface-card px-3.5 py-2.5 text-ink outline-none focus:ring-1 focus:ring-ink"
               />
             </label>
 
             <label className="space-y-2 text-body-sm text-ink sm:col-span-2">
-              <span className="font-semibold">Example</span>
+              <span className="font-semibold">{t('create.card.example')}</span>
               <textarea
                 value={draft.example}
                 onChange={(event) => setDraft({ ...draft, example: event.target.value })}
-                placeholder="The region has abundant natural resources."
+                placeholder={t('create.card.examplePlaceholder')}
                 className="min-h-[72px] w-full resize-y rounded-lg border border-hairline bg-surface-card px-3.5 py-2.5 text-ink outline-none focus:ring-1 focus:ring-ink"
               />
             </label>
@@ -122,14 +124,14 @@ export default function AddCardModal({ onSubmit, onClose }: AddCardModalProps) {
 
           <div className="space-y-3 rounded-xl border border-hairline bg-surface-card p-4">
             <div className="flex items-center justify-between">
-              <span className="text-body-sm font-semibold text-ink">Synonyms</span>
+              <span className="text-body-sm font-semibold text-ink">{t('create.card.synonyms')}</span>
               <button
                 type="button"
                 onClick={addSynonymRow}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-hairline px-2.5 py-1 text-body-sm text-ink transition-colors hover:bg-canvas-soft"
               >
                 <Plus size={14} />
-                Add
+                {t('create.card.add')}
               </button>
             </div>
 
@@ -138,13 +140,13 @@ export default function AddCardModal({ onSubmit, onClose }: AddCardModalProps) {
                 <input
                   value={synonym.word}
                   onChange={(event) => updateSynonym(index, 'word', event.target.value)}
-                  placeholder="Word"
+                  placeholder={t('create.card.wordPlaceholder')}
                   className="w-full rounded-lg border border-hairline bg-canvas-soft px-3 py-2 text-ink outline-none focus:ring-1 focus:ring-ink"
                 />
                 <input
                   value={synonym.phonetic}
                   onChange={(event) => updateSynonym(index, 'phonetic', event.target.value)}
-                  placeholder="Phonetic"
+                  placeholder={t('create.card.phoneticShortPlaceholder')}
                   className="w-full rounded-lg border border-hairline bg-canvas-soft px-3 py-2 font-mono text-ink outline-none focus:ring-1 focus:ring-ink"
                 />
               </div>
@@ -158,14 +160,14 @@ export default function AddCardModal({ onSubmit, onClose }: AddCardModalProps) {
             onClick={onClose}
             className="rounded-lg border border-hairline px-4 py-2 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
           >
-            Cancel
+            {t('create.card.cancel')}
           </button>
           <button
             type="submit"
             disabled={submitting}
             className="rounded-lg bg-primary px-4 py-2 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active disabled:opacity-50"
           >
-            {submitting ? 'Saving…' : 'Save card'}
+            {submitting ? t('create.card.submitting') : t('create.card.submit')}
           </button>
         </div>
       </form>

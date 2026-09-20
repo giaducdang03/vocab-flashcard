@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import PageHeader from '../components/PageHeader';
 import QuizQuestionView from '../components/quiz/QuizQuestionView';
@@ -16,6 +17,7 @@ import type {
 } from '../types';
 
 export default function PracticePage() {
+  const { t } = useTranslation('session');
   const { id } = useParams();
   const location = useLocation();
 
@@ -60,7 +62,7 @@ export default function PracticePage() {
       setFinished(false);
     } catch (err) {
       console.error('Failed to fetch practice deck:', err);
-      setError('Failed to load practice deck. Please try again.');
+      setError(t('practice.fetchError'));
       setDeck(null);
     } finally {
       setLoading(false);
@@ -120,7 +122,7 @@ export default function PracticePage() {
   };
 
   if (loading) {
-    return <div className="app-shell center-block">Building practice set…</div>;
+    return <div className="app-shell center-block">{t('practice.building')}</div>;
   }
 
   // A narrowed pool can legitimately produce fewer than four questions; only
@@ -132,17 +134,15 @@ export default function PracticePage() {
         <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--hairline)' }}>
           <Link to={`/sessions/${id}`} className="inline-link">
             <ArrowLeft size={16} />
-            Back to session
+            {t('practice.backToSession')}
           </Link>
         </div>
 
         <main className="page-container">
           <div className="empty-state">
-            <h3>{error ? 'Error' : 'Practice unavailable'}</h3>
+            <h3>{error ? t('practice.error') : t('practice.unavailable')}</h3>
             <p>
-              {error
-                ? error
-                : "We couldn't generate practice questions for this session. Please try again later."}
+              {error ? error : t('practice.unavailableBody')}
             </p>
           </div>
         </main>
@@ -198,7 +198,7 @@ export default function PracticePage() {
             <Link to={`/sessions/${id}`} className="inline-link quiz-breadcrumb">
               <span className="breadcrumb-exit">
                 <ArrowLeft size={16} />
-                Exit
+                {t('practice.exit')}
               </span>
               <span className="breadcrumb-sep">|</span>
               <span className="breadcrumb-title">{deck.session_title}</span>
