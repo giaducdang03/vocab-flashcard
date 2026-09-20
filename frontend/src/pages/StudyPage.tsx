@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle2, Circle, RotateCcw, Settings, Shuffle, Volume2 } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
@@ -103,6 +104,7 @@ export default function StudyPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { t } = useTranslation('session');
   const [detail, setDetail] = useState<SessionDetailResponse | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
@@ -227,9 +229,9 @@ export default function StudyPage() {
     const { voice, exactMatch } = pickVoice(voices, voiceGender, voiceAccent);
 
     if (!exactMatch) {
-      const genderLabel = voiceGender === 'female' ? 'nữ' : 'nam';
+      const genderLabel = voiceGender === 'female' ? t('study.genderFemale') : t('study.genderMale');
       const accentLabel = voiceAccent === 'en-GB' ? 'UK' : 'US';
-      showVoiceToast(`Không tìm thấy giọng ${genderLabel} cho accent ${accentLabel}, đang dùng giọng thay thế.`);
+      showVoiceToast(t('study.voiceFallbackToast', { gender: genderLabel, accent: accentLabel }));
     }
 
     window.speechSynthesis.cancel();
@@ -241,7 +243,7 @@ export default function StudyPage() {
     }
 
     window.speechSynthesis.speak(utterance);
-  }, [speechSupported, voices, voiceGender, voiceAccent, showVoiceToast]);
+  }, [speechSupported, voices, voiceGender, voiceAccent, showVoiceToast, t]);
 
   const filteredCards = useMemo(() => {
     const cardList = cards || [];
@@ -338,11 +340,11 @@ export default function StudyPage() {
   };
 
   if (loading) {
-    return <div className="app-shell center-block">Loading session…</div>;
+    return <div className="app-shell center-block">{t('study.loading')}</div>;
   }
 
   if (!detail) {
-    return <div className="app-shell center-block">Session not found</div>;
+    return <div className="app-shell center-block">{t('study.notFound')}</div>;
   }
 
   return (
@@ -365,7 +367,7 @@ export default function StudyPage() {
             className="group inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
           >
             <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
-            Session detail
+            {t('study.backToDetail')}
           </Link>
 
           <div className="inline-flex items-center gap-space-xs rounded-xl bg-hairline-soft p-1">
@@ -385,7 +387,7 @@ export default function StudyPage() {
                   setIsFlipped(false);
                 }}
               >
-                {mode}
+                {t(`study.filter.${mode}`)}
                 <span
                   className={`ml-1.5 font-mono text-code-sm ${
                     mode === 'learned' ? 'text-secondary' : 'text-muted-soft'
@@ -405,20 +407,20 @@ export default function StudyPage() {
                 setCurrentIndex(0);
                 setIsFlipped(false);
               }}
-              title="Back to first card"
+              title={t('study.backToFirst')}
             >
               <RotateCcw size={16} />
-              <span className="max-sm:hidden">Start</span>
+              <span className="max-sm:hidden">{t('study.start')}</span>
             </button>
 
             <button
               type="button"
               className={shuffleEnabled ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
               onClick={handleToggleShuffle}
-              title={shuffleEnabled ? 'Turn off shuffle' : 'Shuffle card order'}
+              title={shuffleEnabled ? t('study.turnOffShuffle') : t('study.shuffleCardOrder')}
             >
               <Shuffle size={16} />
-              <span className="max-sm:hidden">Shuffle</span>
+              <span className="max-sm:hidden">{t('study.shuffle')}</span>
             </button>
 
             {speechSupported && (
@@ -427,16 +429,16 @@ export default function StudyPage() {
                   type="button"
                   className={showSpeakerSettings ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
                   onClick={() => setShowSpeakerSettings((current) => !current)}
-                  title="Configure pronunciation voice"
+                  title={t('study.configureVoice')}
                 >
                   <Volume2 size={16} />
-                  <span className="max-sm:hidden">Speaker</span>
+                  <span className="max-sm:hidden">{t('study.speaker')}</span>
                 </button>
 
                 {showSpeakerSettings && (
                   <div className="absolute right-0 top-full z-20 mt-2 flex w-56 flex-col gap-space-md rounded-xl border border-hairline bg-surface-card p-space-md shadow-lg">
                     <div>
-                      <p className={`${EYEBROW_CLASS} mb-2`}>Voice</p>
+                      <p className={`${EYEBROW_CLASS} mb-2`}>{t('study.voiceLabel')}</p>
                       <div className="flex items-center gap-space-xs rounded-lg bg-hairline-soft p-1">
                         {(['female', 'male'] as const).map((gender) => (
                           <button
@@ -449,16 +451,16 @@ export default function StudyPage() {
                                 : 'text-body hover:text-ink'
                             }`}
                             onClick={() => setVoiceGender(gender)}
-                            title={gender === 'female' ? 'Female voice' : 'Male voice'}
+                            title={gender === 'female' ? t('study.femaleVoiceTitle') : t('study.maleVoiceTitle')}
                           >
-                            {gender === 'female' ? 'Nữ' : 'Nam'}
+                            {gender === 'female' ? t('study.voiceFemale') : t('study.voiceMale')}
                           </button>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <p className={`${EYEBROW_CLASS} mb-2`}>Accent</p>
+                      <p className={`${EYEBROW_CLASS} mb-2`}>{t('study.accentLabel')}</p>
                       <div className="flex items-center gap-space-xs rounded-lg bg-hairline-soft p-1">
                         {(['en-US', 'en-GB'] as const).map((accent) => (
                           <button
@@ -471,7 +473,7 @@ export default function StudyPage() {
                                 : 'text-body hover:text-ink'
                             }`}
                             onClick={() => setVoiceAccent(accent)}
-                            title={accent === 'en-US' ? 'US pronunciation' : 'UK pronunciation'}
+                            title={accent === 'en-US' ? t('study.usAccentTitle') : t('study.ukAccentTitle')}
                           >
                             {accent === 'en-US' ? 'US' : 'UK'}
                           </button>
@@ -488,22 +490,22 @@ export default function StudyPage() {
                 type="button"
                 className={showDisplaySettings ? TOOL_BUTTON_ACTIVE_CLASS : TOOL_BUTTON_CLASS}
                 onClick={() => setShowDisplaySettings((current) => !current)}
-                title="Configure card fields"
+                title={t('study.configureFields')}
               >
                 <Settings size={16} />
-                <span className="max-sm:hidden">Display</span>
+                <span className="max-sm:hidden">{t('study.display')}</span>
               </button>
 
               {showDisplaySettings && (
                 <div className="absolute right-0 top-full z-20 mt-2 flex w-56 flex-col gap-space-sm rounded-xl border border-hairline bg-surface-card p-space-md shadow-lg">
-                  <p className={EYEBROW_CLASS}>Show on card</p>
+                  <p className={EYEBROW_CLASS}>{t('study.showOnCard')}</p>
                   {(
                     [
-                      ['phonetic', 'Phonetic'],
-                      ['synonyms', 'Synonyms'],
-                      ['example', 'Example'],
+                      ['phonetic', 'study.phonetic'],
+                      ['synonyms', 'study.synonyms'],
+                      ['example', 'study.example'],
                     ] as const
-                  ).map(([field, label]) => (
+                  ).map(([field, labelKey]) => (
                     <label
                       key={field}
                       className="flex cursor-pointer select-none items-center gap-space-sm text-body-sm text-ink"
@@ -514,7 +516,7 @@ export default function StudyPage() {
                         checked={displayConfig[field]}
                         onChange={() => toggleDisplayField(field)}
                       />
-                      {label}
+                      {t(labelKey)}
                     </label>
                   ))}
                 </div>
@@ -552,7 +554,7 @@ export default function StudyPage() {
         {/* Study Area */}
         {filteredCards.length === 0 ? (
           <div className="flex min-h-[440px] items-center justify-center rounded-2xl border border-hairline bg-surface-card">
-            <p className="text-body-md text-muted">No cards to study in this filter.</p>
+            <p className="text-body-md text-muted">{t('study.noCardsInFilter')}</p>
           </div>
         ) : currentCard ? (
           <div className="flex flex-col gap-space-md">
@@ -584,7 +586,7 @@ export default function StudyPage() {
                       }}
                     >
                       {currentCard.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} />}
-                      {currentCard.is_learned ? 'Learned' : 'Mark learned'}
+                      {currentCard.is_learned ? t('study.learned') : t('study.markLearned')}
                     </button>
 
                     <button
@@ -595,7 +597,7 @@ export default function StudyPage() {
                         setIsFlipped(true);
                       }}
                     >
-                      Flip
+                      {t('study.flip')}
                     </button>
                   </div>
 
@@ -612,7 +614,7 @@ export default function StudyPage() {
                             e.stopPropagation();
                             handleSpeak(currentCard.front_text);
                           }}
-                          title="Play pronunciation"
+                          title={t('study.playPronunciation')}
                         >
                           <Volume2 size={18} />
                         </button>
@@ -643,7 +645,7 @@ export default function StudyPage() {
                       }}
                     >
                       {currentCard.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} />}
-                      {currentCard.is_learned ? 'Learned' : 'Mark learned'}
+                      {currentCard.is_learned ? t('study.learned') : t('study.markLearned')}
                     </button>
 
                     <button
@@ -654,7 +656,7 @@ export default function StudyPage() {
                         setIsFlipped(false);
                       }}
                     >
-                      Flip back
+                      {t('study.flipBack')}
                     </button>
                   </div>
 
@@ -665,7 +667,7 @@ export default function StudyPage() {
 
                     {displayConfig.synonyms && currentCard.synonyms.length > 0 && (
                       <div>
-                        <p className={`${EYEBROW_CLASS} mb-2`}>Synonyms</p>
+                        <p className={`${EYEBROW_CLASS} mb-2`}>{t('study.synonyms')}</p>
                         <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
                           {currentCard.synonyms.map((synonym) => (
                             <div key={synonym.id} className="rounded-xl bg-surface-container p-3">
@@ -683,7 +685,7 @@ export default function StudyPage() {
 
                     {displayConfig.example && currentCard.example && (
                       <div className="rounded-xl bg-surface-container p-space-md">
-                        <p className={`${EYEBROW_CLASS} mb-2`}>Example</p>
+                        <p className={`${EYEBROW_CLASS} mb-2`}>{t('study.example')}</p>
                         <p className="text-body-md leading-relaxed text-ink">{currentCard.example}</p>
                       </div>
                     )}
@@ -701,11 +703,11 @@ export default function StudyPage() {
                 onClick={handlePrev}
               >
                 <ChevronLeft size={18} />
-                Previous
+                {t('study.previous')}
               </button>
 
               <span className="font-mono text-code-sm text-muted">
-                {currentIndex + 1} of {filteredCards.length}
+                {t('study.cardOf', { current: currentIndex + 1, total: filteredCards.length })}
               </span>
 
               <button
@@ -714,7 +716,7 @@ export default function StudyPage() {
                 disabled={currentIndex >= filteredCards.length - 1}
                 onClick={handleNext}
               >
-                Next
+                {t('study.next')}
                 <ChevronRight size={18} />
               </button>
             </div>
@@ -724,11 +726,11 @@ export default function StudyPage() {
               <p className="inline-flex flex-wrap items-center justify-center gap-space-sm rounded-full bg-canvas-soft px-4 py-2 text-body-sm text-muted">
                 <span>💡</span>
                 <span>
-                  <span className="font-mono text-code-sm text-body">Space</span> to flip
+                  <span className="font-mono text-code-sm text-body">Space</span> {t('study.spaceHint')}
                 </span>
                 <span aria-hidden="true">•</span>
                 <span>
-                  <span className="font-mono text-code-sm text-body">← →</span> arrow keys to navigate
+                  <span className="font-mono text-code-sm text-body">← →</span> {t('study.arrowHint')}
                 </span>
               </p>
             </div>

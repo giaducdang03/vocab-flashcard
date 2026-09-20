@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BookOpenText, History, Lightbulb, Play, Plus, Search, ClipboardList } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
@@ -12,16 +13,11 @@ import SessionCreateModal from '../components/SessionCreateModal';
 
 type FilterKey = 'all' | 'in-progress' | 'mastered';
 
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: 'all', label: 'All Sessions' },
-  { key: 'in-progress', label: 'In Progress' },
-  { key: 'mastered', label: 'Mastered' },
-];
-
 const percentOf = (session: Session) =>
   session.total_cards > 0 ? Math.round((session.learned_cards / session.total_cards) * 100) : 0;
 
 export default function DashboardPage() {
+  const { t } = useTranslation('dashboard');
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -90,6 +86,12 @@ export default function DashboardPage() {
     [sessions],
   );
 
+  const FILTERS: { key: FilterKey; label: string }[] = [
+    { key: 'all', label: t('page.filters.all') },
+    { key: 'in-progress', label: t('page.filters.inProgress') },
+    { key: 'mastered', label: t('page.filters.mastered') },
+  ];
+
   return (
     <div className="page-shell">
       <PageHeader user={user} onLogout={handleLogout} streakDays={streakDays} />
@@ -100,10 +102,10 @@ export default function DashboardPage() {
           <div className="flex flex-col justify-between gap-space-lg lg:flex-row lg:items-center">
             <div className="max-w-2xl space-y-space-xs">
               <span className="text-caption-uppercase uppercase tracking-wider text-muted">
-                Welcome back
+                {t('greeting.welcomeBack')}
               </span>
               <h1 className="m-0 text-headline-lg font-medium tracking-tight text-ink">
-                Great to see you, {user?.display_name}! Let's master something new today.
+                {t('greeting.heading', { name: user?.display_name })}
               </h1>
             </div>
 
@@ -113,7 +115,7 @@ export default function DashboardPage() {
                 className="inline-flex h-10 items-center gap-2 rounded-lg bg-surface px-4 text-body-sm font-medium text-ink transition-colors hover:bg-surface-container"
               >
                 <History size={18} className="text-muted" />
-                Review History
+                {t('greeting.reviewHistory')}
               </Link>
 
               {resumeTarget ? (
@@ -122,7 +124,7 @@ export default function DashboardPage() {
                   className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
                 >
                   <Play size={18} />
-                  Continue {resumeTarget.title}
+                  {t('greeting.continueSession', { title: resumeTarget.title })}
                 </Link>
               ) : (
                 <button
@@ -131,7 +133,7 @@ export default function DashboardPage() {
                   className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
                 >
                   <Plus size={18} />
-                  Add session
+                  {t('greeting.addSession')}
                 </button>
               )}
             </div>
@@ -143,9 +145,9 @@ export default function DashboardPage() {
         <section className="space-y-space-md">
           <div className="flex flex-col justify-between gap-space-md sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <h2 className="m-0 text-headline-md font-semibold text-ink">Your sessions</h2>
+              <h2 className="m-0 text-headline-md font-semibold text-ink">{t('page.yourSessions')}</h2>
               <span className="rounded-full bg-surface-container px-2 py-0.5 font-mono text-code-sm font-medium text-muted">
-                {sessions.length} total
+                {t('page.sessionsTotal', { count: sessions.length })}
               </span>
             </div>
 
@@ -156,8 +158,8 @@ export default function DashboardPage() {
                   type="text"
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Filter decks..."
-                  aria-label="Filter sessions by title"
+                  placeholder={t('page.searchPlaceholder')}
+                  aria-label={t('page.searchAriaLabel')}
                   className="h-10 w-44 rounded-lg border border-hairline bg-surface-card pl-9 pr-3 text-body-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-ink sm:w-56"
                 />
               </div>
@@ -167,9 +169,9 @@ export default function DashboardPage() {
                 className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-surface-container"
               >
                 <ClipboardList size={18} className="text-muted" />
-                Quizzes
+                {t('page.quizzes')}
                 <span className="rounded bg-secondary-container px-1 py-0.5 text-caption-uppercase uppercase text-on-secondary-container">
-                  New
+                  {t('page.quizzesNewBadge')}
                 </span>
               </Link>
 
@@ -179,7 +181,7 @@ export default function DashboardPage() {
                 className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
               >
                 <Plus size={18} />
-                Add session
+                {t('page.addSession')}
               </button>
             </div>
           </div>
@@ -203,18 +205,16 @@ export default function DashboardPage() {
 
           {loading ? (
             <div className="rounded-xl border border-hairline bg-surface-card p-space-xl text-center text-body-sm text-body">
-              Loading sessions…
+              {t('page.loading')}
             </div>
           ) : visibleSessions.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-hairline-strong bg-surface-card p-space-xl text-center">
               <BookOpenText size={36} className="text-muted" />
               <h3 className="m-0 text-title-md text-ink">
-                {sessions.length === 0 ? 'No sessions yet' : 'No sessions match this filter'}
+                {sessions.length === 0 ? t('page.emptyTitle') : t('page.emptyTitleFiltered')}
               </h3>
               <p className="m-0 text-body-sm text-body">
-                {sessions.length === 0
-                  ? 'Create your first study set to start reviewing vocabulary.'
-                  : 'Try a different filter or clear the search box.'}
+                {sessions.length === 0 ? t('page.emptyBody') : t('page.emptyBodyFiltered')}
               </p>
             </div>
           ) : (
@@ -232,18 +232,17 @@ export default function DashboardPage() {
               <Lightbulb size={20} />
             </span>
             <p className="m-0 text-body-sm text-ink">
-              <strong className="font-semibold">Spaced Repetition Tip:</strong> Spacing intervals by
-              24h then 72h cements memory permanence twice as fast as cramming.
+              <strong className="font-semibold">{t('page.tip.label')}</strong> {t('page.tip.body')}
             </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-2 font-mono text-code-sm text-muted">
-            <span>Quick action:</span>
+            <span>{t('page.tip.quickAction')}</span>
             <kbd className="rounded bg-surface-card px-2 py-0.5 text-ink">Space</kbd>
-            <span>to flip</span>
+            <span>{t('page.tip.flip')}</span>
             <kbd className="rounded bg-surface-card px-2 py-0.5 text-ink">←</kbd>
             <kbd className="rounded bg-surface-card px-2 py-0.5 text-ink">→</kbd>
-            <span>to navigate</span>
+            <span>{t('page.tip.navigate')}</span>
           </div>
         </section>
       </main>

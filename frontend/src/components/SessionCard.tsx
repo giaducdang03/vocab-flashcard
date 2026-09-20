@@ -1,15 +1,10 @@
 import { ArrowRight, RotateCw, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Session } from '../types';
+import { useFormatters } from '../lib/format';
 
 const MASTERED = 100;
-
-const formatCreatedAt = (isoDate: string) =>
-  new Date(isoDate).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
 
 type SessionCardProps = {
   session: Session;
@@ -18,13 +13,15 @@ type SessionCardProps = {
 };
 
 export default function SessionCard({ session, onDelete, variant = 'card' }: SessionCardProps) {
+  const { t } = useTranslation('session');
+  const { date } = useFormatters();
   const percent =
     session.total_cards > 0
       ? Math.round((session.learned_cards / session.total_cards) * 100)
       : 0;
   const strong = percent >= 50;
   const mastered = percent >= MASTERED;
-  const createdLabel = formatCreatedAt(session.created_at);
+  const createdLabel = date(session.created_at);
 
   if (variant === 'row') {
     return (
@@ -36,7 +33,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
           >
             {session.title}
           </Link>
-          <p className="m-0 font-mono text-code-sm text-muted">Created {createdLabel}</p>
+          <p className="m-0 font-mono text-code-sm text-muted">{t('card.session.createdLabel', { date: createdLabel })}</p>
         </div>
 
         <div className="flex items-center gap-space-md sm:w-64 sm:shrink-0">
@@ -59,7 +56,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
 
         <div className="flex shrink-0 items-center gap-space-md">
           <span className="font-mono text-code-sm text-muted">
-            {session.learned_cards} / {session.total_cards} learned
+            {t('card.session.learnedCount', { learned: session.learned_cards, total: session.total_cards })}
           </span>
 
           <Link
@@ -68,7 +65,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
               mastered ? 'bg-secondary hover:bg-secondary/85' : 'bg-primary hover:bg-primary-active'
             }`}
           >
-            {mastered ? 'Review' : 'Study now'}
+            {mastered ? t('card.session.review') : t('card.session.studyNow')}
             {mastered ? <RotateCw size={16} /> : <ArrowRight size={16} />}
           </Link>
 
@@ -76,7 +73,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
             type="button"
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-hairline text-muted transition-colors hover:border-primary hover:text-primary"
             onClick={() => onDelete(session.id)}
-            title={`Delete ${session.title}`}
+            title={t('card.session.deleteTitle', { title: session.title })}
           >
             <Trash2 size={14} />
           </button>
@@ -95,7 +92,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
           >
             {session.title}
           </Link>
-          <p className="m-0 font-mono text-code-sm text-muted">Created {createdLabel}</p>
+          <p className="m-0 font-mono text-code-sm text-muted">{t('card.session.createdLabel', { date: createdLabel })}</p>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -110,7 +107,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
             type="button"
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-hairline text-muted transition-colors hover:border-primary hover:text-primary"
             onClick={() => onDelete(session.id)}
-            title={`Delete ${session.title}`}
+            title={t('card.session.deleteTitle', { title: session.title })}
           >
             <Trash2 size={14} />
           </button>
@@ -129,7 +126,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
 
         <div className="flex items-center justify-between pt-1">
           <span className="font-mono text-code-sm text-muted">
-            {session.learned_cards} / {session.total_cards} learned
+            {t('card.session.learnedCount', { learned: session.learned_cards, total: session.total_cards })}
           </span>
 
           <Link
@@ -138,7 +135,7 @@ export default function SessionCard({ session, onDelete, variant = 'card' }: Ses
               mastered ? 'bg-secondary hover:bg-secondary/85' : 'bg-primary hover:bg-primary-active'
             }`}
           >
-            {mastered ? 'Review' : 'Study now'}
+            {mastered ? t('card.session.review') : t('card.session.studyNow')}
             {mastered ? <RotateCw size={16} /> : <ArrowRight size={16} />}
           </Link>
         </div>

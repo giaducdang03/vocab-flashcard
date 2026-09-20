@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, PlayCircle } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 import HeroFlashcard from './HeroFlashcard';
 
 export default function HeroSection() {
+  const { t } = useTranslation('landing');
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -22,22 +24,19 @@ export default function HeroSection() {
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface-container px-3 py-1">
               <span className="h-2 w-2 rounded-full bg-secondary" />
               <span className="text-caption-uppercase font-semibold tracking-wider text-ink">
-                AI-ASSISTED LEXICAL MASTERY
+                {t('hero.badge')}
               </span>
             </div>
             <h1 className="mb-6 text-[32px] font-normal leading-[38px] tracking-tight text-ink md:text-display-hero">
-              Build vocabulary sessions that stick.
+              {t('hero.title')}
             </h1>
-            <p className="mb-8 max-w-xl text-body-md leading-relaxed text-body">
-              Curate personal word decks, master nuanced synonyms with authentic IPA phonetic precision,
-              and lock in memory traces through distraction-free, AI-calibrated quizzes.
-            </p>
+            <p className="mb-8 max-w-xl text-body-md leading-relaxed text-body">{t('hero.description')}</p>
             <div className="mb-6 flex w-full flex-wrap items-center gap-3 sm:w-auto">
               <Link
                 to="/login"
                 className="flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-6 text-button text-on-primary shadow-sm transition-colors hover:bg-primary-active"
               >
-                <span>Start learning for free</span>
+                <span>{t('hero.ctaPrimary')}</span>
                 <ArrowRight size={18} />
               </Link>
               <button
@@ -46,7 +45,7 @@ export default function HeroSection() {
                 className="flex h-11 items-center justify-center gap-2 rounded-lg border border-hairline-strong bg-surface-card px-5 text-button text-ink transition-colors hover:bg-surface-container-low"
               >
                 <PlayCircle size={18} className="text-primary" />
-                <span>Flip active card</span>
+                <span>{t('hero.ctaSecondary')}</span>
               </button>
             </div>
             <div className="flex items-center gap-3 pt-2">
@@ -62,8 +61,7 @@ export default function HeroSection() {
                 </div>
               </div>
               <p className="text-body-sm text-muted">
-                Joined by <span className="font-medium text-ink">1,200+</span> academic researchers and
-                IELTS 8.0+ candidates.
+                <Trans i18nKey="hero.socialProof" t={t} components={{ 1: <span className="font-medium text-ink" /> }} />
               </p>
             </div>
           </div>

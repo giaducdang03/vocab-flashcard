@@ -4,6 +4,7 @@ import random
 import pytest
 
 from app.services.ai import quiz_prompt
+from app.services.quiz_generator import AI_QUESTION_TYPES
 from tests.factories import make_pool
 
 
@@ -271,6 +272,14 @@ class TestParseAndValidate:
 
 
 class TestBuildSystemPrompt:
+    @pytest.mark.parametrize("language", ["vi", "en"])
+    def test_explanation_placeholder_is_always_replaced(self, language):
+        system = quiz_prompt.build_system_prompt(
+            list(AI_QUESTION_TYPES), explanation_language=language
+        )
+
+        assert "{explanation_language}" not in system
+
     def test_system_prompt_only_describes_the_requested_types(self):
         cards = make_pool(4)
 
@@ -339,6 +348,36 @@ class TestBuildSystemPrompt:
         system, _ = quiz_prompt.build_prompt(cards, ["verb_tense", "word_stress"], 2, max_cards=10)
 
         assert "NEVER use front_text or back_text as the card_id" in system
+
+    def test_explanations_default_to_vietnamese(self):
+        system, _ = quiz_prompt.build_prompt(make_pool(4), ["cloze"], 2, max_cards=10)
+
+        assert "Write in Vietnamese" in system
+        assert "Write in English" not in system
+
+    def test_explanations_can_be_requested_in_english(self):
+        system, _ = quiz_prompt.build_prompt(
+            make_pool(4), ["cloze"], 2, max_cards=10, explanation_language="en"
+        )
+
+        assert "Write in English" in system
+        assert "Write in Vietnamese" not in system
+
+    def test_word_stress_explanation_follows_the_chosen_language(self):
+        vi, _ = quiz_prompt.build_prompt(make_pool(4), ["word_stress"], 2, max_cards=10)
+        en, _ = quiz_prompt.build_prompt(
+            make_pool(4), ["word_stress"], 2, max_cards=10, explanation_language="en"
+        )
+
+        assert "Write the explanation in Vietnamese" in vi
+        assert "Write the explanation in English" in en
+        assert "Write the explanation in Vietnamese" not in en
+
+    def test_rejects_unknown_explanation_language(self):
+        with pytest.raises(ValueError, match="explanation_language"):
+            quiz_prompt.build_prompt(
+                make_pool(4), ["cloze"], 2, max_cards=10, explanation_language="fr"
+            )
 
 
 class TestVerbTense:

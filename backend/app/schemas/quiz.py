@@ -24,6 +24,7 @@ class QuizCreate(BaseModel):
     session_ids: list[str] = Field(min_length=1)
     question_count: int = Field(ge=1, le=100)
     question_types: list[QuestionType] = Field(min_length=1)
+    explanation_language: Literal["vi", "en"] = "vi"
 
 
 class QuizListItem(BaseModel):

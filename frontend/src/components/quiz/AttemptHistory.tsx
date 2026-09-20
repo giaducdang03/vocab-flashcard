@@ -1,8 +1,9 @@
 import { ArrowRight, CalendarDays, Check, Timer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { QuizAttemptSummary } from '../../types';
+import { useFormatters } from '../../lib/format';
 import {
-  formatAttemptDate,
   formatDuration,
   isStrongScore,
   percentOf,
@@ -15,14 +16,14 @@ type AttemptHistoryProps = {
 
 export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation('quiz');
+  const { dateTime } = useFormatters();
 
   if (attempts.length === 0) {
     return (
       <div className="grid min-h-[180px] place-items-center gap-2 rounded-xl border border-dashed border-hairline-strong bg-canvas-soft p-space-xl text-center">
-        <h3 className="text-title-md text-ink">No attempts yet</h3>
-        <p className="text-body-sm text-body">
-          Start your first attempt to build a score history here.
-        </p>
+        <h3 className="text-title-md text-ink">{t('history.emptyTitle')}</h3>
+        <p className="text-body-sm text-body">{t('history.emptyBody')}</p>
       </div>
     );
   }
@@ -50,12 +51,14 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
                   isLatest ? 'text-ink' : 'text-muted'
                 }`}
               >
-                #{attemptNumber}
+                {t('history.attemptBadge', { number: attemptNumber })}
               </div>
 
               <div className="flex flex-col">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-title-sm text-ink">Attempt #{attemptNumber}</span>
+                  <span className="text-title-sm text-ink">
+                    {t('history.attemptLabel', { number: attemptNumber })}
+                  </span>
                   <span
                     className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
                       strong
@@ -64,11 +67,11 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
                     }`}
                   >
                     {strong && <Check size={13} />}
-                    {percent}% Score
+                    {t('history.scorePercent', { percent })}
                   </span>
                   {isLatest && (
                     <span className="rounded bg-hairline-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase text-body">
-                      Latest
+                      {t('history.latest')}
                     </span>
                   )}
                 </div>
@@ -76,7 +79,7 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
                 <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted">
                   <span className="flex items-center gap-1 font-mono text-code-sm">
                     <CalendarDays size={15} className="text-muted-soft" />
-                    {formatAttemptDate(attempt.submitted_at)}
+                    {dateTime(attempt.submitted_at)}
                   </span>
                   <span aria-hidden="true">•</span>
                   <span className="flex items-center gap-1 font-mono text-code-sm">
@@ -90,10 +93,13 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
             <div className="flex items-center justify-between gap-space-md pl-12 sm:justify-end sm:pl-0">
               <div className="text-left font-mono text-code-sm sm:text-right">
                 <div className="font-medium text-ink">
-                  {attempt.score} / {attempt.total_questions}
+                  {t('history.scoreFraction', {
+                    score: attempt.score,
+                    total: attempt.total_questions,
+                  })}
                 </div>
                 <div className="text-[11px] text-muted">
-                  {attempt.score} correct, {missed} missed
+                  {t('history.correctMissed', { correct: attempt.score, missed })}
                 </div>
               </div>
               <button
@@ -101,7 +107,7 @@ export default function AttemptHistory({ attempts }: AttemptHistoryProps) {
                 onClick={() => navigate(`/attempts/${attempt.id}`)}
                 className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-hairline-strong bg-surface-card px-3 py-1.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft group-hover:border-ink/40"
               >
-                Review attempt
+                {t('history.reviewAttempt')}
                 <ArrowRight size={16} />
               </button>
             </div>

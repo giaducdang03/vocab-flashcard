@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ClipboardList, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { apiErrorMessage } from '../api/errors';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,15 +8,19 @@ import type { Quiz, Session } from '../types';
 import QuizCard from '../components/quiz/QuizCard';
 import QuizCreateModal from '../components/quiz/QuizCreateModal';
 import PageHeader from '../components/PageHeader';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
 import { useQuizPolling } from '../hooks/useQuizPolling';
 
 export default function QuizzesPage() {
+  const { t } = useTranslation('quiz');
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingDelete, setPendingDelete] = useState<Quiz | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -66,16 +71,22 @@ export default function QuizzesPage() {
         current.map((quiz) => (quiz.id === quizId ? response.data : quiz)),
       );
     } catch (err) {
-      setNotice(apiErrorMessage(err, 'Could not retry this quiz.'));
+      setNotice(apiErrorMessage(err, t('list.retryError')));
     }
   };
 
-  const handleDeleteQuiz = async (quizId: string) => {
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/quizzes/${quizId}`);
-      setQuizzes((current) => current.filter((quiz) => quiz.id !== quizId));
+      await api.delete(`/quizzes/${pendingDelete.id}`);
+      setQuizzes((current) => current.filter((quiz) => quiz.id !== pendingDelete.id));
     } catch (err) {
       console.error('Failed to delete quiz:', err);
+    } finally {
+      setDeleting(false);
+      setPendingDelete(null);
     }
   };
 
@@ -95,22 +106,20 @@ export default function QuizzesPage() {
       <main className="page-container">
         <section className="hero-card">
           <div>
-            <p className="eyebrow">Quiz Center</p>
-            <h1 className="text-2xl font-light letter-spacing-tight">
-              Challenge yourself with curated quizzes
-            </h1>
+            <p className="eyebrow">{t('list.eyebrow')}</p>
+            <h1 className="text-2xl font-light letter-spacing-tight">{t('list.title')}</h1>
           </div>
         </section>
 
         <section className="section-header">
-          <h2>Quizzes ({quizzes.length})</h2>
+          <h2>{t('list.heading', { count: quizzes.length })}</h2>
           <button
             type="button"
             className="btn btn-primary"
             onClick={() => setShowCreateModal(true)}
           >
             <Plus size={16} />
-            Create quiz
+            {t('list.createQuiz')}
           </button>
         </section>
 
@@ -124,12 +133,12 @@ export default function QuizzesPage() {
         )}
 
         {loading ? (
-          <div className="empty-state">Loading quizzes…</div>
+          <div className="empty-state">{t('list.loading')}</div>
         ) : quizzes.length === 0 ? (
           <div className="empty-state">
             <ClipboardList size={36} />
-            <h3>No quizzes yet</h3>
-            <p>Create your first quiz to start testing your vocabulary knowledge.</p>
+            <h3>{t('list.emptyTitle')}</h3>
+            <p>{t('list.emptyBody')}</p>
           </div>
         ) : (
           <div className="session-grid">
@@ -138,7 +147,7 @@ export default function QuizzesPage() {
                 key={quiz.id}
                 quiz={quiz}
                 onOpen={() => navigate(`/quizzes/${quiz.id}`)}
-                onDelete={() => handleDeleteQuiz(quiz.id)}
+                onDelete={() => setPendingDelete(quiz)}
                 onRetry={handleRetry}
               />
             ))}
@@ -151,6 +160,17 @@ export default function QuizzesPage() {
         sessions={sessions}
         onClose={() => setShowCreateModal(false)}
         onCreated={handleQuizCreated}
+      />
+
+      <ConfirmDialog
+        isOpen={pendingDelete !== null}
+        title={t('list.deleteDialog.title')}
+        message={t('list.deleteDialog.message', { title: pendingDelete?.title ?? '' })}
+        confirmLabel={t('common:delete')}
+        cancelLabel={t('common:cancel')}
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPendingDelete(null)}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CircleUser, LogOut, ShieldCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { User } from '../types';
 
 type UserMenuProps = {
@@ -10,6 +11,7 @@ type UserMenuProps = {
 
 export default function UserMenu({ user, onLogout }: UserMenuProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation('nav');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +39,7 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
         type="button"
         className="inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-canvas transition-colors text-ink"
         onClick={() => setIsOpen(!isOpen)}
-        title="User menu"
+        title={t('user.menu')}
       >
         {user.avatar_url ? (
           <img src={user.avatar_url} alt="" className="h-5 w-5 rounded-full object-cover" referrerPolicy="no-referrer" />
@@ -50,7 +52,7 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-56 bg-white border border-hairline rounded-lg shadow-lg z-50">
           <div className="px-4 py-3 border-b border-hairline">
-            <p className="text-xs text-muted mb-1">User info</p>
+            <p className="text-xs text-muted mb-1">{t('user.info')}</p>
             <p className="text-sm font-semibold text-ink">{user.display_name}</p>
             <p className="text-xs text-muted">{user.email}</p>
           </div>
@@ -65,7 +67,7 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
               }}
             >
               <ShieldCheck size={16} />
-              <span>User Management</span>
+              <span>{t('user.userManagement')}</span>
             </button>
           )}
           <button
@@ -74,7 +76,7 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
             onClick={handleLogout}
           >
             <LogOut size={16} />
-            <span>Logout</span>
+            <span>{t('user.logout')}</span>
           </button>
         </div>
       )}

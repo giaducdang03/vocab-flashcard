@@ -13,6 +13,7 @@ Webapp học từ vựng tiếng Anh bằng flashcard — hỗ trợ cả **voca
 - [Chạy dự án](#chạy-dự-án)
 - [Định dạng file import](#định-dạng-file-import)
 - [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [Đa ngôn ngữ (i18n)](#đa-ngôn-ngữ-i18n)
 - [Testing](#testing)
 - [Biến môi trường](#biến-môi-trường)
 - [Bản quyền](#bản-quyền)
@@ -361,6 +362,22 @@ vocab_flash/
 | `/quizzes/:id` | Chi tiết quiz + lịch sử làm bài |
 | `/quizzes/:id/attempts/:attemptId` | Làm bài |
 | `/attempts/:id/review` | Review chi tiết bài đã nộp |
+
+---
+
+## Đa ngôn ngữ (i18n)
+
+Giao diện hỗ trợ **tiếng Anh (en)** và **tiếng Việt (vi)** qua `i18next` + `react-i18next`. Người dùng đổi ngôn ngữ bằng nút chuyển ngôn ngữ (icon cờ) ở header/landing; lựa chọn được ghi vào `localStorage` (`vocabflash.lang`) nên còn nguyên sau khi tải lại trang. Chưa từng chọn thì mặc định là `en`.
+
+- **Cấu trúc:** mỗi ngôn ngữ là một thư mục con dưới `frontend/src/i18n/locales/` (`en/`, `vi/`), chia theo namespace (`common`, `nav`, `landing`, `auth`, `session`, `quiz`, `dashboard`, `changelog`, `errors`). Danh sách ngôn ngữ khả dụng khai báo ở hằng số `LANGUAGES` trong `frontend/src/i18n/index.ts`.
+- **Thêm ngôn ngữ mới:** tạo thư mục locale mới (copy toàn bộ file JSON từ `en/` làm khung), dịch từng key, rồi thêm mã ngôn ngữ vào `LANGUAGES` (và `INTL_LOCALE` nếu cần định dạng số/ngày riêng). Không cần sửa code UI vì mọi màn hình đều gọi qua `t()`.
+- **Kiểm tra key thiếu:** chạy `npm run check:i18n` (trong `frontend/`) — script so khớp key giữa các namespace của `en` và `vi`, báo lỗi nếu một bên thiếu key mà bên kia có.
+- **Định dạng số/ngày:** dùng `Intl` khóa theo `INTL_LOCALE[lang]` (`en-US` / `vi-VN`), không dùng `toLocaleString()` không tham số để tránh phụ thuộc locale trình duyệt.
+- **Cố ý không dịch — không phải bug:**
+  - **Khu vực admin** (`src/pages/AdminUsersPage.tsx`, `src/pages/AdminUserDetailPage.tsx`, `src/components/admin/**`, `src/lib/adminFormat.ts`): luôn hiển thị tiếng Anh, khóa cứng `toLocaleString('en-US')`. Đây là công cụ nội bộ cho quản trị viên, không phải mặt hàng người dùng cuối nhìn thấy, nên không đưa vào phạm vi i18n để giảm khối lượng dịch không cần thiết.
+  - **Nội dung do AI sinh** (câu hỏi quiz AI, giải thích đáp án, nội dung thẻ nhập từ AI): giữ nguyên ngôn ngữ AI trả về (thường là tiếng Anh cho từ vựng, tiếng Việt cho phần nghĩa) vì đây là dữ liệu người dùng/AI tạo ra tại runtime, không phải chuỗi UI tĩnh — không thể và không nên dịch lại.
+  - **Landing page — demo flashcard & demo quiz** (`components/landing/HeroFlashcard.tsx`, `components/landing/PracticeArena.tsx`): từ mẫu (`resilient`, `tenacious`...) và đáp án mẫu tiếng Việt là nội dung minh họa cố định mô phỏng đúng sản phẩm thật (thẻ Anh–Việt), không phải chrome giao diện, nên giữ nguyên bất kể ngôn ngữ hiển thị.
+  - **Tên riêng / thương hiệu** (`VocabFlash`) và **tên phím tắt** (`Space`, `←`, `→`): không dịch theo quy ước chung, tương tự các app khác.
 
 ---
 

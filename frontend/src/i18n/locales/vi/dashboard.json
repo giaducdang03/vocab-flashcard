@@ -1,0 +1,78 @@
+{
+  "greeting": {
+    "welcomeBack": "Chào mừng trở lại",
+    "heading": "Rất vui được gặp lại bạn, {{name}}! Hãy chinh phục điều gì đó mới hôm nay.",
+    "reviewHistory": "Lịch sử ôn tập",
+    "continueSession": "Tiếp tục {{title}}",
+    "addSession": "Thêm phiên học"
+  },
+  "kpi": {
+    "totalWords": "Tổng số từ",
+    "totalWordsFootnote_one": "Trong {{count}} phiên học đang hoạt động",
+    "totalWordsFootnote_other": "Trong {{count}} phiên học đang hoạt động",
+    "learned": "Đã học",
+    "learnedBadge": "{{percent}}% tổng số",
+    "learnedTodayFootnote_one": "+{{count}} từ hôm nay",
+    "learnedTodayFootnote_other": "+{{count}} từ hôm nay",
+    "overallMastery": "Mức độ thành thạo",
+    "streak": "Chuỗi ngày",
+    "streakUnit": "ngày",
+    "streakLoading": "…",
+    "streakUnavailable": "—",
+    "personalBest": "Kỷ lục cá nhân: {{count}} ngày"
+  },
+  "charts": {
+    "dailyLearned": {
+      "title": "Số từ học mỗi ngày",
+      "subtitle": "Nhịp độ học hàng ngày theo các khoảng lặp SRS đang hoạt động",
+      "rangeDays": "{{count}} ngày",
+      "tooltipWord_one": "{{count}} từ",
+      "tooltipWord_other": "{{count}} từ",
+      "emptyState": "Chưa có từ nào được đánh dấu đã học trong {{count}} ngày qua.",
+      "retentionTip": "Học đều đặn giúp tăng khả năng ghi nhớ gấp 4 lần.",
+      "average": "TB: {{value}} từ/ngày"
+    },
+    "sessionProgress": {
+      "title": "Tiến độ theo phiên học",
+      "subtitle": "Sắp xếp theo tỷ lệ hoàn thành thấp nhất",
+      "modules_one": "{{count}} Học phần",
+      "modules_other": "{{count}} Học phần",
+      "empty": "Chưa có phiên học nào có thẻ.",
+      "needsAttention": "Cần chú ý (<50%)",
+      "strongRetention": "Ghi nhớ tốt (≥50%)"
+    }
+  },
+  "stats": {
+    "loadError": "Không thể tải thống kê hàng ngày. Tổng số của bạn vẫn chính xác."
+  },
+  "empty": {
+    "noStudyData": "Chưa có dữ liệu học tập. Tạo phiên học đầu tiên để bắt đầu theo dõi tiến độ."
+  },
+  "page": {
+    "filters": {
+      "all": "Tất cả phiên học",
+      "inProgress": "Đang học",
+      "mastered": "Đã thành thạo"
+    },
+    "yourSessions": "Phiên học của bạn",
+    "sessionsTotal_one": "{{count}} tổng số",
+    "sessionsTotal_other": "{{count}} tổng số",
+    "searchPlaceholder": "Lọc bộ thẻ...",
+    "searchAriaLabel": "Lọc phiên học theo tiêu đề",
+    "quizzes": "Quiz",
+    "quizzesNewBadge": "Mới",
+    "addSession": "Thêm phiên học",
+    "loading": "Đang tải phiên học…",
+    "emptyTitle": "Chưa có phiên học nào",
+    "emptyTitleFiltered": "Không có phiên học nào khớp với bộ lọc",
+    "emptyBody": "Tạo bộ học đầu tiên để bắt đầu ôn tập từ vựng.",
+    "emptyBodyFiltered": "Thử bộ lọc khác hoặc xóa ô tìm kiếm.",
+    "tip": {
+      "label": "Mẹo lặp lại ngắt quãng:",
+      "body": "Giãn cách khoảng thời gian 24 giờ rồi 72 giờ giúp ghi nhớ lâu dài nhanh gấp đôi so với học dồn.",
+      "quickAction": "Thao tác nhanh:",
+      "flip": "để lật thẻ",
+      "navigate": "để di chuyển"
+    }
+  }
+}

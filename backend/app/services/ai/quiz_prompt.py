@@ -16,6 +16,9 @@ CLOZE_BLANK = "___"
 MIN_OPTION_COUNT = 2
 MAX_OPTION_COUNT = 4
 
+DEFAULT_EXPLANATION_LANGUAGE = "vi"
+EXPLANATION_LANGUAGE_NAMES: dict[str, str] = {"vi": "Vietnamese", "en": "English"}
+
 # Dạng nào có số phương án cố định thì khai ở đây. Dạng vắng mặt tự ép số
 # phương án trong checker của nó.
 OPTION_COUNT: dict[str, int] = {
@@ -84,7 +87,7 @@ TYPE_RULES: dict[str, str] = {
    • NEVER capitalize any chunk, not even the stressed one (capitalizing gives the answer away). Every chunk is lowercase exactly as in prompt_text; only correct_index marks the right syllable. Do NOT put ˈ, ˌ or any phonetic character into options — options contain only letters taken straight from prompt_text.
    • correct_index points to the chunk holding the PRIMARY STRESS.
    • SELF-CHECK before answering: join the chunks in options (dropping the "i — " part); if the result differs from prompt_text by even one character, split again. If there is no way to split while keeping every letter, SKIP that card instead of forcing a question out of it.
-   • Write the explanation in Vietnamese, and it MUST OPEN with a transcription in exactly this shape: a pair of slashes /.../, with a stress mark placed IMMEDIATELY BEFORE the primary-stressed syllable and INSIDE that pair of slashes.
+   • Write the explanation in {explanation_language}, and it MUST OPEN with a transcription in exactly this shape: a pair of slashes /.../, with a stress mark placed IMMEDIATELY BEFORE the primary-stressed syllable and INSIDE that pair of slashes.
      ─ The stress mark may ONLY be the IPA character ˈ (preferred) or a straight apostrophe ' if you cannot type ˈ. NEVER use an acute accent ´, a prime ′, a backtick ` or any other character — a wrong mark counts as missing.
      ─ The transcription must sit inside a / / pair, with no line break in the middle. No / / counts as missing.
      ─ If the stress falls on the first syllable, the mark still goes right after the opening /.
@@ -106,13 +109,16 @@ WORD_DISTRACTOR_RULES = """\
   ─ Never be taken from the card's synonyms field (a synonym could be correct too).
 - The position of the correct answer (correct_index) should be spread evenly, not always 0."""
 
-EXPLANATION_RULES = """\
+
+def _explanation_rules(language_name: str) -> str:
+    return f"""\
 ═══ EXPLANATION RULES ═══
 
-Write in Vietnamese, 2–4 sentences, structured as:
+Write in {language_name}, 2–4 sentences, structured as:
 1. State the correct answer and explain WHY it fits there (through meaning or collocation).
 2. Pick the 1–2 most tempting wrong options and briefly explain why they do not fit here.
 Do not write vague lines like "the other options are wrong". Point out the specific problem."""
+
 
 # Card_id thật là UUID4 (xem app.models.card.Card.id) — ví dụ này cho model
 # thấy đúng hình dạng chuỗi cần sao chép, tránh nó tưởng "..." nghĩa là được
@@ -163,24 +169,37 @@ Return ONLY one JSON object, with no markdown and no explanatory text around it:
 WORD_CHOICE_TYPES = ("cloze", "context")
 
 
-def build_system_prompt(ai_types: Sequence[str]) -> str:
+def build_system_prompt(
+    ai_types: Sequence[str],
+    explanation_language: str = DEFAULT_EXPLANATION_LANGUAGE,
+) -> str:
     """Ghép system prompt chỉ từ block của những dạng được yêu cầu.
 
     Thứ tự block bám theo `AI_QUESTION_TYPES` chứ không theo thứ tự người gọi
     truyền vào, để cùng một tập dạng luôn sinh ra đúng một chuỗi.
     """
+    language_name = EXPLANATION_LANGUAGE_NAMES.get(explanation_language)
+    if language_name is None:
+        raise ValueError(
+            f"explanation_language phải là một trong: {', '.join(EXPLANATION_LANGUAGE_NAMES)}; "
+            f"nhận: {explanation_language!r}"
+        )
+
     requested = set(ai_types)
     ordered = [t for t in AI_QUESTION_TYPES if t in requested]
 
     blocks = [
-        f"{number}. {TYPE_RULES[question_type]}"
+        f"{number}. "
+        + TYPE_RULES[question_type].replace("{explanation_language}", language_name)
         for number, question_type in enumerate(ordered, start=1)
     ]
 
     parts = [SYSTEM_HEADER, "═══ QUESTION TYPES ═══\n\n" + "\n\n".join(blocks)]
     if any(question_type in WORD_CHOICE_TYPES for question_type in ordered):
         parts.append(WORD_DISTRACTOR_RULES)
-    parts.extend([EXPLANATION_RULES, _technical_rules(ordered), _output_format(ordered)])
+    parts.extend(
+        [_explanation_rules(language_name), _technical_rules(ordered), _output_format(ordered)]
+    )
 
     return "\n\n".join(parts)
 
@@ -202,6 +221,7 @@ def build_prompt(
     ai_question_count: int,
     max_cards: int,
     rng: Random | None = None,
+    explanation_language: str = DEFAULT_EXPLANATION_LANGUAGE,
 ) -> tuple[str, str]:
     """Trả về `(system, user)` cho một lần gọi sinh cả phần AI của đề.
 
@@ -236,7 +256,7 @@ def build_prompt(
         f"{json.dumps(payload, ensure_ascii=False)}"
     )
 
-    return build_system_prompt(ai_types), user
+    return build_system_prompt(ai_types, explanation_language), user
 
 
 def _extract_json(raw: str) -> dict[str, Any]:

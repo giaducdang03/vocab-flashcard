@@ -1,0 +1,178 @@
+{
+  "blankAriaLabel": "chỗ trống",
+  "ai": {
+    "badge": "AI tạo",
+    "questionsWarning": "Chứa câu hỏi do AI tạo; có thể có sai sót.",
+    "questionWarning": "Câu hỏi do AI tạo; có thể có sai sót.",
+    "contentWarning": "Nội dung do AI tạo; có thể có sai sót."
+  },
+  "list": {
+    "eyebrow": "Trung tâm Quiz",
+    "title": "Thử thách bản thân với các quiz được tuyển chọn",
+    "heading": "Quiz ({{count}})",
+    "createQuiz": "Tạo quiz",
+    "retryError": "Không thể thử lại quiz này.",
+    "loading": "Đang tải quiz…",
+    "emptyTitle": "Chưa có quiz nào",
+    "emptyBody": "Tạo quiz đầu tiên để bắt đầu kiểm tra vốn từ vựng của bạn.",
+    "deleteDialog": {
+      "title": "Xóa quiz này?",
+      "message": "Quiz \"{{title}}\" và lịch sử làm bài của nó sẽ bị xóa vĩnh viễn. Không thể khôi phục."
+    },
+    "card": {
+      "generating": "AI đang tạo quiz…",
+      "generationFailed": "Tạo quiz thất bại.",
+      "retry": "Thử lại",
+      "delete": "Xóa",
+      "deleteTitle": "Xóa quiz",
+      "questions": "Câu hỏi",
+      "attempts": "Lượt làm",
+      "best": "Tốt nhất",
+      "from": "Từ: {{sessions}}",
+      "noSource": "—",
+      "open": "Mở quiz"
+    }
+  },
+  "detail": {
+    "loading": "Đang tải quiz…",
+    "backLink": "Về danh sách Quiz",
+    "notFoundTitle": "Không tìm thấy quiz",
+    "notFoundBody": "Quiz bạn tìm không tồn tại.",
+    "fromSession": "Từ phiên: ",
+    "retake": "Làm lại quiz",
+    "start": "Bắt đầu quiz"
+  },
+  "history": {
+    "title": "Lịch sử làm bài",
+    "sortedByNewest": "Sắp xếp theo mới nhất",
+    "emptyTitle": "Chưa có lượt làm bài nào",
+    "emptyBody": "Làm bài lần đầu để bắt đầu xây dựng lịch sử điểm số tại đây.",
+    "attemptBadge": "#{{number}}",
+    "attemptLabel": "Lượt {{number}}",
+    "scorePercent": "{{percent}}% điểm",
+    "latest": "Mới nhất",
+    "scoreFraction": "{{score}} / {{total}}",
+    "correctMissed": "{{correct}} đúng, {{missed}} sai",
+    "reviewAttempt": "Xem lại lượt làm"
+  },
+  "stats": {
+    "totalQuestions": "Tổng số câu hỏi",
+    "items": "câu",
+    "totalAttempts": "Tổng lượt làm",
+    "completed": "đã hoàn thành",
+    "bestScore": "Điểm cao nhất",
+    "averageScore": "Điểm trung bình",
+    "avg": "trung bình",
+    "trajectory": {
+      "title": "Tiến bộ theo thời gian",
+      "paceImproved": "Tốc độ hoàn thành của bạn nhanh hơn <bold>{{duration}}</bold> so với lượt làm đầu tiên, với độ chính xác {{trend}} từ {{firstPercent}}% lên {{lastPercent}}%.",
+      "acrossAttempts": "Qua {{count}} lượt làm, độ chính xác của bạn {{trend}} từ {{firstPercent}}% lên {{lastPercent}}%.",
+      "increasing": "đang tăng",
+      "increased": "đã tăng",
+      "moving": "đang thay đổi",
+      "moved": "đã thay đổi",
+      "netLine": "{{sign}}{{value}}% {{label}} ròng",
+      "netGain": "Tăng",
+      "netChange": "Thay đổi"
+    }
+  },
+  "create": {
+    "title": "Tạo quiz mới",
+    "step": "Bước {{current}}/{{total}}",
+    "sessions": {
+      "label": "Chọn phiên học",
+      "hint": "Các thẻ từ những phiên đã chọn sẽ được dùng để tạo quiz",
+      "cardsCount_one": "{{count}} thẻ",
+      "cardsCount_other": "{{count}} thẻ"
+    },
+    "count": {
+      "label": "Số lượng câu hỏi",
+      "loadingCapacity": "Đang tải sức chứa...",
+      "available": "{{cards}} thẻ khả dụng · tối đa {{max}} câu hỏi",
+      "all": "Tất cả",
+      "custom": "Tùy chỉnh",
+      "placeholder": "Nhập số lượng câu hỏi",
+      "maxError": "Số câu hỏi tối đa: {{max}}"
+    },
+    "types": {
+      "label": "Loại câu hỏi",
+      "hint": "Chọn các loại câu hỏi muốn đưa vào",
+      "cardsCount_one": "{{count}} thẻ",
+      "cardsCount_other": "{{count}} thẻ",
+      "aiNote": "Quiz sẽ được AI tạo ở chế độ nền và mất khoảng 10–40 giây. Bạn có thể đóng cửa sổ này; quiz sẽ tự động xuất hiện trong danh sách khi sẵn sàng. Câu hỏi và giải thích do AI tạo đôi khi có thể có sai sót.",
+      "explanationLanguage": {
+        "label": "Ngôn ngữ giải thích",
+        "hint": "Ngôn ngữ AI dùng để giải thích từng đáp án. Câu hỏi và các phương án vẫn bằng tiếng Anh."
+      }
+    },
+    "name": {
+      "label": "Tên quiz",
+      "placeholder": "ví dụ: Từ vựng TOEFL",
+      "summary": "Tóm tắt",
+      "questionsCount_one": "{{count}} câu hỏi",
+      "questionsCount_other": "{{count}} câu hỏi",
+      "from": "từ {{sessions}}"
+    },
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "create": "Tạo quiz",
+    "creating": "Đang tạo...",
+    "createError": "Không thể tạo quiz."
+  },
+  "take": {
+    "loading": "Đang tải quiz…",
+    "backLink": "Về danh sách quiz",
+    "errorTitle": "Lỗi",
+    "notFoundTitle": "Không tìm thấy quiz",
+    "startError": "Không thể bắt đầu quiz. Vui lòng thử lại.",
+    "notFoundBody": "Quiz bạn tìm không tồn tại hoặc không có câu hỏi nào.",
+    "saveAnswerError": "Không thể lưu câu trả lời đó.",
+    "submitError": "Không thể nộp bài. Vui lòng thử lại.",
+    "exit": "Thoát",
+    "question": {
+      "progress": "Câu {{current}}/{{total}}",
+      "percentCompleted": "Hoàn thành {{percent}}%",
+      "finish": "Hoàn thành quiz",
+      "next": "Câu tiếp theo",
+      "correctMessages": [
+        "Chính xác!",
+        "Tốt lắm!",
+        "Làm tốt lắm!",
+        "Chuẩn không cần chỉnh!",
+        "Đúng rồi!",
+        "Xuất sắc!",
+        "Giỏi lắm!",
+        "Bạn làm được rồi!",
+        "Hoàn hảo!",
+        "Quá đỉnh!"
+      ],
+      "wrongMessages": [
+        "Chưa đúng",
+        "Gần đúng rồi",
+        "Sát nút",
+        "Cố lên",
+        "Chưa phải lần này",
+        "Không phải đáp án đó",
+        "Suýt nữa!",
+        "Tiếp tục cố gắng",
+        "Đừng lo, câu tiếp theo là của bạn",
+        "Hãy rút kinh nghiệm từ câu này"
+      ]
+    }
+  },
+  "review": {
+    "backToQuizzes": "Về danh sách quiz",
+    "backToQuiz": "Về quiz",
+    "loading": "Đang tải kết quả…",
+    "errorTitle": "Lỗi",
+    "notFoundTitle": "Không tìm thấy kết quả",
+    "loadError": "Không thể tải kết quả. Vui lòng thử lại.",
+    "notFoundBody": "Kết quả bạn tìm không tồn tại.",
+    "scoreLine": "{{score}} / {{total}} đúng · {{percent}}%",
+    "finishedIn": "Hoàn thành trong {{duration}} · {{date}}",
+    "heading": "Xem lại ({{count}})",
+    "notAnswered": "Chưa trả lời",
+    "correctAnswer": "Đáp án đúng:",
+    "yourAnswer": "Câu trả lời của bạn:"
+  }
+}

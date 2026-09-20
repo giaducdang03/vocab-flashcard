@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import { Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { ArrowRight, Home, Sparkles } from 'lucide-react';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { api, API_BASE_URL } from '../api/client';
 import { apiErrorMessage } from '../api/errors';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 export default function AuthPage() {
+  const { t } = useTranslation('auth');
   const navigate = useNavigate();
   const location = useLocation();
   const { login, register, isLoading, user } = useAuth();
@@ -48,7 +51,7 @@ export default function AuthPage() {
   }, [location]);
 
   if (isLoading) {
-    return <div className="app-shell center-block">Loading...</div>;
+    return <div className="app-shell center-block">{t('callback.processing')}</div>;
   }
 
   if (user) {
@@ -69,7 +72,7 @@ export default function AuthPage() {
 
       navigate('/', { replace: true });
     } catch (err) {
-      setError(apiErrorMessage(err, 'Authentication failed. Please try again.'));
+      setError(apiErrorMessage(err, t('errors.authFailed')));
     } finally {
       setSubmitting(false);
     }
@@ -77,27 +80,36 @@ export default function AuthPage() {
 
   return (
     <div className="app-shell auth-shell">
+      <Link to="/" className="auth-back-link">
+        <Home size={16} />
+        <span>{t('backToLanding')}</span>
+      </Link>
+
+      <div className="auth-lang-switcher" style={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}>
+        <LanguageSwitcher />
+      </div>
+
       <div className="auth-panel">
         <div className="brand-block">
-          <img src="/favicon.ico" alt="VocabFlash" className="brand-logo" />
+          <img src="/favicon.ico" alt={t('brand.name')} className="brand-logo" />
           <div>
-            <p className="eyebrow">VocabFlash</p>
-            <h1>Build vocabulary sessions that stick.</h1>
+            <p className="eyebrow">{t('brand.name')}</p>
+            <h1>{t('brand.tagline')}</h1>
           </div>
         </div>
 
         <div className="feature-list">
           <div className="feature-inline">
             <Sparkles size={18} />
-            <span>Weekly study loops</span>
+            <span>{t('features.weeklyLoops')}</span>
           </div>
           <div className="feature-inline">
             <Sparkles size={18} />
-            <span>Session-based memorization</span>
+            <span>{t('features.sessionMemorization')}</span>
           </div>
           <div className="feature-inline">
             <Sparkles size={18} />
-            <span>Fast review with spaced recall</span>
+            <span>{t('features.fastReview')}</span>
           </div>
         </div>
       </div>
@@ -110,47 +122,47 @@ export default function AuthPage() {
               className={isRegister ? 'tab-button' : 'tab-button active'}
               onClick={() => setIsRegister(false)}
             >
-              Login
+              {t('login.tab')}
             </button>
             <button
               type="button"
               className={isRegister ? 'tab-button active' : 'tab-button'}
               onClick={() => setIsRegister(true)}
             >
-              Register
+              {t('register.tab')}
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="stack-form">
             {isRegister && (
               <label className="field-group">
-                <span>Display name</span>
+                <span>{t('field.displayName')}</span>
                 <input
                   value={form.display_name}
                   onChange={(event) => setForm({ ...form, display_name: event.target.value })}
-                  placeholder="Your name"
+                  placeholder={t('field.displayNamePlaceholder')}
                 />
               </label>
             )}
 
             <label className="field-group">
-              <span>Email</span>
+              <span>{t('field.email')}</span>
               <input
                 type="email"
                 value={form.email}
                 onChange={(event) => setForm({ ...form, email: event.target.value })}
-                placeholder="you@example.com"
+                placeholder={t('field.emailPlaceholder')}
                 required
               />
             </label>
 
             <label className="field-group">
-              <span>Password</span>
+              <span>{t('field.password')}</span>
               <input
                 type="password"
                 value={form.password}
                 onChange={(event) => setForm({ ...form, password: event.target.value })}
-                placeholder="••••••••"
+                placeholder={t('field.passwordPlaceholder')}
                 required
               />
             </label>
@@ -158,14 +170,20 @@ export default function AuthPage() {
             {error && <div className="inline-error">{error}</div>}
 
             <button type="submit" className="btn btn-primary wide" disabled={submitting}>
-              {submitting ? 'Please wait...' : isRegister ? 'Create account' : 'Sign in'}
+              {submitting
+                ? isRegister
+                  ? t('register.submitting')
+                  : t('login.submitting')
+                : isRegister
+                  ? t('register.submit')
+                  : t('login.submit')}
               <ArrowRight size={16} />
             </button>
           </form>
 
           {googleEnabled && (
             <>
-              <div className="divider-text">or</div>
+              <div className="divider-text">{t('login.or')}</div>
               <button
                 type="button"
                 className="btn btn-secondary wide btn-google"
@@ -191,7 +209,7 @@ export default function AuthPage() {
                     d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .95 4.97l3 2.33C4.66 5.17 6.65 3.58 9 3.58z"
                   />
                 </svg>
-                Sign in with Google
+                {t('login.googleCta')}
               </button>
             </>
           )}

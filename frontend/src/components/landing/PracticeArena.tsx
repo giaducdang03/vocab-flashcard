@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BadgeCheck, Check, CheckCircle2, Terminal } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const OPTIONS = [
   { text: 'đông đúc, tắc nghẽn', correct: false },
@@ -8,22 +9,10 @@ const OPTIONS = [
   { text: 'tắc nghẽn giao thông', correct: false },
 ];
 
-const FEATURES = [
-  {
-    title: 'Directional testing:',
-    body: 'Toggle between English-to-Vietnamese, Vietnamese-to-English, or nuance synonym matching.',
-  },
-  {
-    title: 'Keyboard-first speed:',
-    body: 'Press keys 1, 2, 3, or 4 for instantaneous, fluid testing workflows.',
-  },
-  {
-    title: 'Mistake-driven recycling:',
-    body: 'Incorrect selections are queued back into the active review box.',
-  },
-];
+const FEATURE_KEYS = ['directional', 'keyboard', 'recycling'] as const;
 
 export default function PracticeArena() {
+  const { t } = useTranslation('landing');
   const [selected, setSelected] = useState<number | null>(null);
   const answeredCorrectly = selected !== null && OPTIONS[selected].correct;
 
@@ -36,29 +25,23 @@ export default function PracticeArena() {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
             <span className="mb-2 block text-caption-uppercase font-semibold tracking-wider text-primary">
-              PRACTICE ARENA
+              {t('arena.eyebrow')}
             </span>
-            <h2 className="mb-4 text-headline-lg tracking-tight text-ink">
-              Zero friction, 4-option verification.
-            </h2>
-            <p className="mb-6 text-body-md leading-relaxed text-body">
-              Test yourself with precision. Answers are verified in milliseconds, providing the phonetic
-              transcription alongside contextual feedback so you learn the nuance, not just the
-              translation.
-            </p>
+            <h2 className="mb-4 text-headline-lg tracking-tight text-ink">{t('arena.title')}</h2>
+            <p className="mb-6 text-body-md leading-relaxed text-body">{t('arena.description')}</p>
             <ul className="mb-8 space-y-3 text-body-sm text-ink">
-              {FEATURES.map((feature) => (
-                <li key={feature.title} className="flex items-start gap-2.5">
+              {FEATURE_KEYS.map((key) => (
+                <li key={key} className="flex items-start gap-2.5">
                   <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-secondary" />
                   <span>
-                    <strong>{feature.title}</strong> {feature.body}
+                    <strong>{t(`arena.features.${key}.title`)}</strong> {t(`arena.features.${key}.body`)}
                   </span>
                 </li>
               ))}
             </ul>
             <div className="inline-flex items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3 py-2 font-mono text-code-sm text-body">
               <Terminal size={16} className="text-muted" />
-              <span>Try selecting the correct meaning in the live card →</span>
+              <span>{t('arena.tryPrompt')}</span>
             </div>
           </div>
 
@@ -67,19 +50,23 @@ export default function PracticeArena() {
               <div className="mb-6 flex items-center justify-between border-b border-hairline pb-4">
                 <div className="flex items-center gap-2">
                   <span className="rounded bg-surface-container px-2 py-1 text-caption-uppercase font-medium text-ink">
-                    MODE: EN → VI
+                    {t('arena.modeLabel')}
                   </span>
-                  <span className="hidden font-mono text-code-sm text-muted sm:inline">Question 1 of 5</span>
+                  <span className="hidden font-mono text-code-sm text-muted sm:inline">
+                    {t('arena.questionProgress', { current: 1, total: 5 })}
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-code-sm font-medium text-secondary">Score: 4/4</span>
+                  <span className="font-mono text-code-sm font-medium text-secondary">
+                    {t('arena.score', { score: '4/4' })}
+                  </span>
                   <span className="h-1.5 w-1.5 rounded-full bg-hairline-strong" />
                   <button
                     type="button"
                     onClick={() => setSelected(null)}
                     className="text-button text-muted transition-colors hover:text-ink"
                   >
-                    Reset
+                    {t('arena.reset')}
                   </button>
                 </div>
               </div>
@@ -90,9 +77,7 @@ export default function PracticeArena() {
                   <span className="font-mono text-code-phonetic text-muted">/faɪˈnæn.ʃəl.i/</span>
                   <span className="text-caption-uppercase text-muted-soft">(adv)</span>
                 </div>
-                <p className="text-body-sm text-body">
-                  Select the most accurate Vietnamese contextual translation for this word:
-                </p>
+                <p className="text-body-sm text-body">{t('arena.prompt')}</p>
               </div>
 
               <div className="space-y-2.5">
@@ -120,10 +105,10 @@ export default function PracticeArena() {
                       {isSelected &&
                         (option.correct ? (
                           <span className="flex items-center gap-1 text-body-sm font-medium text-secondary">
-                            <Check size={16} /> Correct
+                            <Check size={16} /> {t('arena.correct')}
                           </span>
                         ) : (
-                          <span className="text-body-sm font-medium text-error">Incorrect</span>
+                          <span className="text-body-sm font-medium text-error">{t('arena.incorrect')}</span>
                         ))}
                     </button>
                   );
@@ -134,7 +119,7 @@ export default function PracticeArena() {
                 <div className="mt-4 rounded-xl border border-secondary/20 bg-learned-surface p-4">
                   <div className="mb-1 flex items-center gap-2 text-title-sm text-secondary">
                     <BadgeCheck size={18} />
-                    <span>Spot on. Mastered collocation:</span>
+                    <span>{t('arena.masteredTitle')}</span>
                   </div>
                   <p className="text-body-sm text-ink">
                     “The startup became <strong>financially viable</strong> after their series A expansion.”

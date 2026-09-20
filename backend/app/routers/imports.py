@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.deps import get_current_user
+from app.errors import ErrorCode, api_error
 from app.models.card import Card, Synonym
 from app.models.session import Session
 from app.models.user import User
@@ -21,16 +22,24 @@ async def import_cards(
 ):
     session = await db.get(Session, session_id)
     if not session or session.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+        raise api_error(status.HTTP_404_NOT_FOUND, ErrorCode.SESSION_NOT_FOUND, "Session not found")
 
     if not (file.filename or "").lower().endswith((".csv", ".xlsx")):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only .csv and .xlsx files are allowed")
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.IMPORT_UNSUPPORTED_TYPE,
+            "Only .csv and .xlsx files are allowed",
+        )
 
     contents = await file.read()
     try:
         rows = parse_import_file(contents, file.filename or "")
     except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Failed to parse file: {exc}") from exc
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.IMPORT_PARSE_FAILED,
+            f"Failed to parse file: {exc}",
+        ) from exc
 
     created = 0
     for index, row in enumerate(rows, start=1):

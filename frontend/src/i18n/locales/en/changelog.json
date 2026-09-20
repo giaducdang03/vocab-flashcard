@@ -1,0 +1,20 @@
+{
+  "loading": "Loading…",
+  "title": "What's new in VocabFlash",
+  "subtitle": "A roundup of changes across every release, newest on top.",
+  "empty": "No changelog entries yet.",
+  "roadmap": {
+    "title": "Coming soon to VocabFlash"
+  },
+  "sidebar": {
+    "jumpToLabel": "Jump to a release",
+    "roadmapLink": "What's coming next",
+    "roadmapBadge": "Roadmap",
+    "versioningTitle": "Versioning policy",
+    "versioningBody": "Interface and learning feature updates ship weekly to keep reliability high for learners.",
+    "securityCommitment": "Committed to keeping learner data secure",
+    "feedbackTitle": "Suggest a feature",
+    "feedbackBody": "Want to improve the learning experience or spot something odd?",
+    "feedbackCta": "Send feedback to the author"
+  }
+}

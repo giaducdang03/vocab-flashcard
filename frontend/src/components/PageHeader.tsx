@@ -1,7 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Flame } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { User } from '../types';
 import UserMenu from './UserMenu';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface PageHeaderProps {
   user?: User | null;
@@ -10,14 +12,15 @@ interface PageHeaderProps {
 }
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/' },
-  { label: 'Sessions', path: '/sessions' },
-  { label: 'Quizzes', path: '/quizzes', badge: 'New' },
-];
+  { key: 'dashboard', path: '/' },
+  { key: 'sessions', path: '/sessions' },
+  { key: 'quizzes', path: '/quizzes', badge: true },
+] as const;
 
 export default function PageHeader({ user, onLogout, streakDays }: PageHeaderProps) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useTranslation('nav');
 
   const isActive = (path: string) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path);
@@ -48,10 +51,10 @@ export default function PageHeader({ user, onLogout, streakDays }: PageHeaderPro
                     : 'text-body hover:text-ink'
                 }`}
               >
-                {item.label}
-                {item.badge && (
+                {t(`items.${item.key}`)}
+                {'badge' in item && item.badge && (
                   <span className="rounded-full bg-secondary-container px-1.5 py-0.5 text-caption-uppercase uppercase leading-none text-on-secondary-container">
-                    {item.badge}
+                    {t('badgeNew')}
                   </span>
                 )}
               </button>
@@ -63,9 +66,10 @@ export default function PageHeader({ user, onLogout, streakDays }: PageHeaderPro
           {typeof streakDays === 'number' && streakDays > 0 && (
             <span className="hidden items-center gap-1.5 rounded-full border border-hairline bg-surface-card px-2.5 py-1 font-mono text-code-sm text-ink sm:flex">
               <Flame size={14} className="text-primary" />
-              {streakDays}-day streak
+              {t('streak', { count: streakDays })}
             </span>
           )}
+          <LanguageSwitcher />
           {user && <UserMenu user={user} onLogout={onLogout ?? (() => {})} />}
         </div>
       </div>

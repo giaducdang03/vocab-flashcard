@@ -1,0 +1,159 @@
+{
+  "announcement": {
+    "version": "Phiên bản {{version}}",
+    "description": "Xem chi tiết những thay đổi trong bản cập nhật mới nhất.",
+    "cta": "Xem có gì mới"
+  },
+  "hero": {
+    "badge": "Nắm vững từ vựng với trợ giúp AI",
+    "title": "Xây dựng những buổi học từ vựng ghi nhớ lâu dài.",
+    "description": "Tạo bộ từ vựng của riêng bạn, nắm chắc các từ đồng nghĩa tinh tế với phiên âm IPA chuẩn xác, và khắc sâu trí nhớ qua các bài kiểm tra được AI hiệu chỉnh, không xao nhãng.",
+    "ctaPrimary": "Học miễn phí ngay",
+    "ctaSecondary": "Lật thẻ minh hoạ",
+    "socialProof": "Được tin dùng bởi <1>hơn 1.200</1> nhà nghiên cứu học thuật và thí sinh IELTS 8.0+."
+  },
+  "flashcard": {
+    "flipToWordAria": "Lật thẻ về mặt từ",
+    "flipToMeaningAria": "Lật thẻ về mặt nghĩa",
+    "deckLabel": "BỘ TỪ:",
+    "retention": "{{value}} ghi nhớ",
+    "streak": "Chuỗi {{count}} ngày",
+    "partOfSpeech": {
+      "adjective": "TÍNH TỪ"
+    },
+    "level": "CEFR {{level}} · HỌC THUẬT",
+    "audioAria": "Nghe phát âm",
+    "flipToWord": "Xem mặt từ",
+    "flipToMeaning": "Xem mặt nghĩa",
+    "vietnameseDefinition": "ĐỊNH NGHĨA TIẾNG VIỆT",
+    "regionLabel": "UK / US",
+    "collocationLabel": "Cụm từ IELTS thường dùng",
+    "synonymsLabel": "TỪ ĐỒNG NGHĨA:",
+    "cardProgress": "Thẻ {{current}}/{{total}}",
+    "shortcutFlip": "[Space] Lật thẻ",
+    "shortcutNext": "[→] Tiếp theo",
+    "spacedRepetition": "Lặp lại ngắt quãng: Hộp Leitner {{box}}"
+  },
+  "stats": {
+    "items": {
+      "retention": {
+        "value": "94.2%",
+        "title": "Ghi nhớ sau 30 ngày",
+        "description": "Đo lường qua bài kiểm tra suy giảm trí nhớ chủ động."
+      },
+      "latency": {
+        "value": "< 150ms",
+        "title": "Phản hồi tức thì",
+        "description": "Xác nhận đáp án ngay lập tức kèm hiển thị IPA."
+      },
+      "collocations": {
+        "value": "10.000+",
+        "title": "Cụm từ được ánh xạ",
+        "description": "Chọn lọc riêng cho mục tiêu học thuật và công việc."
+      },
+      "focus": {
+        "value": "0% nhiễu",
+        "title": "Tập trung tuyệt đối",
+        "description": "Không chuông báo, huy hiệu game hoá hay pop-up gây xao nhãng."
+      }
+    }
+  },
+  "pillars": {
+    "eyebrow": "KIẾN TRÚC HỆ THỐNG",
+    "title": "Được thiết kế cho khả năng tập trung, không phải để lướt vô tận.",
+    "description": "Các ứng dụng flashcard truyền thống nhầm lẫn giữa hoạt động hỗn loạn và trí nhớ bền vững. VocabFlash sắp xếp từ vựng của bạn thành các chu trình tiếp thu có kỷ luật, không xao nhãng.",
+    "session": {
+      "label": "TRỤ CỘT 01",
+      "title": "Tập trung theo từng bộ từ",
+      "description": "Nhóm từ vựng theo lĩnh vực học thuật, tiêu chí band IELTS, hoặc danh sách đọc riêng của bạn. Nhập dễ dàng từ file XLSX hay CSV mà không cần định dạng lại.",
+      "activeDeck": "BỘ TỪ ĐANG HỌC",
+      "items": "SỐ THẺ",
+      "cardsCount": "{{count}} thẻ"
+    },
+    "quiz": {
+      "label": "TRỤ CỘT 02",
+      "title": "Kiểm tra 4 lựa chọn tức thì",
+      "descriptionPrefix": "Tự động tạo câu hỏi trắc nghiệm theo ba chiều:",
+      "descriptionSuffix": "và phân biệt từ đồng nghĩa với chấm điểm tức thì.",
+      "generationLabel": "TẠO CÂU HỎI",
+      "autoCalibrated": "Tự động hiệu chỉnh",
+      "modeLabel": "Chế độ phân biệt từ đồng nghĩa",
+      "completed": "Hoàn thành {{done}}/{{total}}"
+    },
+    "learningCurve": {
+      "label": "TRỤ CỘT 03",
+      "title": "Biểu đồ tiến bộ minh bạch",
+      "description": "Theo dõi dữ liệu ghi nhớ hằng ngày dựa trên đường cong Ebbinghaus cải tiến. Phát hiện điểm yếu dai dẳng mà không bị thuật toán mù mờ nắm giữ danh sách từ của bạn.",
+      "telemetryLabel": "DỮ LIỆU GHI NHỚ",
+      "days30": "30 NGÀY",
+      "day1": "Ngày 1 ({{value}})",
+      "day30": "Ngày 30 ({{value}})"
+    }
+  },
+  "howItWorks": {
+    "eyebrow": "KỶ LUẬT BA BƯỚC",
+    "title": "Cách người học nghiêm túc dùng VocabFlash.",
+    "description": "Một quy trình liền mạch, giảm tối đa rào cản giữa việc khám phá một từ học thuật mới và khắc sâu nó vào trí nhớ dài hạn.",
+    "steps": {
+      "capture": {
+        "label": "BƯỚC 01",
+        "title": "Nhập & Thu thập",
+        "description": "Kéo thả file bảng tính hoặc nhập từ trực tiếp. VocabFlash tự động bổ sung phiên âm IPA, từ loại và các từ đồng nghĩa còn thiếu bằng trí tuệ ngôn ngữ.",
+        "parsedStatus": "Đã đọc CSV: {{count}} dòng",
+        "columnMapping": "Ánh xạ cột: [Từ, Từ loại, Ngữ cảnh, Nghĩa]"
+      },
+      "review": {
+        "label": "BƯỚC 02",
+        "title": "Ôn thẻ theo lịch giãn cách",
+        "description": "Vào chế độ học không xao nhãng. Dùng phím tắt để lật, phát âm và đánh giá độ khó. Khoảng lặp Leitner tự động giãn cách các lần ôn tiếp theo để đạt đỉnh ghi nhớ.",
+        "shortcutsActive": "Phím tắt đang bật",
+        "ready": "Sẵn sàng",
+        "shortcutsLegend": "Space = Lật · 1 = Quên · 2 = Khó · 3 = Tốt"
+      },
+      "verify": {
+        "label": "BƯỚC 03",
+        "title": "Thử thách & Xác nhận",
+        "description": "Kết thúc mỗi phiên ôn bằng một bài kiểm tra được hiệu chỉnh. Ghi lại tốc độ học của bạn và chứng kiến vốn từ chủ động biến thành phản xạ tự nhiên lâu dài.",
+        "deckMastery": "Độ thành thạo bộ từ",
+        "masteryValue": "{{value}}",
+        "breakdown": "{{mastered}} Thành thạo · {{review}} Đang ôn · {{new}} Mới"
+      }
+    }
+  },
+  "arena": {
+    "eyebrow": "SÂN LUYỆN TẬP",
+    "title": "Kiểm tra 4 lựa chọn, không rào cản.",
+    "description": "Tự kiểm tra bản thân với độ chính xác cao. Đáp án được xác nhận trong tích tắc, kèm phiên âm và phản hồi theo ngữ cảnh để bạn học được sắc thái, không chỉ nghĩa dịch.",
+    "features": {
+      "directional": {
+        "title": "Kiểm tra hai chiều:",
+        "body": "Chuyển đổi giữa Anh-Việt, Việt-Anh, hoặc phân biệt từ đồng nghĩa."
+      },
+      "keyboard": {
+        "title": "Thao tác nhanh bằng bàn phím:",
+        "body": "Nhấn phím 1, 2, 3 hoặc 4 để làm bài liền mạch, tức thì."
+      },
+      "recycling": {
+        "title": "Tự động ôn lại câu sai:",
+        "body": "Những lựa chọn sai sẽ được đưa trở lại hộp ôn tập đang hoạt động."
+      }
+    },
+    "tryPrompt": "Hãy thử chọn nghĩa đúng ngay trên thẻ minh hoạ bên cạnh →",
+    "modeLabel": "CHẾ ĐỘ: ANH → VIỆT",
+    "questionProgress": "Câu {{current}}/{{total}}",
+    "score": "Điểm: {{score}}",
+    "reset": "Làm lại",
+    "prompt": "Chọn bản dịch tiếng Việt sát nghĩa nhất cho từ này:",
+    "correct": "Chính xác",
+    "incorrect": "Chưa đúng",
+    "masteredTitle": "Chuẩn luôn. Bạn đã nắm được cụm từ:"
+  },
+  "finalCta": {
+    "badge": "BẮT ĐẦU CHỈ TRONG VÀI GIÂY",
+    "title": "Sẵn sàng nâng tầm vốn từ vựng tiếng Anh của bạn?",
+    "description": "Tạo phiên học đầu tiên của riêng bạn trong chưa đầy 30 giây. Không cài đặt rườm rà, không quảng cáo gây xao nhãng.",
+    "ctaPrimary": "Bắt đầu miễn phí",
+    "ctaSecondary": "Khám phá bộ từ học thuật",
+    "footnote": "Gói miễn phí gồm bộ flashcard tuỳ chỉnh không giới hạn và 50 lượt làm giàu từ vựng bằng AI mỗi ngày."
+  }
+}

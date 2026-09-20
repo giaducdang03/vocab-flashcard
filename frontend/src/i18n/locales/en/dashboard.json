@@ -1,0 +1,78 @@
+{
+  "greeting": {
+    "welcomeBack": "Welcome back",
+    "heading": "Great to see you, {{name}}! Let's master something new today.",
+    "reviewHistory": "Review History",
+    "continueSession": "Continue {{title}}",
+    "addSession": "Add session"
+  },
+  "kpi": {
+    "totalWords": "Total words",
+    "totalWordsFootnote_one": "Across {{count}} active session",
+    "totalWordsFootnote_other": "Across {{count}} active sessions",
+    "learned": "Learned",
+    "learnedBadge": "{{percent}}% total",
+    "learnedTodayFootnote_one": "+{{count}} word today",
+    "learnedTodayFootnote_other": "+{{count}} words today",
+    "overallMastery": "Overall mastery",
+    "streak": "Streak",
+    "streakUnit": "days",
+    "streakLoading": "…",
+    "streakUnavailable": "—",
+    "personalBest": "Personal best: {{count}} days"
+  },
+  "charts": {
+    "dailyLearned": {
+      "title": "Words learned per day",
+      "subtitle": "Daily pace tracked across active SRS intervals",
+      "rangeDays": "{{count}} days",
+      "tooltipWord_one": "{{count}} word",
+      "tooltipWord_other": "{{count}} words",
+      "emptyState": "No words marked as learned in the last {{count}} days.",
+      "retentionTip": "Consistent learning improves retention by 4x.",
+      "average": "Avg: {{value}} words/day"
+    },
+    "sessionProgress": {
+      "title": "Progress by session",
+      "subtitle": "Sorted by lowest completion rate",
+      "modules_one": "{{count}} Module",
+      "modules_other": "{{count}} Modules",
+      "empty": "No sessions with cards yet.",
+      "needsAttention": "Needs attention (<50%)",
+      "strongRetention": "Strong retention (≥50%)"
+    }
+  },
+  "stats": {
+    "loadError": "Couldn't load daily stats. Your totals are still accurate."
+  },
+  "empty": {
+    "noStudyData": "No study data yet. Create your first session to start tracking progress."
+  },
+  "page": {
+    "filters": {
+      "all": "All Sessions",
+      "inProgress": "In Progress",
+      "mastered": "Mastered"
+    },
+    "yourSessions": "Your sessions",
+    "sessionsTotal_one": "{{count}} total",
+    "sessionsTotal_other": "{{count}} total",
+    "searchPlaceholder": "Filter decks...",
+    "searchAriaLabel": "Filter sessions by title",
+    "quizzes": "Quizzes",
+    "quizzesNewBadge": "New",
+    "addSession": "Add session",
+    "loading": "Loading sessions…",
+    "emptyTitle": "No sessions yet",
+    "emptyTitleFiltered": "No sessions match this filter",
+    "emptyBody": "Create your first study set to start reviewing vocabulary.",
+    "emptyBodyFiltered": "Try a different filter or clear the search box.",
+    "tip": {
+      "label": "Spaced Repetition Tip:",
+      "body": "Spacing intervals by 24h then 72h cements memory permanence twice as fast as cramming.",
+      "quickAction": "Quick action:",
+      "flip": "to flip",
+      "navigate": "to navigate"
+    }
+  }
+}

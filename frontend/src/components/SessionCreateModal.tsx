@@ -1,4 +1,5 @@
 import { Plus, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type SessionCreateModalProps = {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function SessionCreateModal({
   onSubmit,
   isCreating,
 }: SessionCreateModalProps) {
+  const { t } = useTranslation('session');
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,7 +30,7 @@ export default function SessionCreateModal({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Create new session</h2>
+          <h2>{t('create.session.title')}</h2>
           <button type="button" className="modal-close" onClick={onClose}>
             <X size={18} />
           </button>
@@ -37,11 +39,11 @@ export default function SessionCreateModal({
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 p-7">
           <div className="field-group">
             <label>
-              <span>Session name</span>
+              <span>{t('create.session.nameLabel')}</span>
               <input
                 value={title}
                 onChange={(e) => onTitleChange(e.target.value)}
-                placeholder="e.g., TOEFL Vocabulary"
+                placeholder={t('create.session.namePlaceholder')}
                 autoFocus
               />
             </label>
@@ -54,7 +56,7 @@ export default function SessionCreateModal({
               onClick={onClose}
               disabled={isCreating}
             >
-              Cancel
+              {t('create.session.cancel')}
             </button>
             <button
               type="submit"
@@ -62,7 +64,7 @@ export default function SessionCreateModal({
               disabled={isCreating || !title.trim()}
             >
               <Plus size={16} />
-              {isCreating ? 'Creating...' : 'Create session'}
+              {isCreating ? t('create.session.submitting') : t('create.session.submit')}
             </button>
           </div>
         </form>

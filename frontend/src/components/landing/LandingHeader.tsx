@@ -1,17 +1,20 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { scrollToSection } from './scrollToSection';
+import LanguageSwitcher from '../LanguageSwitcher';
 
 const NAV_ITEMS = [
-  { label: 'Features', id: 'features' },
-  { label: 'Method', id: 'method' },
-  { label: 'Quizzes', id: 'quizzes' },
-  { label: 'Pricing', id: 'pricing' },
-];
+  { key: 'features', id: 'features' },
+  { key: 'method', id: 'method' },
+  { key: 'quizzes', id: 'quizzes' },
+  { key: 'pricing', id: 'pricing' },
+] as const;
 
 export default function LandingHeader() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation('nav');
 
   const handleNavClick = (event: React.MouseEvent, id: string) => {
     event.preventDefault();
@@ -42,28 +45,29 @@ export default function LandingHeader() {
                 onClick={(event) => handleNavClick(event, item.id)}
                 className="text-body-sm text-on-surface-variant transition-colors hover:text-ink"
               >
-                {item.label}
+                {t(`landing.${item.key}`)}
               </a>
             ))}
           </nav>
         </div>
 
         <div className="flex items-center gap-space-md">
+          <LanguageSwitcher />
           <Link
             to="/login"
             className="hidden px-space-xs py-space-sm text-button text-body transition-colors hover:text-ink sm:block"
           >
-            Sign in
+            {t('landing.signIn')}
           </Link>
           <Link
             to="/login"
             className="flex items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-button text-on-primary transition-colors hover:bg-primary-active"
           >
-            Get started
+            {t('landing.getStarted')}
           </Link>
           <Link
             to="/login"
-            aria-label="Sign in"
+            aria-label={t('landing.signIn')}
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary"
           >
             <User size={18} />

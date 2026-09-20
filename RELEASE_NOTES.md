@@ -4,6 +4,42 @@ Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở
 
 ---
 
+## Phiên bản 2.1.1 — 20/09/2026
+### Chọn ngôn ngữ giải thích của AI khi tạo quiz
+
+Khi tạo quiz có câu hỏi do AI sinh, bạn giờ có thể chọn AI giải thích đáp án bằng **tiếng Việt** hoặc **tiếng Anh**.
+
+**Có gì mới**
+
+- **Chọn ngôn ngữ giải thích:** Ở bước chọn dạng câu hỏi, khi bạn chọn ít nhất một dạng do AI tạo sẽ hiện thêm ô chọn "Tiếng Việt" / "English". Lựa chọn cũng được nhắc lại ở bước cuối trước khi tạo quiz.
+- **Mặc định theo giao diện:** Ô này tự chọn sẵn theo ngôn ngữ giao diện bạn đang dùng, bạn vẫn đổi được bất cứ lúc nào trước khi tạo.
+- **Thử lại vẫn đúng ngôn ngữ:** Nếu quiz tạo thất bại rồi bạn bấm thử lại, quiz vẫn được sinh theo ngôn ngữ đã chọn.
+
+**Lưu ý**
+
+- Câu hỏi và các phương án trả lời vẫn luôn bằng tiếng Anh; lựa chọn này chỉ áp dụng cho phần giải thích.
+- Các quiz đã tạo trước đây giữ nguyên phần giải thích bằng tiếng Việt.
+
+---
+
+## Phiên bản 2.1.0 — 20/09/2026
+### Giao diện song ngữ Anh – Việt
+
+VocabFlash giờ có thể dùng hoàn toàn bằng **tiếng Anh**, không chỉ tiếng Việt như trước. Đổi ngôn ngữ ngay trong app, không cần cài lại hay đổi trình duyệt.
+
+**Có gì mới**
+
+- **Chuyển ngôn ngữ tức thì:** Nút chuyển ngôn ngữ (cờ Anh/Việt) ở góc header và trang giới thiệu — bấm là đổi toàn bộ giao diện ngay lập tức, không cần tải lại trang.
+- **Ghi nhớ lựa chọn:** Ngôn ngữ bạn chọn được lưu lại, lần sau mở app vẫn giữ nguyên. Máy mới hoặc chưa từng chọn thì mặc định là tiếng Anh.
+- **Phủ toàn bộ hành trình chính:** Trang giới thiệu, đăng nhập/đăng ký, tổng quan, bộ thẻ, chế độ học, luyện nhanh, đề quiz (tạo/làm/xem lại), changelog và các thông báo lỗi từ hệ thống — tất cả đều đổi theo ngôn ngữ đã chọn.
+- **Thông báo lỗi rõ ràng ở cả hai ngôn ngữ:** Lỗi từ máy chủ (sai mật khẩu, hết hạn mức AI, quiz chưa đủ thẻ...) hiện đúng ngôn ngữ giao diện thay vì luôn bằng một thứ tiếng.
+
+**Lưu ý**
+
+- Khu vực quản trị viên và nội dung do AI sinh ra (câu hỏi, giải thích) giữ nguyên như cũ, không đổi theo lựa chọn ngôn ngữ — đây là chủ đích, không phải thiếu sót.
+
+---
+
 ## Phiên bản 2.0.1 — 19/09/2026
 ### Cải thiện tính năng Quiz (Bài kiểm tra)
 

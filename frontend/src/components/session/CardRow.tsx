@@ -1,4 +1,5 @@
 import { CheckCircle2, Circle, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Card } from '../../types';
 
 type CardRowProps = {
@@ -11,6 +12,7 @@ type CardRowProps = {
 };
 
 export default function CardRow({ card, index, selected, onToggleSelect, onToggleLearned, onDelete }: CardRowProps) {
+  const { t } = useTranslation('session');
   const isCollocation = card.card_type === 'collocation';
 
   return (
@@ -26,14 +28,14 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
             checked={selected}
             onChange={() => onToggleSelect(card.id)}
             className="h-4 w-4 cursor-pointer rounded text-primary focus:ring-0"
-            aria-label={`Select ${card.front_text}`}
+            aria-label={t('card.row.selectAria', { word: card.front_text })}
           />
           <span
             className={`inline-flex items-center rounded px-2.5 py-0.5 text-caption-uppercase font-bold uppercase tracking-wide text-surface-card ${
               isCollocation ? 'bg-tertiary' : 'bg-ink'
             }`}
           >
-            {isCollocation ? 'Collocation' : 'Vocab'}
+            {isCollocation ? t('card.row.collocation') : t('card.row.vocab')}
           </span>
           <span className="font-mono text-code-sm text-muted">#{String(index + 1).padStart(2, '0')}</span>
         </div>
@@ -49,13 +51,13 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
             }`}
           >
             {card.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} className="text-muted" />}
-            {card.is_learned ? 'Learned' : 'Mark learned'}
+            {card.is_learned ? t('card.row.learned') : t('card.row.markLearned')}
           </button>
 
           <button
             type="button"
             onClick={() => onDelete(card.id)}
-            title="Delete card"
+            title={t('card.row.deleteTitle')}
             className="rounded-lg p-1.5 text-muted transition-colors hover:text-error"
           >
             <Trash2 size={16} />
@@ -66,7 +68,7 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
       <div className="mt-4 grid grid-cols-1 items-baseline gap-6 md:grid-cols-12">
         <div className="space-y-1 md:col-span-6">
           <span className="text-[11px] uppercase tracking-wider text-muted">
-            {isCollocation ? 'Collocation phrase' : 'Front'}
+            {isCollocation ? t('card.row.collocationPhrase') : t('card.row.front')}
           </span>
           <div className="flex flex-wrap items-baseline gap-2.5">
             <h3 className="text-title-md font-semibold text-ink">{card.front_text}</h3>
@@ -82,7 +84,7 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
                   key={synonym.id}
                   className="inline-flex items-center gap-1 rounded-lg bg-canvas-soft px-2.5 py-1 text-body-sm"
                 >
-                  <span className="text-muted">syn:</span>
+                  <span className="text-muted">{t('card.row.synPrefix')}</span>
                   <strong className="font-medium text-ink">{synonym.word}</strong>
                   {synonym.phonetic && (
                     <span className="font-mono text-code-sm text-muted">/{synonym.phonetic}/</span>
@@ -95,13 +97,13 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
 
         <div className="space-y-1 md:col-span-6">
           <span className="text-[11px] uppercase tracking-wider text-muted">
-            {isCollocation ? 'Vietnamese definition & context' : 'Back'}
+            {isCollocation ? t('card.row.vietnameseDefinition') : t('card.row.back')}
           </span>
           <p className="text-title-md text-ink">{card.back_text}</p>
           {card.example &&
             (isCollocation ? (
               <div className="mt-2 rounded-lg bg-canvas p-3 text-body-sm text-ink">
-                <span className="font-semibold text-primary">Example: </span>
+                <span className="font-semibold text-primary">{t('card.row.exampleLabel')}</span>
                 {card.example}
               </div>
             ) : (

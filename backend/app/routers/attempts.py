@@ -1,12 +1,13 @@
 import json
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.deps import get_current_user
+from app.errors import ErrorCode, api_error
 from app.models.quiz import Quiz, QuizAnswer, QuizAttempt, QuizQuestion
 from app.models.user import User
 from app.schemas.quiz import (
@@ -33,9 +34,10 @@ async def _get_owned_attempt(
     attempt = result.scalar_one_or_none()
 
     if not attempt:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Attempt not found",
+        raise api_error(
+            status.HTTP_404_NOT_FOUND,
+            ErrorCode.ATTEMPT_NOT_FOUND,
+            "Attempt not found",
         )
 
     return attempt
@@ -54,9 +56,10 @@ async def submit_answer(
 
     # Check if attempt is already submitted
     if attempt.submitted_at is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Attempt already submitted",
+        raise api_error(
+            status.HTTP_409_CONFLICT,
+            ErrorCode.ATTEMPT_ALREADY_SUBMITTED,
+            "Attempt already submitted",
         )
 
     # Fetch and validate question belongs to quiz
@@ -69,9 +72,10 @@ async def submit_answer(
     question = result.scalar_one_or_none()
 
     if not question:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Question not found in this quiz",
+        raise api_error(
+            status.HTTP_404_NOT_FOUND,
+            ErrorCode.QUESTION_NOT_IN_QUIZ,
+            "Question not found in this quiz",
         )
 
     # Check for duplicate answer (unique constraint on attempt_id, question_id)
@@ -84,9 +88,10 @@ async def submit_answer(
     existing_answer = result.scalar_one_or_none()
 
     if existing_answer:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Question already answered",
+        raise api_error(
+            status.HTTP_409_CONFLICT,
+            ErrorCode.QUESTION_ALREADY_ANSWERED,
+            "Question already answered",
         )
 
     # Determine if answer is correct
@@ -127,9 +132,10 @@ async def submit_attempt(
 
     # Check if already submitted
     if attempt.submitted_at is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Attempt already submitted",
+        raise api_error(
+            status.HTTP_409_CONFLICT,
+            ErrorCode.ATTEMPT_ALREADY_SUBMITTED,
+            "Attempt already submitted",
         )
 
     # Get all questions in the quiz
@@ -184,9 +190,10 @@ async def review_attempt(
 
     # Check if attempt is submitted
     if attempt.submitted_at is None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Attempt not yet submitted",
+        raise api_error(
+            status.HTTP_409_CONFLICT,
+            ErrorCode.ATTEMPT_NOT_SUBMITTED,
+            "Attempt not yet submitted",
         )
 
     # Fetch quiz for title
@@ -194,9 +201,10 @@ async def review_attempt(
     quiz = result.scalar_one_or_none()
 
     if not quiz:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Quiz not found",
+        raise api_error(
+            status.HTTP_404_NOT_FOUND,
+            ErrorCode.QUIZ_NOT_FOUND,
+            "Quiz not found",
         )
 
     # Fetch all questions for the quiz

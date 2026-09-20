@@ -1,13 +1,14 @@
 import json
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database import AsyncSessionLocal, get_db
 from app.deps import get_current_user
+from app.errors import ErrorCode, api_error
 from app.models.card import Card, Synonym
 from app.models.quiz import Quiz, QuizAttempt, QuizQuestion, QuizSourceSession
 from app.models.session import Session
@@ -53,9 +54,10 @@ async def _load_user_sessions(
     sessions = result.scalars().all()
 
     if len(sessions) != len(session_ids):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Session not found",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.SESSION_NOT_FOUND,
+            "Session not found",
         )
 
     return sessions
@@ -87,9 +89,10 @@ async def _get_owned_quiz(
     quiz = result.scalar_one_or_none()
 
     if not quiz:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Quiz not found",
+        raise api_error(
+            status.HTTP_404_NOT_FOUND,
+            ErrorCode.QUIZ_NOT_FOUND,
+            "Quiz not found",
         )
 
     return quiz
@@ -166,9 +169,11 @@ async def compute_capacity_endpoint(
     cards = await _load_user_cards(db, current_user.id, payload.session_ids)
 
     if len(cards) < MIN_POOL_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Need at least {MIN_POOL_SIZE} cards to generate questions",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_POOL_TOO_SMALL,
+            f"Need at least {MIN_POOL_SIZE} cards to generate questions",
+            min=MIN_POOL_SIZE,
         )
 
     # Compute capacity
@@ -262,7 +267,12 @@ async def run_ai_generation(quiz_id: str) -> None:
             return
 
         result = await generate_ai_questions(
-            provider, cards, ai_types, ai_count, fallback_types
+            provider,
+            cards,
+            ai_types,
+            ai_count,
+            fallback_types,
+            explanation_language=quiz.explanation_language,
         )
 
         _add_questions(db, quiz_id, result.questions, algo_count)
@@ -295,18 +305,21 @@ async def create_quiz(
     cards = await _load_user_cards(db, current_user.id, payload.session_ids)
 
     if len(cards) < MIN_POOL_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Need at least {MIN_POOL_SIZE} cards to generate questions",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_POOL_TOO_SMALL,
+            f"Need at least {MIN_POOL_SIZE} cards to generate questions",
+            min=MIN_POOL_SIZE,
         )
 
     ai_types = [t for t in payload.question_types if t in AI_QUESTION_TYPES]
     algo_types = [t for t in payload.question_types if t not in AI_QUESTION_TYPES]
 
     if ai_types and not ai_available():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Tính năng soạn đề bằng AI chưa được bật trên máy chủ",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.AI_DISABLED,
+            "AI quiz generation is not enabled on this server",
         )
 
     if ai_types:
@@ -320,9 +333,10 @@ async def create_quiz(
         generated = generate_questions(cards, algo_types, algo_count)
 
     if not ai_types and not generated:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Could not generate questions with given parameters",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_GENERATION_FAILED,
+            "Could not generate questions with given parameters",
         )
 
     quiz = Quiz(
@@ -330,6 +344,7 @@ async def create_quiz(
         title=payload.title,
         question_types=",".join(payload.question_types),
         requested_count=payload.question_count,
+        explanation_language=payload.explanation_language,
         uses_ai=bool(ai_types),
         status="pending" if ai_types else "ready",
     )
@@ -535,21 +550,24 @@ async def retry_quiz(
     quiz = await _get_owned_quiz(db, quiz_id, current_user.id)
 
     if not quiz.uses_ai:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Chỉ đề có phần AI mới soạn lại được",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_NOT_AI_GENERATED,
+            "Only AI-generated quizzes can be regenerated",
         )
 
     if quiz.status == "pending":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Đề đang được soạn",
+        raise api_error(
+            status.HTTP_400_BAD_REQUEST,
+            ErrorCode.QUIZ_STILL_GENERATING,
+            "Quiz is still being generated",
         )
 
     if quiz.retry_count >= 3:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Đề này đã thử lại quá 3 lần",
+        raise api_error(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            ErrorCode.QUIZ_RETRY_LIMIT,
+            "Retry limit reached for this quiz",
         )
 
     await ai_policy.enforce_enabled(db, current_user.id)

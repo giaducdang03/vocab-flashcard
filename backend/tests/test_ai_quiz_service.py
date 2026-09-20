@@ -135,3 +135,25 @@ class TestGenerateAiQuestions:
         assert len(result.rejected) == 1
         assert len(result.questions) == 3
         assert all(question.source == "algo" for question in result.questions)
+
+    async def test_explanation_language_reaches_the_prompt(self):
+        cards = make_pool(8)
+        provider = FakeProvider(raw=_raw_questions(["card-0"]))
+
+        await generate_ai_questions(
+            provider, cards, ["cloze"], ai_count=1, fallback_types=[],
+            rng=Random(1), explanation_language="en",
+        )
+
+        system, _ = provider.calls[0]
+        assert "Write in English" in system
+
+    async def test_explanations_stay_vietnamese_when_not_specified(self):
+        cards = make_pool(8)
+        provider = FakeProvider(raw=_raw_questions(["card-0"]))
+
+        await generate_ai_questions(
+            provider, cards, ["cloze"], ai_count=1, fallback_types=[], rng=Random(1)
+        )
+
+        assert "Write in Vietnamese" in provider.calls[0][0]

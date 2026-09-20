@@ -1,4 +1,5 @@
 import type { MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MessageSquareWarning, Rocket, ShieldCheck } from 'lucide-react';
 import type { ChangelogVersion } from '../../lib/changelog';
 
@@ -14,6 +15,7 @@ interface ChangelogSidebarProps {
 export const versionAnchor = (version: string) => `v${version.replace(/\./g, '-')}`;
 
 export default function ChangelogSidebar({ versions, activeId, onSelect }: ChangelogSidebarProps) {
+  const { t } = useTranslation('changelog');
   const jumpTo = (event: MouseEvent, id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
@@ -26,7 +28,7 @@ export default function ChangelogSidebar({ versions, activeId, onSelect }: Chang
     <aside className="sticky top-24 hidden space-y-space-md lg:col-span-4 lg:block">
       <div className="rounded-xl bg-surface-card p-5 shadow-sm">
         <div className="mb-space-sm text-caption-uppercase uppercase tracking-wider text-muted">
-          CHUYỂN NHANH ĐẾN BẢN CẬP NHẬT
+          {t('sidebar.jumpToLabel')}
         </div>
         <nav className="flex flex-col space-y-1">
           {versions.map((v) => {
@@ -64,23 +66,21 @@ export default function ChangelogSidebar({ versions, activeId, onSelect }: Chang
           >
             <span className="flex items-center gap-2">
               <Rocket size={14} />
-              Kế hoạch sắp có
+              {t('sidebar.roadmapLink')}
             </span>
-            <span className="text-xs font-semibold">Roadmap</span>
+            <span className="text-xs font-semibold">{t('sidebar.roadmapBadge')}</span>
           </a>
         </nav>
       </div>
 
       <div className="rounded-xl bg-surface-card p-5 shadow-sm">
-        <h4 className="mb-1 text-title-sm text-ink">Quy tắc đặt phiên bản</h4>
+        <h4 className="mb-1 text-title-sm text-ink">{t('sidebar.versioningTitle')}</h4>
         <p className="mb-3 text-xs leading-relaxed text-muted">
-          Các cập
-          nhật giao diện và tính năng học được đóng gói theo tuần để duy trì độ tin cậy cao nhất cho người
-          học.
+          {t('sidebar.versioningBody')}
         </p>
         <div className="flex items-center gap-2 text-xs font-medium text-secondary">
           <ShieldCheck size={16} />
-          <span>Cam kết bảo mật dữ liệu người học</span>
+          <span>{t('sidebar.securityCommitment')}</span>
         </div>
       </div>
 
@@ -88,9 +88,9 @@ export default function ChangelogSidebar({ versions, activeId, onSelect }: Chang
         <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-surface-card text-primary">
           <MessageSquareWarning size={22} />
         </div>
-        <h4 className="mb-1 text-title-sm text-ink">Góp ý tính năng mới</h4>
+        <h4 className="mb-1 text-title-sm text-ink">{t('sidebar.feedbackTitle')}</h4>
         <p className="mb-3 text-xs text-muted">
-          Bạn muốn cải thiện trải nghiệm học hay phát hiện điều bất thường?
+          {t('sidebar.feedbackBody')}
         </p>
         <a
           href={FEEDBACK_URL}
@@ -98,7 +98,7 @@ export default function ChangelogSidebar({ versions, activeId, onSelect }: Chang
           rel="noopener noreferrer"
           className="inline-flex w-full items-center justify-center rounded-lg bg-surface-card px-3 py-2 text-button text-ink transition-colors hover:bg-white"
         >
-          Gửi phản hồi cho tác giả
+          {t('sidebar.feedbackCta')}
         </a>
       </div>
     </aside>

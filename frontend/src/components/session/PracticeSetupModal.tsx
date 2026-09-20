@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Card, PracticePool, QuestionType } from '../../types';
 import { QUESTION_TYPE_LABELS } from '../../types';
 
@@ -11,11 +12,7 @@ type PracticeSetupModalProps = {
   onClose: () => void;
 };
 
-const POOLS: { value: PracticePool; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'unlearned', label: 'Unlearned' },
-  { value: 'learned', label: 'Learned' },
-];
+const POOLS: PracticePool[] = ['all', 'unlearned', 'learned'];
 
 /** Mirrors quiz_generator._is_eligible on the backend, so the count shown
  *  here matches the deck the server actually builds. */
@@ -40,6 +37,7 @@ export default function PracticeSetupModal({
   cards,
   onClose,
 }: PracticeSetupModalProps) {
+  const { t } = useTranslation('session');
   const navigate = useNavigate();
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>([
     'en_to_vi',
@@ -99,9 +97,9 @@ export default function PracticeSetupModal({
 
   const blockedReason =
     selectedTypes.length === 0
-      ? 'Pick at least one question type.'
+      ? t('practice.setup.blockedNoType')
       : questionCount === 0
-        ? 'No cards in this pool match the selected question types.'
+        ? t('practice.setup.blockedNoCards')
         : null;
 
   return (
@@ -109,7 +107,7 @@ export default function PracticeSetupModal({
       <div className="flex max-h-[90vh] w-[90vw] max-w-md flex-col rounded-3xl border border-hairline bg-canvas animate-slideUp">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-hairline px-7 py-6">
-          <h2 className="m-0 text-headline-md font-medium text-ink">Quick practice</h2>
+          <h2 className="m-0 text-headline-md font-medium text-ink">{t('practice.setup.title')}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -123,19 +121,19 @@ export default function PracticeSetupModal({
         <div className="min-h-0 flex-1 space-y-6 overflow-y-auto px-7 py-7">
           {/* Pool Section */}
           <div className="space-y-3">
-            <h3 className="text-body-sm font-semibold text-ink">Cards to practice</h3>
+            <h3 className="text-body-sm font-semibold text-ink">{t('practice.setup.poolsHeading')}</h3>
 
             <div className="flex gap-2">
-              {POOLS.map((option) => {
-                const count = poolCounts[option.value];
+              {POOLS.map((value) => {
+                const count = poolCounts[value];
                 const disabled = count === 0;
-                const active = pool === option.value;
+                const active = pool === value;
 
                 return (
                   <button
-                    key={option.value}
+                    key={value}
                     type="button"
-                    onClick={() => setPool(option.value)}
+                    onClick={() => setPool(value)}
                     disabled={disabled}
                     className={`flex-1 rounded-lg border px-3 py-2 text-body-sm font-medium transition-colors ${
                       active
@@ -143,7 +141,7 @@ export default function PracticeSetupModal({
                         : 'border-hairline bg-surface-card text-ink hover:bg-canvas-soft'
                     } disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface-card`}
                   >
-                    <span className="block">{option.label}</span>
+                    <span className="block">{t(`practice.setup.pool.${value}`)}</span>
                     <span className="block font-mono text-caption text-muted">{count}</span>
                   </button>
                 );
@@ -153,7 +151,7 @@ export default function PracticeSetupModal({
 
           {/* Question Types Section */}
           <div className="space-y-4">
-            <h3 className="text-body-sm font-semibold text-ink">Question types</h3>
+            <h3 className="text-body-sm font-semibold text-ink">{t('practice.setup.typesHeading')}</h3>
 
             <div className="space-y-3">
               {/* EN to VI */}
@@ -168,7 +166,7 @@ export default function PracticeSetupModal({
                   <div className="text-body-sm font-medium text-ink">
                     {QUESTION_TYPE_LABELS.en_to_vi}
                   </div>
-                  <div className="text-caption text-muted">Translate English to Vietnamese</div>
+                  <div className="text-caption text-muted">{t('practice.setup.enToViDesc')}</div>
                 </div>
               </label>
 
@@ -184,7 +182,7 @@ export default function PracticeSetupModal({
                   <div className="text-body-sm font-medium text-ink">
                     {QUESTION_TYPE_LABELS.vi_to_en}
                   </div>
-                  <div className="text-caption text-muted">Translate Vietnamese to English</div>
+                  <div className="text-caption text-muted">{t('practice.setup.viToEnDesc')}</div>
                 </div>
               </label>
 
@@ -203,8 +201,8 @@ export default function PracticeSetupModal({
                   </div>
                   <div className="text-caption text-muted">
                     {hasSynonyms
-                      ? 'Find synonyms for words'
-                      : 'No cards in this pool have synonyms yet'}
+                      ? t('practice.setup.synonymDesc')
+                      : t('practice.setup.synonymUnavailable')}
                   </div>
                 </div>
               </label>
@@ -217,8 +215,7 @@ export default function PracticeSetupModal({
               <div className="text-body-sm text-muted">{blockedReason}</div>
             ) : (
               <div className="text-body-sm text-ink">
-                <span className="font-semibold text-primary">{questionCount}</span> question
-                {questionCount !== 1 ? 's' : ''} in this run
+                {t('practice.setup.questionCount', { count: questionCount })}
               </div>
             )}
           </div>
@@ -231,7 +228,7 @@ export default function PracticeSetupModal({
             onClick={onClose}
             className="rounded-lg border border-hairline px-4 py-2 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
           >
-            Cancel
+            {t('practice.setup.cancel')}
           </button>
           <button
             type="button"
@@ -239,7 +236,7 @@ export default function PracticeSetupModal({
             disabled={!canStart}
             className="rounded-lg bg-primary px-4 py-2 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active disabled:opacity-50"
           >
-            Start practice
+            {t('practice.setup.start')}
           </button>
         </div>
       </div>

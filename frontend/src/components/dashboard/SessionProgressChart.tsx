@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Session } from '../../types';
 
 const MAX_ROWS = 6;
@@ -8,6 +9,7 @@ type SessionProgressChartProps = {
 };
 
 export default function SessionProgressChart({ sessions }: SessionProgressChartProps) {
+  const { t } = useTranslation('dashboard');
   const withCards = sessions.filter((session) => session.total_cards > 0);
 
   const ranked = withCards
@@ -25,18 +27,18 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
     <div className="flex flex-col justify-between rounded-xl border border-hairline bg-surface-card p-space-lg">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
-          <h2 className="m-0 text-title-md text-ink">Progress by session</h2>
-          <p className="m-0 text-body-sm text-muted">Sorted by lowest completion rate</p>
+          <h2 className="m-0 text-title-md text-ink">{t('charts.sessionProgress.title')}</h2>
+          <p className="m-0 text-body-sm text-muted">{t('charts.sessionProgress.subtitle')}</p>
         </div>
         {withCards.length > 0 && (
           <span className="shrink-0 rounded bg-surface-container px-2 py-0.5 text-caption-uppercase text-tertiary">
-            {withCards.length} {withCards.length === 1 ? 'Module' : 'Modules'}
+            {t('charts.sessionProgress.modules', { count: withCards.length })}
           </span>
         )}
       </div>
 
       {ranked.length === 0 ? (
-        <p className="m-0 text-body-sm text-body">No sessions with cards yet.</p>
+        <p className="m-0 text-body-sm text-body">{t('charts.sessionProgress.empty')}</p>
       ) : (
         <>
           <div className="my-auto space-y-4 pt-2">
@@ -71,10 +73,10 @@ export default function SessionProgressChart({ sessions }: SessionProgressChartP
 
           <div className="mt-4 flex items-center justify-between pt-3 font-mono text-code-sm text-muted">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-primary" /> Needs attention (&lt;50%)
+              <span className="h-2 w-2 rounded-full bg-primary" /> {t('charts.sessionProgress.needsAttention')}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-secondary" /> Strong retention (≥50%)
+              <span className="h-2 w-2 rounded-full bg-secondary" /> {t('charts.sessionProgress.strongRetention')}
             </span>
           </div>
         </>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, FolderOpen, Play, Sparkles } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuth } from '../contexts/AuthContext';
 import type { QuizDetail } from '../types';
@@ -14,6 +15,7 @@ const BACK_LINK_CLASS =
   'group inline-flex items-center gap-1.5 text-body-sm text-body transition-colors hover:text-ink';
 
 export default function QuizDetailPage() {
+  const { t } = useTranslation('quiz');
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { id } = useParams();
@@ -61,7 +63,7 @@ export default function QuizDetailPage() {
   }, [id]);
 
   if (loading) {
-    return <div className="app-shell center-block">Loading quiz…</div>;
+    return <div className="app-shell center-block">{t('detail.loading')}</div>;
   }
 
   if (!detail) {
@@ -71,11 +73,11 @@ export default function QuizDetailPage() {
         <main className="mx-auto w-full max-w-5xl px-margin py-space-xl max-sm:px-space-md">
           <Link to="/quizzes" className={BACK_LINK_CLASS}>
             <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
-            Back to Quizzes
+            {t('detail.backLink')}
           </Link>
           <div className="mt-space-lg grid min-h-[180px] place-items-center gap-2 rounded-xl border border-dashed border-hairline-strong bg-canvas-soft p-space-xl text-center">
-            <h3 className="text-title-md text-ink">Quiz not found</h3>
-            <p className="text-body-sm text-body">The quiz you're looking for doesn't exist.</p>
+            <h3 className="text-title-md text-ink">{t('detail.notFoundTitle')}</h3>
+            <p className="text-body-sm text-body">{t('detail.notFoundBody')}</p>
           </div>
         </main>
       </div>
@@ -84,7 +86,7 @@ export default function QuizDetailPage() {
 
   const { quiz, attempts } = detail;
   const hasAttempts = attempts.length > 0;
-  const buttonText = hasAttempts ? 'Retake quiz' : 'Start quiz';
+  const buttonText = hasAttempts ? t('detail.retake') : t('detail.start');
   const uniqueTypes = Array.from(new Set(quiz.question_types));
 
   return (
@@ -94,7 +96,7 @@ export default function QuizDetailPage() {
       <main className="mx-auto w-full max-w-5xl px-margin py-space-xl max-sm:px-space-md">
         <Link to="/quizzes" className={BACK_LINK_CLASS}>
           <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-0.5" />
-          Back to Quizzes
+          {t('detail.backLink')}
         </Link>
 
         {/* Hero */}
@@ -107,7 +109,7 @@ export default function QuizDetailPage() {
                   className="inline-flex items-center gap-1.5 rounded border border-hairline bg-surface-card px-2.5 py-1 font-mono text-code-sm text-body"
                 >
                   <FolderOpen size={15} className="text-muted" />
-                  From session:{' '}
+                  {t('detail.fromSession')}
                   {sessions[title] ? (
                     <Link
                       to={`/sessions/${sessions[title]}`}
@@ -135,7 +137,7 @@ export default function QuizDetailPage() {
                 <span
                   className="ai-chip"
                   style={{ marginLeft: 0, padding: '0.5rem' }}
-                  title="Contains AI-generated questions; may contain mistakes."
+                  title={t('ai.questionsWarning')}
                 >
                   <Sparkles size={20} />
                 </span>
@@ -162,13 +164,15 @@ export default function QuizDetailPage() {
         <div className="mt-space-xl flex flex-col gap-space-sm">
           <div className="flex items-center justify-between pb-space-xs">
             <div className="flex items-center gap-2">
-              <h2 className="text-title-md text-ink">Attempt History</h2>
+              <h2 className="text-title-md text-ink">{t('history.title')}</h2>
               <span className="inline-flex h-5 items-center justify-center rounded-full bg-hairline-soft px-2 font-mono text-[11px] text-muted">
                 {attempts.length}
               </span>
             </div>
             {hasAttempts && (
-              <span className="text-caption-uppercase uppercase text-muted">Sorted by newest</span>
+              <span className="text-caption-uppercase uppercase text-muted">
+                {t('history.sortedByNewest')}
+              </span>
             )}
           </div>
           <AttemptHistory attempts={attempts} />

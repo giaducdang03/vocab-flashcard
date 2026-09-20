@@ -101,11 +101,3 @@ export const formatDuration = (seconds: number | null): string => {
   return minutes > 0 ? `${minutes}m ${rest}s` : `${rest}s`;
 };
 
-export const formatAttemptDate = (dateString: string): string =>
-  new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });

@@ -10,7 +10,11 @@ from typing import Any
 
 from app.config import settings
 from app.services.ai.provider import LLMProvider
-from app.services.ai.quiz_prompt import build_prompt, parse_and_validate
+from app.services.ai.quiz_prompt import (
+    DEFAULT_EXPLANATION_LANGUAGE,
+    build_prompt,
+    parse_and_validate,
+)
 from app.services.quiz_generator import GeneratedQuestion, generate_questions
 
 logger = logging.getLogger(__name__)
@@ -32,6 +36,7 @@ async def generate_ai_questions(
     ai_count: int,
     fallback_types: Sequence[str],
     rng: Random | None = None,
+    explanation_language: str = DEFAULT_EXPLANATION_LANGUAGE,
 ) -> AiGenerationResult:
     """Sinh `ai_count` câu cho các dạng AI, bù phần thiếu bằng thuật toán.
 
@@ -44,6 +49,7 @@ async def generate_ai_questions(
             Rỗng nghĩa là người dùng chỉ chọn dạng AI, khi đó đề chấp nhận
             ngắn hơn yêu cầu.
         rng: Random number generator.
+        explanation_language: Ngôn ngữ lời giải thích của AI ("vi" hoặc "en").
 
     Lỗi của provider được trả về trong `error` chứ không ném ra ngoài, vì hàm
     này chạy trong background task và người gọi cần ghi lý do vào DB.
@@ -55,7 +61,12 @@ async def generate_ai_questions(
 
     try:
         system, user = build_prompt(
-            cards, ai_types, ai_count, settings.AI_MAX_CARDS_PER_PROMPT, rng
+            cards,
+            ai_types,
+            ai_count,
+            settings.AI_MAX_CARDS_PER_PROMPT,
+            rng,
+            explanation_language=explanation_language,
         )
         raw = await provider.complete_json(system, user)
         accepted, rejected = parse_and_validate(raw, cards, ai_types)

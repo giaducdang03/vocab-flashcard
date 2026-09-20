@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import PageHeader from '../components/PageHeader';
 import LandingHeader from '../components/landing/LandingHeader';
@@ -8,6 +9,7 @@ import { loadChangelog, type ChangelogData, type ChangelogVersion } from '../lib
 import { AlertCircle } from 'lucide-react';
 
 export default function ChangelogPage() {
+  const { t } = useTranslation('changelog');
   const { user, logout } = useAuth();
   const [data, setData] = useState<ChangelogData | null>(null);
   const [activeId, setActiveId] = useState<string>('');
@@ -20,7 +22,7 @@ export default function ChangelogPage() {
   }, []);
 
   if (!data) {
-    return <div className="app-shell center-block">Loading…</div>;
+    return <div className="app-shell center-block">{t('loading')}</div>;
   }
 
   return (
@@ -31,25 +33,27 @@ export default function ChangelogPage() {
         <div className="mx-auto max-w-[1120px] px-space-md py-space-xl lg:px-space-xl">
           <div className="mb-space-xl">
             <h1 className="text-display-hero font-normal tracking-tight text-ink mb-space-sm">
-              Có gì mới ở VocabFlash
+              {t('title')}
             </h1>
             <p className="text-body-md text-body leading-relaxed">
-              Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở trên cùng.
+              {t('subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
             {/* Timeline */}
             <div className="lg:col-span-8 space-y-space-xl">
-              {data.versions.map((v) => (
-                <VersionCard key={v.version} version={v} />
-              ))}
+              {data.versions.length === 0 ? (
+                <p className="text-body-sm text-muted">{t('empty')}</p>
+              ) : (
+                data.versions.map((v) => <VersionCard key={v.version} version={v} />)
+              )}
 
               {/* Roadmap */}
               <div id="roadmap" className="scroll-mt-24 rounded-xl border border-hairline bg-surface-card p-space-lg">
                 <div className="flex items-center gap-2 mb-space-md">
                   <AlertCircle className="text-primary" size={24} />
-                  <h2 className="text-headline-lg text-ink">Sắp có trên VocabFlash</h2>
+                  <h2 className="text-headline-lg text-ink">{t('roadmap.title')}</h2>
                 </div>
                 <Markdown content={data.roadmap.replace(/^## .*$/m, '')} />
               </div>
