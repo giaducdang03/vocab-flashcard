@@ -267,7 +267,12 @@ async def run_ai_generation(quiz_id: str) -> None:
             return
 
         result = await generate_ai_questions(
-            provider, cards, ai_types, ai_count, fallback_types
+            provider,
+            cards,
+            ai_types,
+            ai_count,
+            fallback_types,
+            explanation_language=quiz.explanation_language,
         )
 
         _add_questions(db, quiz_id, result.questions, algo_count)
@@ -339,6 +344,7 @@ async def create_quiz(
         title=payload.title,
         question_types=",".join(payload.question_types),
         requested_count=payload.question_count,
+        explanation_language=payload.explanation_language,
         uses_ai=bool(ai_types),
         status="pending" if ai_types else "ready",
     )

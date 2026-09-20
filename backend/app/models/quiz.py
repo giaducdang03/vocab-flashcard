@@ -22,6 +22,7 @@ class Quiz(Base):
     ai_question_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     retry_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     requested_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    explanation_language: Mapped[str] = mapped_column(String(2), nullable=False, default="vi")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
