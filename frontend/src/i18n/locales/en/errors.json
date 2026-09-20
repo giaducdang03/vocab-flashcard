@@ -1,0 +1,45 @@
+{
+  "auth": {
+    "not_authenticated": "You are not signed in.",
+    "invalid_token": "Your session has expired. Please sign in again.",
+    "invalid_credentials": "Incorrect email or password.",
+    "invalid_or_expired_code": "That code is invalid or has expired.",
+    "email_already_registered": "This email is already registered.",
+    "admin_required": "You do not have permission to do that."
+  },
+  "user": {
+    "not_found": "User not found."
+  },
+  "session": {
+    "not_found": "Session not found.",
+    "pool_too_small": "You need at least {{min}} cards to practise."
+  },
+  "card": {
+    "not_found": "Card not found."
+  },
+  "quiz": {
+    "not_found": "Quiz not found.",
+    "pool_too_small": "You need at least {{min}} cards to generate questions.",
+    "no_matching_cards": "No cards match the selected pool.",
+    "not_enough_for_types": "Not enough cards for the selected question types.",
+    "generation_failed": "Could not generate questions with those settings.",
+    "still_generating": "This quiz is still being generated.",
+    "retry_limit": "This quiz has already been retried 3 times.",
+    "not_ai_generated": "Only AI-generated quizzes can be regenerated."
+  },
+  "attempt": {
+    "not_found": "Attempt not found.",
+    "already_submitted": "This attempt has already been submitted.",
+    "not_submitted": "This attempt has not been submitted yet.",
+    "question_not_in_quiz": "That question does not belong to this quiz.",
+    "question_already_answered": "You have already answered this question."
+  },
+  "import": {
+    "unsupported_type": "Only .csv and .xlsx files are allowed.",
+    "parse_failed": "Could not read that file."
+  },
+  "ai": {
+    "disabled": "AI quiz generation is not enabled on this server.",
+    "quota_exceeded": "You have used all {{limit}} AI quiz generations in the last 24 hours."
+  }
+}

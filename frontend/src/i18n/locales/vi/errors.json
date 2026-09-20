@@ -1,0 +1,45 @@
+{
+  "auth": {
+    "not_authenticated": "Bạn chưa đăng nhập.",
+    "invalid_token": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "invalid_credentials": "Email hoặc mật khẩu không đúng.",
+    "invalid_or_expired_code": "Mã không đúng hoặc đã hết hạn.",
+    "email_already_registered": "Email này đã được đăng ký.",
+    "admin_required": "Bạn không có quyền thực hiện thao tác này."
+  },
+  "user": {
+    "not_found": "Không tìm thấy người dùng."
+  },
+  "session": {
+    "not_found": "Không tìm thấy bộ từ.",
+    "pool_too_small": "Cần ít nhất {{min}} thẻ để luyện tập."
+  },
+  "card": {
+    "not_found": "Không tìm thấy thẻ từ."
+  },
+  "quiz": {
+    "not_found": "Không tìm thấy đề.",
+    "pool_too_small": "Cần ít nhất {{min}} thẻ để soạn câu hỏi.",
+    "no_matching_cards": "Không có thẻ nào khớp với nhóm đã chọn.",
+    "not_enough_for_types": "Không đủ thẻ cho các dạng câu hỏi đã chọn.",
+    "generation_failed": "Không soạn được câu hỏi với thiết lập này.",
+    "still_generating": "Đề đang được soạn.",
+    "retry_limit": "Đề này đã thử lại quá 3 lần.",
+    "not_ai_generated": "Chỉ đề có phần AI mới soạn lại được."
+  },
+  "attempt": {
+    "not_found": "Không tìm thấy lượt làm bài.",
+    "already_submitted": "Lượt làm bài này đã nộp rồi.",
+    "not_submitted": "Lượt làm bài này chưa nộp.",
+    "question_not_in_quiz": "Câu hỏi này không thuộc đề đang làm.",
+    "question_already_answered": "Bạn đã trả lời câu này rồi."
+  },
+  "import": {
+    "unsupported_type": "Chỉ chấp nhận tệp .csv và .xlsx.",
+    "parse_failed": "Không đọc được tệp này."
+  },
+  "ai": {
+    "disabled": "Tính năng soạn đề bằng AI chưa được bật trên máy chủ.",
+    "quota_exceeded": "Bạn đã dùng hết {{limit}} lượt soạn đề bằng AI trong 24 giờ qua."
+  }
+}

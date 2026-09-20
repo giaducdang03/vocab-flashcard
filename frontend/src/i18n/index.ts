@@ -17,6 +17,8 @@ import enDashboard from './locales/en/dashboard.json';
 import viDashboard from './locales/vi/dashboard.json';
 import enChangelog from './locales/en/changelog.json';
 import viChangelog from './locales/vi/changelog.json';
+import enErrors from './locales/en/errors.json';
+import viErrors from './locales/vi/errors.json';
 
 export type AppLanguage = 'en' | 'vi';
 
@@ -48,8 +50,8 @@ export function getStoredLanguage(): AppLanguage {
 }
 
 export const resources = {
-  en: { common: enCommon, nav: enNav, landing: enLanding, auth: enAuth, session: enSession, quiz: enQuiz, dashboard: enDashboard, changelog: enChangelog },
-  vi: { common: viCommon, nav: viNav, landing: viLanding, auth: viAuth, session: viSession, quiz: viQuiz, dashboard: viDashboard, changelog: viChangelog },
+  en: { common: enCommon, nav: enNav, landing: enLanding, auth: enAuth, session: enSession, quiz: enQuiz, dashboard: enDashboard, changelog: enChangelog, errors: enErrors },
+  vi: { common: viCommon, nav: viNav, landing: viLanding, auth: viAuth, session: viSession, quiz: viQuiz, dashboard: viDashboard, changelog: viChangelog, errors: viErrors },
 } as const;
 
 void i18n.use(initReactI18next).init({
