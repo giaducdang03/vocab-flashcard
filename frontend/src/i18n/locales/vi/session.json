@@ -1,20 +1,20 @@
 {
   "list": {
     "eyebrow": "Thư viện",
-    "title": "Tất cả sessions",
+    "title": "Tất cả bộ từ",
     "searchPlaceholder": "Lọc bộ thẻ...",
-    "searchAriaLabel": "Lọc session theo tiêu đề",
-    "addSession": "Thêm session",
-    "loading": "Đang tải sessions…",
-    "emptyTitle": "Chưa có session nào",
-    "emptyTitleFiltered": "Không có session khớp tìm kiếm",
+    "searchAriaLabel": "Lọc bộ từ theo tiêu đề",
+    "addSession": "Thêm bộ từ",
+    "loading": "Đang tải bộ từ…",
+    "emptyTitle": "Chưa có bộ từ nào",
+    "emptyTitleFiltered": "Không có bộ từ khớp tìm kiếm",
     "emptyBody": "Tạo bộ học đầu tiên để bắt đầu ôn từ vựng.",
     "emptyBodyFiltered": "Thử một từ khóa tìm kiếm khác."
   },
   "card": {
     "session": {
       "createdLabel": "Tạo {{date}}",
-      "learnedCount": "{{learned}} / {{total}} đã thuộc",
+      "learnedCount": "{{learned}} / {{total}} đã học",
       "review": "Ôn lại",
       "studyNow": "Học ngay",
       "deleteTitle": "Xóa {{title}}"
@@ -23,8 +23,8 @@
       "collocation": "Collocation",
       "vocab": "Vocab",
       "selectAria": "Chọn {{word}}",
-      "markLearned": "Đánh dấu đã thuộc",
-      "learned": "Đã thuộc",
+      "markLearned": "Đánh dấu đã học",
+      "learned": "Đã học",
       "deleteTitle": "Xóa thẻ",
       "front": "Mặt trước",
       "collocationPhrase": "Cụm collocation",
@@ -36,11 +36,11 @@
   },
   "create": {
     "session": {
-      "title": "Tạo session mới",
-      "nameLabel": "Tên session",
+      "title": "Tạo bộ từ mới",
+      "nameLabel": "Tên bộ từ",
       "namePlaceholder": "ví dụ: Từ vựng TOEFL",
       "cancel": "Hủy",
-      "submit": "Tạo session",
+      "submit": "Tạo bộ từ",
       "submitting": "Đang tạo..."
     },
     "card": {
@@ -78,7 +78,7 @@
     "supportedFormats": "Hỗ trợ: .xlsx, .csv",
     "rowCount": "{{count}} dòng",
     "changeFile": "Đổi file",
-    "importCount": "Thao tác này sẽ nhập {{count}} thẻ vào session này.",
+    "importCount": "Thao tác này sẽ nhập {{count}} thẻ vào bộ từ này.",
     "cancel": "Hủy",
     "confirm": "Xác nhận nhập",
     "importing": "Đang nhập...",
@@ -89,11 +89,11 @@
     "errorImportFailed": "Nhập thất bại"
   },
   "study": {
-    "backToDetail": "Chi tiết session",
+    "backToDetail": "Chi tiết bộ từ",
     "filter": {
       "all": "tất cả",
-      "unlearned": "chưa thuộc",
-      "learned": "đã thuộc"
+      "unlearned": "chưa học",
+      "learned": "đã học"
     },
     "backToFirst": "Về thẻ đầu tiên",
     "start": "Bắt đầu",
@@ -116,11 +116,11 @@
     "phonetic": "Phiên âm",
     "synonyms": "Từ đồng nghĩa",
     "example": "Ví dụ",
-    "loading": "Đang tải session…",
-    "notFound": "Không tìm thấy session",
+    "loading": "Đang tải bộ từ…",
+    "notFound": "Không tìm thấy bộ từ",
     "noCardsInFilter": "Không có thẻ nào trong bộ lọc này.",
-    "markLearned": "Đánh dấu đã thuộc",
-    "learned": "Đã thuộc",
+    "markLearned": "Đánh dấu đã học",
+    "learned": "Đã học",
     "flip": "Lật thẻ",
     "flipBack": "Lật lại",
     "playPronunciation": "Phát âm",
@@ -137,17 +137,17 @@
     "building": "Đang tạo bộ luyện tập…",
     "error": "Lỗi",
     "unavailable": "Chưa thể luyện tập",
-    "unavailableBody": "Không thể tạo câu hỏi luyện tập cho session này. Vui lòng thử lại sau.",
+    "unavailableBody": "Không thể tạo câu hỏi luyện tập cho bộ từ này. Vui lòng thử lại sau.",
     "fetchError": "Không tải được bộ luyện tập. Vui lòng thử lại.",
-    "backToSession": "Về session",
+    "backToSession": "Về bộ từ",
     "exit": "Thoát",
     "setup": {
       "title": "Luyện tập nhanh",
       "poolsHeading": "Thẻ để luyện tập",
       "pool": {
         "all": "Tất cả",
-        "unlearned": "Chưa thuộc",
-        "learned": "Đã thuộc"
+        "unlearned": "Chưa học",
+        "learned": "Đã học"
       },
       "typesHeading": "Loại câu hỏi",
       "enToViDesc": "Dịch từ Anh sang Việt",
@@ -167,7 +167,7 @@
       "accuracy": "Độ chính xác",
       "timeSpent": "Thời gian",
       "practiceAgain": "Luyện tập lại",
-      "backToSession": "Về session",
+      "backToSession": "Về bộ từ",
       "byQuestionType": "Theo loại câu hỏi",
       "reviewMissed_one": "Xem lại {{count}} câu sai",
       "reviewMissed_other": "Xem lại {{count}} câu sai",
@@ -184,8 +184,8 @@
       "all": "Tất cả",
       "vocab": "Vocab",
       "collocation": "Collocations",
-      "unlearned": "Chưa thuộc",
-      "learned": "Đã thuộc"
+      "unlearned": "Chưa học",
+      "learned": "Đã học"
     },
     "sortLabel": "Sắp xếp:",
     "sort": {
@@ -198,23 +198,23 @@
     "selectAll": "Chọn tất cả {{count}} mục",
     "selected_one": "Đã chọn {{count}} thẻ",
     "selected_other": "Đã chọn {{count}} thẻ",
-    "markLearned": "Đánh dấu đã thuộc",
+    "markLearned": "Đánh dấu đã học",
     "delete": "Xóa"
   },
   "detail": {
-    "backToSessions": "Sessions",
-    "badge": "Chi tiết session",
+    "backToSessions": "Bộ từ",
+    "badge": "Chi tiết bộ từ",
     "createdLabel": "Tạo {{date}}",
-    "titleFallback": "Session",
+    "titleFallback": "Bộ từ",
     "masteryProgress": "Tiến độ thành thạo",
-    "learnedOf": "{{learned}} / {{total}} đã thuộc",
+    "learnedOf": "{{learned}} / {{total}} đã học",
     "studyDeck": "Học bộ thẻ",
     "quickPractice": "Luyện tập nhanh",
     "import": "Nhập",
     "addCard": "Thêm thẻ",
-    "loading": "Đang tải session…",
+    "loading": "Đang tải bộ từ…",
     "emptyTitle": "Chưa có thẻ nào",
-    "emptyBody": "Thêm flashcard đầu tiên để bắt đầu học session này.",
+    "emptyBody": "Thêm flashcard đầu tiên để bắt đầu học bộ từ này.",
     "emptyFilteredTitle": "Không có thẻ khớp bộ lọc",
     "emptyFilteredBody": "Thử từ khóa khác hoặc bỏ bộ lọc đang chọn.",
     "bulkImportTitle": "Cần thêm nhiều từ cùng lúc?",
