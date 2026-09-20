@@ -15,10 +15,15 @@
     "loading": "Đang tải quiz…",
     "emptyTitle": "Chưa có quiz nào",
     "emptyBody": "Tạo quiz đầu tiên để bắt đầu kiểm tra vốn từ vựng của bạn.",
+    "deleteDialog": {
+      "title": "Xóa quiz này?",
+      "message": "Quiz \"{{title}}\" và lịch sử làm bài của nó sẽ bị xóa vĩnh viễn. Không thể khôi phục."
+    },
     "card": {
       "generating": "AI đang tạo quiz…",
       "generationFailed": "Tạo quiz thất bại.",
       "retry": "Thử lại",
+      "delete": "Xóa",
       "deleteTitle": "Xóa quiz",
       "questions": "Câu hỏi",
       "attempts": "Lượt làm",

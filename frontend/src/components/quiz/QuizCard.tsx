@@ -31,13 +31,15 @@ export default function QuizCard({ quiz, onOpen, onDelete, onRetry }: QuizCardPr
       <article className="quiz-card quiz-card--failed">
         <h3 className="quiz-card__title">{quiz.title}</h3>
         <p className="quiz-card__error">{quiz.error_message ?? t('list.card.generationFailed')}</p>
-        <button
-          type="button"
-          className="btn btn-secondary quiz-card__retry"
-          onClick={() => onRetry(quiz.id)}
-        >
-          {t('list.card.retry')}
-        </button>
+        <div className="quiz-card__actions">
+          <button type="button" className="btn btn-secondary" onClick={() => onRetry(quiz.id)}>
+            {t('list.card.retry')}
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={onDelete}>
+            <Trash2 size={15} />
+            {t('list.card.delete')}
+          </button>
+        </div>
       </article>
     );
   }

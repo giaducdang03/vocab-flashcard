@@ -8,6 +8,7 @@ import type { Quiz, Session } from '../types';
 import QuizCard from '../components/quiz/QuizCard';
 import QuizCreateModal from '../components/quiz/QuizCreateModal';
 import PageHeader from '../components/PageHeader';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useNavigate } from 'react-router-dom';
 import { useQuizPolling } from '../hooks/useQuizPolling';
 
@@ -18,6 +19,8 @@ export default function QuizzesPage() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingDelete, setPendingDelete] = useState<Quiz | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -72,12 +75,18 @@ export default function QuizzesPage() {
     }
   };
 
-  const handleDeleteQuiz = async (quizId: string) => {
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return;
+
+    setDeleting(true);
     try {
-      await api.delete(`/quizzes/${quizId}`);
-      setQuizzes((current) => current.filter((quiz) => quiz.id !== quizId));
+      await api.delete(`/quizzes/${pendingDelete.id}`);
+      setQuizzes((current) => current.filter((quiz) => quiz.id !== pendingDelete.id));
     } catch (err) {
       console.error('Failed to delete quiz:', err);
+    } finally {
+      setDeleting(false);
+      setPendingDelete(null);
     }
   };
 
@@ -138,7 +147,7 @@ export default function QuizzesPage() {
                 key={quiz.id}
                 quiz={quiz}
                 onOpen={() => navigate(`/quizzes/${quiz.id}`)}
-                onDelete={() => handleDeleteQuiz(quiz.id)}
+                onDelete={() => setPendingDelete(quiz)}
                 onRetry={handleRetry}
               />
             ))}
@@ -151,6 +160,17 @@ export default function QuizzesPage() {
         sessions={sessions}
         onClose={() => setShowCreateModal(false)}
         onCreated={handleQuizCreated}
+      />
+
+      <ConfirmDialog
+        isOpen={pendingDelete !== null}
+        title={t('list.deleteDialog.title')}
+        message={t('list.deleteDialog.message', { title: pendingDelete?.title ?? '' })}
+        confirmLabel={t('common:delete')}
+        cancelLabel={t('common:cancel')}
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPendingDelete(null)}
       />
     </div>
   );

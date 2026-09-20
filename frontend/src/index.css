@@ -469,6 +469,12 @@ textarea {
   background: var(--primary-active);
 }
 
+.modal-content--confirm .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .btn-secondary {
   background: var(--surface-card);
   color: var(--ink);
@@ -838,6 +844,25 @@ textarea {
   border-color: var(--primary);
 }
 
+.modal-content--confirm {
+  max-width: 420px;
+}
+
+.confirm-dialog__title {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.confirm-dialog__message {
+  margin: 0;
+  color: var(--body);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 .modal-body {
   padding: 28px;
   flex: 1;
@@ -1198,7 +1223,10 @@ textarea {
   opacity: 0.75;
 }
 
-.quiz-card__retry {
+.quiz-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   align-self: flex-start;
 }
 

@@ -15,10 +15,15 @@
     "loading": "Loading quizzes…",
     "emptyTitle": "No quizzes yet",
     "emptyBody": "Create your first quiz to start testing your vocabulary knowledge.",
+    "deleteDialog": {
+      "title": "Delete this quiz?",
+      "message": "\"{{title}}\" and its attempt history will be permanently deleted. This cannot be undone."
+    },
     "card": {
       "generating": "AI is generating the quiz…",
       "generationFailed": "Quiz generation failed.",
       "retry": "Retry",
+      "delete": "Delete",
       "deleteTitle": "Delete quiz",
       "questions": "Questions",
       "attempts": "Attempts",
