@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { apiErrorMessage } from '../api/errors';
 
 export default function AuthCallbackPage() {
+  const { t } = useTranslation('auth');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { loginWithGoogleCode } = useAuth();
@@ -31,7 +33,7 @@ export default function AuthCallbackPage() {
     if (!code) {
       navigate('/login', {
         replace: true,
-        state: { authError: 'No authorization code provided' },
+        state: { authError: t('errors.noAuthorizationCode') },
       });
       return;
     }
@@ -42,18 +44,19 @@ export default function AuthCallbackPage() {
         await loginWithGoogleCode(code);
         navigate('/', { replace: true });
       } catch (err) {
-        const message = apiErrorMessage(err, 'Sign-in failed. Please try again.');
+        const message = apiErrorMessage(err, t('errors.signInFailed'));
         navigate('/login', {
           replace: true,
           state: { authError: message },
         });
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, loginWithGoogleCode, navigate]);
 
   return (
     <div className="app-shell center-block">
-      <p>Signing you in…</p>
+      <p>{t('callback.processing')}</p>
     </div>
   );
 }

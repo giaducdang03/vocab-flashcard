@@ -7,6 +7,8 @@ import enNav from './locales/en/nav.json';
 import viNav from './locales/vi/nav.json';
 import enLanding from './locales/en/landing.json';
 import viLanding from './locales/vi/landing.json';
+import enAuth from './locales/en/auth.json';
+import viAuth from './locales/vi/auth.json';
 
 export type AppLanguage = 'en' | 'vi';
 
@@ -38,8 +40,8 @@ export function getStoredLanguage(): AppLanguage {
 }
 
 export const resources = {
-  en: { common: enCommon, nav: enNav, landing: enLanding },
-  vi: { common: viCommon, nav: viNav, landing: viLanding },
+  en: { common: enCommon, nav: enNav, landing: enLanding, auth: enAuth },
+  vi: { common: viCommon, nav: viNav, landing: viLanding, auth: viAuth },
 } as const;
 
 void i18n.use(initReactI18next).init({
