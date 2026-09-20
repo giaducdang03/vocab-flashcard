@@ -1,0 +1,20 @@
+{
+  "loading": "Đang tải…",
+  "title": "Có gì mới ở VocabFlash",
+  "subtitle": "Tổng hợp những thay đổi qua từng bản cập nhật, mới nhất ở trên cùng.",
+  "empty": "Chưa có mục nhật ký thay đổi nào.",
+  "roadmap": {
+    "title": "Sắp có trên VocabFlash"
+  },
+  "sidebar": {
+    "jumpToLabel": "Chuyển nhanh đến bản cập nhật",
+    "roadmapLink": "Kế hoạch sắp có",
+    "roadmapBadge": "Roadmap",
+    "versioningTitle": "Quy tắc đặt phiên bản",
+    "versioningBody": "Các cập nhật giao diện và tính năng học được đóng gói theo tuần để duy trì độ tin cậy cao nhất cho người học.",
+    "securityCommitment": "Cam kết bảo mật dữ liệu người học",
+    "feedbackTitle": "Góp ý tính năng mới",
+    "feedbackBody": "Bạn muốn cải thiện trải nghiệm học hay phát hiện điều bất thường?",
+    "feedbackCta": "Gửi phản hồi cho tác giả"
+  }
+}
