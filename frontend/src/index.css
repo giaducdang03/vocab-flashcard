@@ -528,6 +528,15 @@ textarea {
   color: var(--ink);
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .auth-shell {
   display: grid;
   grid-template-columns: 1.08fr 0.92fr;
