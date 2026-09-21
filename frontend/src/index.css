@@ -528,13 +528,15 @@ textarea {
   color: var(--ink);
 }
 
-.no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+@media (max-width: 639.98px) {
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .auth-shell {
