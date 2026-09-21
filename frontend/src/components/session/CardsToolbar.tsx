@@ -48,7 +48,7 @@ export default function CardsToolbar({
             key={key}
             type="button"
             onClick={() => onFilterChange(key)}
-            className={`whitespace-nowrap rounded-full px-3.5 py-2 text-body-sm font-medium transition-colors sm:py-1.5 ${
+            className={`whitespace-nowrap rounded-full px-3.5 py-2.5 text-body-sm font-medium transition-colors sm:py-1.5 ${
               filter === key
                 ? 'bg-ink text-surface-card'
                 : 'border border-hairline bg-surface-card text-body hover:text-ink'
@@ -66,7 +66,7 @@ export default function CardsToolbar({
           <select
             value={sort}
             onChange={(event) => onSortChange(event.target.value as SortKey)}
-            className="flex-1 cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none sm:flex-none"
+            className="h-full flex-1 cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none sm:h-auto sm:flex-initial"
           >
             {SORT_OPTIONS.map((key) => (
               <option key={key} value={key}>
