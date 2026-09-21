@@ -224,7 +224,7 @@ export default function SessionDetailPage() {
                 {detail && <span className="font-mono text-code-sm text-muted">{t('detail.createdLabel', { date: createdLabel })}</span>}
               </div>
 
-              <h1 className="m-0 text-headline-md font-medium tracking-tight text-ink sm:text-headline-lg">
+              <h1 className="m-0 text-headline-md font-medium tracking-tight text-ink sm:text-headline-lg sm:font-medium sm:tracking-tight">
                 {detail?.session.title || t('detail.titleFallback')}
               </h1>
 
