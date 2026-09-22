@@ -364,13 +364,19 @@ export default function StudyPage() {
         <div className="flex flex-wrap items-center justify-between gap-space-sm">
           <Link
             to={`/sessions/${id}`}
-            className="group inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink"
+            className="group order-1 inline-flex items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas-soft hover:text-ink sm:order-none"
           >
             <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" />
             {t('study.backToDetail')}
           </Link>
 
-          <div className="inline-flex items-center gap-space-xs rounded-xl bg-hairline-soft p-1">
+          {/* Forces the filter pills onto their own row below sm, where the
+              back link and toolbar share the first row (see the order-*
+              classes above/below). Invisible and inert from sm up, where the
+              three groups lay out in their original single-row order. */}
+          <div className="order-3 basis-full sm:hidden" aria-hidden="true" />
+
+          <div className="order-4 inline-flex items-center gap-space-xs rounded-xl bg-hairline-soft p-1 sm:order-none">
             {(['all', 'unlearned', 'learned'] as const).map((mode) => (
               <button
                 key={mode}
@@ -399,7 +405,7 @@ export default function StudyPage() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="order-2 flex flex-wrap items-center gap-1.5 sm:order-none">
             <button
               type="button"
               className={TOOL_BUTTON_CLASS}
@@ -553,20 +559,20 @@ export default function StudyPage() {
 
         {/* Study Area */}
         {filteredCards.length === 0 ? (
-          <div className="flex min-h-[440px] items-center justify-center rounded-2xl border border-hairline bg-surface-card">
+          <div className="flex min-h-[360px] items-center justify-center rounded-2xl border border-hairline bg-surface-card sm:min-h-[440px]">
             <p className="text-body-md text-muted">{t('study.noCardsInFilter')}</p>
           </div>
         ) : currentCard ? (
           <div className="flex flex-col gap-space-md">
             <div
-              className="perspective min-h-[440px] cursor-pointer transition-transform duration-500 md:min-h-[480px]"
+              className="perspective min-h-[360px] cursor-pointer transition-transform duration-500 sm:min-h-[440px] md:min-h-[480px]"
               style={{
                 transformStyle: 'preserve-3d',
                 transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
               }}
               onClick={() => setIsFlipped((current) => !current)}
             >
-              <div className="relative h-full min-h-[440px] w-full md:min-h-[480px]" style={{ transformStyle: 'preserve-3d' }}>
+              <div className="relative h-full min-h-[360px] w-full sm:min-h-[440px] md:min-h-[480px]" style={{ transformStyle: 'preserve-3d' }}>
                 {/* Front */}
                 <div
                   className="absolute inset-0 flex h-full flex-col rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
@@ -609,7 +615,7 @@ export default function StudyPage() {
                       {speechSupported && (
                         <button
                           type="button"
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-hairline bg-canvas-soft text-body transition-colors hover:bg-hairline-soft hover:text-ink"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-hairline bg-canvas-soft text-body transition-colors hover:bg-hairline-soft hover:text-ink sm:h-10 sm:w-10"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleSpeak(currentCard.front_text);
@@ -698,7 +704,7 @@ export default function StudyPage() {
             <div className="flex items-center justify-between gap-space-md">
               <button
                 type="button"
-                className="inline-flex items-center gap-space-sm rounded-lg border border-hairline-strong bg-surface-card px-4 py-2.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface-card"
+                className="inline-flex items-center gap-space-sm rounded-lg border border-hairline-strong bg-surface-card px-4 py-1.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface-card sm:py-2.5"
                 disabled={currentIndex === 0}
                 onClick={handlePrev}
               >
@@ -712,7 +718,7 @@ export default function StudyPage() {
 
               <button
                 type="button"
-                className="inline-flex items-center gap-space-sm rounded-lg bg-primary px-5 py-2.5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary"
+                className="inline-flex items-center gap-space-sm rounded-lg bg-primary px-5 py-1.5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary sm:py-2.5"
                 disabled={currentIndex >= filteredCards.length - 1}
                 onClick={handleNext}
               >
@@ -721,8 +727,8 @@ export default function StudyPage() {
               </button>
             </div>
 
-            {/* Keyboard Hints */}
-            <div className="flex justify-center">
+            {/* Keyboard Hints — meaningless on a touchscreen, so hidden below sm. */}
+            <div className="hidden justify-center sm:flex">
               <p className="inline-flex flex-wrap items-center justify-center gap-space-sm rounded-full bg-canvas-soft px-4 py-2 text-body-sm text-muted">
                 <span>💡</span>
                 <span>
