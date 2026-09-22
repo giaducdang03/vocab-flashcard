@@ -634,7 +634,7 @@ export default function StudyPage() {
 
                 {/* Back */}
                 <div
-                  className="absolute inset-0 flex h-full flex-col justify-center overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:p-10"
+                  className="absolute inset-0 flex h-full flex-col justify-start overflow-y-auto rounded-2xl border border-hairline bg-surface-card p-space-lg sm:justify-center sm:p-10"
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="absolute top-space-lg left-space-lg right-space-lg flex items-center justify-between sm:top-10 sm:left-10 sm:right-10">
@@ -666,7 +666,7 @@ export default function StudyPage() {
                     </button>
                   </div>
 
-                  <div className="flex w-full flex-col gap-space-lg">
+                  <div className="flex w-full flex-col gap-space-lg pt-12 sm:pt-0">
                     <h2 className="break-words text-center text-headline-lg text-ink">
                       {currentCard.back_text}
                     </h2>
@@ -674,9 +674,12 @@ export default function StudyPage() {
                     {displayConfig.synonyms && currentCard.synonyms.length > 0 && (
                       <div>
                         <p className={`${EYEBROW_CLASS} mb-2`}>{t('study.synonyms')}</p>
-                        <div className="grid grid-cols-1 gap-space-sm sm:grid-cols-2">
+                        <div className="no-scrollbar flex gap-space-sm overflow-x-auto pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0">
                           {currentCard.synonyms.map((synonym) => (
-                            <div key={synonym.id} className="rounded-xl bg-surface-container p-3">
+                            <div
+                              key={synonym.id}
+                              className="w-36 shrink-0 rounded-xl bg-surface-container p-2.5 sm:w-auto sm:p-3"
+                            >
                               <p className="text-title-sm text-ink">{synonym.word}</p>
                               {synonym.phonetic && (
                                 <p className="mt-1 font-mono text-code-sm text-muted-soft" title={synonym.phonetic}>
@@ -690,7 +693,7 @@ export default function StudyPage() {
                     )}
 
                     {displayConfig.example && currentCard.example && (
-                      <div className="rounded-xl bg-surface-container p-space-md">
+                      <div className="rounded-xl bg-surface-container p-3 sm:p-space-md">
                         <p className={`${EYEBROW_CLASS} mb-2`}>{t('study.example')}</p>
                         <p className="text-body-md leading-relaxed text-ink">{currentCard.example}</p>
                       </div>
