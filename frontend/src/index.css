@@ -87,6 +87,13 @@ textarea {
   gap: 24px;
 }
 
+/* Grid items default to min-width:auto, so a wide non-wrapping child (the filter
+   chip strip) stretches the whole column and scrolls the page sideways on phones.
+   Letting items shrink keeps their own overflow-x handling working. */
+.page-container > * {
+  min-width: 0;
+}
+
 .page-toolbar {
   width: 100%;
   max-width: 1152px;
