@@ -46,8 +46,8 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
             onClick={() => onToggleLearned(card.id, !card.is_learned)}
             className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2.5 text-body-sm font-semibold transition-colors sm:py-1 ${
               card.is_learned
-                ? 'bg-secondary-container text-on-secondary-container'
-                : 'bg-surface-card text-body hover:text-secondary'
+                ? 'text-secondary sm:bg-secondary-container sm:text-on-secondary-container'
+                : 'text-muted hover:text-secondary sm:bg-surface-card sm:text-body'
             }`}
           >
             {card.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} className="text-muted" />}
