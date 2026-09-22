@@ -43,7 +43,7 @@ export default function BulkActionBar({
           type="button"
           onClick={onMarkLearned}
           disabled={!hasSelection}
-          className="inline-flex items-center justify-center gap-1.5 rounded bg-surface-card px-2.5 py-2.5 text-body-sm text-body transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-60 max-sm:flex-1 sm:py-1"
+          className="inline-flex items-center justify-center gap-1.5 rounded bg-surface-card px-2.5 py-1.5 text-body-sm text-body transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-60 max-sm:flex-1 sm:py-1"
         >
           <CheckCircle2 size={16} />
           {t('bulk.markLearned')}
@@ -52,7 +52,7 @@ export default function BulkActionBar({
           type="button"
           onClick={onDelete}
           disabled={!hasSelection}
-          className="inline-flex items-center justify-center gap-1.5 rounded bg-surface-card px-2.5 py-2.5 text-body-sm text-error transition-colors hover:bg-error/10 disabled:cursor-not-allowed disabled:opacity-60 max-sm:flex-1 sm:py-1"
+          className="inline-flex items-center justify-center gap-1.5 rounded bg-surface-card px-2.5 py-1.5 text-body-sm text-error transition-colors hover:bg-error/10 disabled:cursor-not-allowed disabled:opacity-60 max-sm:flex-1 sm:py-1"
         >
           <Trash2 size={16} />
           {t('bulk.delete')}

@@ -48,7 +48,7 @@ export default function CardsToolbar({
             key={key}
             type="button"
             onClick={() => onFilterChange(key)}
-            className={`whitespace-nowrap rounded-full px-3.5 py-2.5 text-body-sm font-medium transition-colors sm:py-1.5 ${
+            className={`whitespace-nowrap rounded-full px-3.5 py-1.5 text-body-sm font-medium transition-colors ${
               filter === key
                 ? 'bg-ink text-surface-card'
                 : 'border border-hairline bg-surface-card text-body hover:text-ink'
@@ -60,13 +60,13 @@ export default function CardsToolbar({
       </div>
 
       <div className="flex w-full items-center gap-2 sm:w-auto sm:self-end md:self-auto">
-        <div className="flex h-11 w-full items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 text-body-sm text-ink sm:h-10 sm:w-auto">
+        <div className="flex h-10 w-full items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 text-body-sm text-ink sm:w-auto">
           <SlidersHorizontal size={16} className="text-muted" />
           <span className="text-muted">{t('toolbar.sortLabel')}</span>
           <select
             value={sort}
             onChange={(event) => onSortChange(event.target.value as SortKey)}
-            className="h-full flex-1 cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none sm:h-auto sm:flex-initial"
+            className="flex-1 cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none sm:flex-initial"
           >
             {SORT_OPTIONS.map((key) => (
               <option key={key} value={key}>

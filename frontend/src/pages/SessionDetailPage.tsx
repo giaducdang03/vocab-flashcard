@@ -256,7 +256,7 @@ export default function SessionDetailPage() {
               {cards.length > 0 && (
                 <Link
                   to={`/sessions/${id}/study`}
-                  className="col-span-2 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active sm:col-auto sm:h-10"
+                  className="col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active sm:col-auto"
                 >
                   <BookOpen size={18} />
                   {t('detail.studyDeck')}
@@ -266,7 +266,7 @@ export default function SessionDetailPage() {
                 <button
                   type="button"
                   onClick={() => setShowPractice(true)}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft sm:h-10"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
                 >
                   <Zap size={18} className="text-secondary" />
                   {t('detail.quickPractice')}
@@ -275,7 +275,7 @@ export default function SessionDetailPage() {
               <button
                 type="button"
                 onClick={() => setShowImport(true)}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft sm:h-10"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
               >
                 <Upload size={18} className="text-muted" />
                 {t('detail.import')}
@@ -283,7 +283,7 @@ export default function SessionDetailPage() {
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                className={`inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-ink px-3.5 text-body-sm font-medium text-surface-card transition-colors hover:bg-ink/85 sm:h-10 ${
+                className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-ink px-3.5 text-body-sm font-medium text-surface-card transition-colors hover:bg-ink/85 ${
                   cards.length >= 4 ? 'col-span-2 sm:col-auto' : ''
                 }`}
               >

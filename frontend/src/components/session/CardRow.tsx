@@ -44,7 +44,7 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
           <button
             type="button"
             onClick={() => onToggleLearned(card.id, !card.is_learned)}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2.5 text-body-sm font-semibold transition-colors sm:py-1 ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm font-semibold transition-colors sm:py-1 ${
               card.is_learned
                 ? 'text-secondary sm:bg-secondary-container sm:text-on-secondary-container'
                 : 'text-muted hover:text-secondary sm:bg-surface-card sm:text-body'
@@ -58,7 +58,7 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
             type="button"
             onClick={() => onDelete(card.id)}
             title={t('card.row.deleteTitle')}
-            className="rounded-lg p-3 text-muted transition-colors hover:text-error sm:p-1.5"
+            className="rounded-lg p-2 text-muted transition-colors hover:text-error sm:p-1.5"
           >
             <Trash2 size={16} />
           </button>
