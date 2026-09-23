@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, BookOpen, Download, Plus, ShieldCheck, Table, Upload, Zap } from 'lucide-react';
+import { ArrowLeft, BookOpen, Check, Download, Pencil, Plus, ShieldCheck, Table, Upload, X, Zap } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
+import { apiErrorMessage } from '../api/errors';
 import { useAuth } from '../contexts/AuthContext';
 import ImportModal from '../components/ImportModal';
 import PageHeader from '../components/PageHeader';
@@ -36,6 +37,11 @@ export default function SessionDetailPage() {
   const [sort, setSort] = useState<SortKey>('position');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState('');
+  const [savingTitle, setSavingTitle] = useState(false);
+  const [titleError, setTitleError] = useState('');
+
   const fetchDetail = async () => {
     if (!id) {
       return;
@@ -51,6 +57,47 @@ export default function SessionDetailPage() {
     window.scrollTo(0, 0);
     void fetchDetail();
   }, [id]);
+
+  const startEditTitle = () => {
+    setTitleDraft(detail?.session.title ?? '');
+    setTitleError('');
+    setEditingTitle(true);
+  };
+
+  const cancelEditTitle = () => {
+    setEditingTitle(false);
+    setTitleError('');
+  };
+
+  const saveTitle = async () => {
+    if (!detail || !id) {
+      return;
+    }
+
+    const trimmed = titleDraft.trim();
+    if (!trimmed) {
+      setTitleError(t('detail.titleRequired'));
+      return;
+    }
+
+    if (trimmed === detail.session.title) {
+      setEditingTitle(false);
+      return;
+    }
+
+    setSavingTitle(true);
+    setTitleError('');
+
+    try {
+      const response = await api.put(`/sessions/${id}`, { title: trimmed });
+      setDetail({ ...detail, session: { ...detail.session, title: response.data.title } });
+      setEditingTitle(false);
+    } catch (err) {
+      setTitleError(apiErrorMessage(err, t('detail.renameFailed')));
+    } finally {
+      setSavingTitle(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -224,9 +271,66 @@ export default function SessionDetailPage() {
                 {detail && <span className="font-mono text-code-sm text-muted">{t('detail.createdLabel', { date: createdLabel })}</span>}
               </div>
 
-              <h1 className="m-0 text-headline-md font-medium tracking-tight text-ink sm:text-headline-lg sm:font-medium sm:tracking-tight">
-                {detail?.session.title || t('detail.titleFallback')}
-              </h1>
+              {editingTitle ? (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <input
+                      autoFocus
+                      value={titleDraft}
+                      onChange={(event) => setTitleDraft(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.preventDefault();
+                          void saveTitle();
+                        } else if (event.key === 'Escape') {
+                          event.preventDefault();
+                          cancelEditTitle();
+                        }
+                      }}
+                      maxLength={255}
+                      disabled={savingTitle}
+                      aria-label={t('detail.titleInputAriaLabel')}
+                      className="m-0 min-w-0 flex-1 rounded-lg border border-hairline bg-surface-card px-3 py-1.5 text-headline-md font-medium tracking-tight text-ink outline-none focus:ring-1 focus:ring-ink disabled:opacity-60 sm:text-headline-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => void saveTitle()}
+                      disabled={savingTitle}
+                      title={t('detail.saveTitle')}
+                      aria-label={t('detail.saveTitle')}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-on-primary transition-colors hover:bg-primary-active disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <Check size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelEditTitle}
+                      disabled={savingTitle}
+                      title={t('detail.cancelTitle')}
+                      aria-label={t('detail.cancelTitle')}
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-hairline text-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                  {titleError && <p className="m-0 text-body-sm text-error">{titleError}</p>}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h1 className="m-0 min-w-0 text-headline-md font-medium tracking-tight text-ink sm:text-headline-lg sm:font-medium sm:tracking-tight">
+                    {detail?.session.title || t('detail.titleFallback')}
+                  </h1>
+                  <button
+                    type="button"
+                    onClick={startEditTitle}
+                    title={t('detail.editTitle')}
+                    aria-label={t('detail.editTitle')}
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted transition-colors hover:bg-canvas-soft hover:text-ink"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                </div>
+              )}
 
               <div className="pt-2">
                 <div className="mb-2 flex flex-col items-start justify-between gap-1 text-body-sm lg:flex-row lg:items-center">
