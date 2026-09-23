@@ -34,7 +34,14 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // A 401 only means "your session expired" for a request that actually
+    // carried a token. Login/register calls are unauthenticated by nature —
+    // their 401 just means "wrong credentials", and the caller (AuthPage)
+    // already shows that inline. Redirecting here would hard-reload the
+    // page and wipe whatever the person had typed into the form.
+    const hadToken = Boolean(error.config?.headers?.Authorization);
+
+    if (error.response?.status === 401 && hadToken) {
       setStoredToken(null);
       window.location.assign('/login');
     }
