@@ -1247,9 +1247,11 @@ textarea {
   }
 
   .auth-panel {
-    padding: 68px 24px 18px;
-    border-right: none;
-    border-bottom: 1px solid var(--hairline);
+    display: none;
+  }
+
+  .auth-form-wrap {
+    min-height: 100vh;
   }
 
   .hero-card {
