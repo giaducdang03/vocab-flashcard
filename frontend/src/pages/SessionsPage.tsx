@@ -118,12 +118,17 @@ export default function SessionsPage() {
         ) : (
           <div className="flex flex-col gap-space-sm">
             {visibleSessions.map((session) => (
-              <SessionCard
-                key={session.id}
-                session={session}
-                onDelete={handleDeleteSession}
-                variant="row"
-              />
+              <div key={session.id}>
+                {/* Below sm: the compact card layout (same as Dashboard's recent sessions).
+                    The "row" variant is a table-like row meant for wider screens — stacked
+                    on mobile it reads as a broken table row rather than a card. */}
+                <div className="sm:hidden">
+                  <SessionCard session={session} onDelete={handleDeleteSession} variant="card" />
+                </div>
+                <div className="hidden sm:block">
+                  <SessionCard session={session} onDelete={handleDeleteSession} variant="row" />
+                </div>
+              </div>
             ))}
           </div>
         )}
