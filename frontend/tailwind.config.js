@@ -42,18 +42,21 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
+      // Sizes are CSS custom properties (defined in src/index.css :root) so every
+      // text-* utility can shrink a notch on mobile from one place, without
+      // touching each component.
       fontSize: {
-        'display-hero': ['48px', { lineHeight: '54px', letterSpacing: '-0.03em', fontWeight: '400' }],
-        'headline-lg': ['32px', { lineHeight: '38px', letterSpacing: '-0.015em', fontWeight: '400' }],
-        'headline-md': ['22px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '500' }],
-        'title-md': ['18px', { lineHeight: '24px', letterSpacing: '-0.005em', fontWeight: '600' }],
-        'title-sm': ['15px', { lineHeight: '22px', fontWeight: '600' }],
-        'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
-        'body-sm': ['14px', { lineHeight: '20px', fontWeight: '400' }],
-        'caption-uppercase': ['11px', { lineHeight: '16px', letterSpacing: '0.08em', fontWeight: '600' }],
-        'code-phonetic': ['14px', { lineHeight: '20px', fontWeight: '400' }],
-        'code-sm': ['12px', { lineHeight: '16px', fontWeight: '400' }],
-        button: ['14px', { lineHeight: '14px', fontWeight: '500' }],
+        'display-hero': ['var(--fs-display-hero)', { lineHeight: 'var(--lh-display-hero)', letterSpacing: '-0.03em', fontWeight: '400' }],
+        'headline-lg': ['var(--fs-headline-lg)', { lineHeight: 'var(--lh-headline-lg)', letterSpacing: '-0.015em', fontWeight: '400' }],
+        'headline-md': ['var(--fs-headline-md)', { lineHeight: 'var(--lh-headline-md)', letterSpacing: '-0.01em', fontWeight: '500' }],
+        'title-md': ['var(--fs-title-md)', { lineHeight: 'var(--lh-title-md)', letterSpacing: '-0.005em', fontWeight: '600' }],
+        'title-sm': ['var(--fs-title-sm)', { lineHeight: 'var(--lh-title-sm)', fontWeight: '600' }],
+        'body-md': ['var(--fs-body-md)', { lineHeight: 'var(--lh-body-md)', fontWeight: '400' }],
+        'body-sm': ['var(--fs-body-sm)', { lineHeight: 'var(--lh-body-sm)', fontWeight: '400' }],
+        'caption-uppercase': ['var(--fs-caption-uppercase)', { lineHeight: 'var(--lh-caption-uppercase)', letterSpacing: '0.08em', fontWeight: '600' }],
+        'code-phonetic': ['var(--fs-code-phonetic)', { lineHeight: 'var(--lh-code-phonetic)', fontWeight: '400' }],
+        'code-sm': ['var(--fs-code-sm)', { lineHeight: 'var(--lh-code-sm)', fontWeight: '400' }],
+        button: ['var(--fs-button)', { lineHeight: 'var(--lh-button)', fontWeight: '500' }],
       },
       spacing: {
         gutter: '1.25rem',

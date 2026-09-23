@@ -23,6 +23,32 @@
   --hairline-strong: #cfcdc4;
   --ai-accent: #7c3aed;
   --ai-accent-soft: #f3eeff;
+
+  /* Typography scale, referenced by the fontSize tokens in tailwind.config.js.
+     Overridden (slightly smaller) under the mobile media query below so every
+     text-* utility site-wide shrinks a notch on phones without per-component edits. */
+  --fs-display-hero: 48px;
+  --lh-display-hero: 54px;
+  --fs-headline-lg: 32px;
+  --lh-headline-lg: 38px;
+  --fs-headline-md: 22px;
+  --lh-headline-md: 28px;
+  --fs-title-md: 18px;
+  --lh-title-md: 24px;
+  --fs-title-sm: 15px;
+  --lh-title-sm: 22px;
+  --fs-body-md: 16px;
+  --lh-body-md: 24px;
+  --fs-body-sm: 14px;
+  --lh-body-sm: 20px;
+  --fs-caption-uppercase: 11px;
+  --lh-caption-uppercase: 16px;
+  --fs-code-phonetic: 14px;
+  --lh-code-phonetic: 20px;
+  --fs-code-sm: 12px;
+  --lh-code-sm: 16px;
+  --fs-button: 14px;
+  --lh-button: 14px;
 }
 
 html {
@@ -87,6 +113,13 @@ textarea {
   gap: 24px;
 }
 
+/* Grid items default to min-width:auto, so a wide non-wrapping child (the filter
+   chip strip) stretches the whole column and scrolls the page sideways on phones.
+   Letting items shrink keeps their own overflow-x handling working. */
+.page-container > * {
+  min-width: 0;
+}
+
 .page-toolbar {
   width: 100%;
   max-width: 1152px;
@@ -102,6 +135,31 @@ textarea {
 
   .page-toolbar {
     padding: 12px 16px;
+  }
+
+  :root {
+    --fs-display-hero: 40px;
+    --lh-display-hero: 46px;
+    --fs-headline-lg: 26px;
+    --lh-headline-lg: 32px;
+    --fs-headline-md: 19px;
+    --lh-headline-md: 24px;
+    --fs-title-md: 16px;
+    --lh-title-md: 21px;
+    --fs-title-sm: 14px;
+    --lh-title-sm: 20px;
+    --fs-body-md: 15px;
+    --lh-body-md: 22px;
+    --fs-body-sm: 13px;
+    --lh-body-sm: 19px;
+    --fs-caption-uppercase: 10px;
+    --lh-caption-uppercase: 15px;
+    --fs-code-phonetic: 13px;
+    --lh-code-phonetic: 19px;
+    --fs-code-sm: 11px;
+    --lh-code-sm: 15px;
+    --fs-button: 13px;
+    --lh-button: 13px;
   }
 }
 
@@ -526,6 +584,17 @@ textarea {
 .empty-state h3 {
   margin: 0;
   color: var(--ink);
+}
+
+@media (max-width: 639.98px) {
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .auth-shell {

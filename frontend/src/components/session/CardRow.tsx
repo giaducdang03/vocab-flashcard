@@ -17,11 +17,11 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
 
   return (
     <article
-      className={`rounded-xl p-5 transition-colors sm:p-6 ${
+      className={`rounded-xl p-4 transition-colors sm:p-6 ${
         card.is_learned ? 'border-2 border-success bg-surface-card' : 'bg-surface-card hover:bg-canvas-soft'
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 sm:flex-nowrap sm:items-start sm:gap-4">
         <div className="flex items-center gap-3">
           <input
             type="checkbox"
@@ -40,14 +40,14 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
           <span className="font-mono text-code-sm text-muted">#{String(index + 1).padStart(2, '0')}</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             type="button"
             onClick={() => onToggleLearned(card.id, !card.is_learned)}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-body-sm font-semibold transition-colors ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-body-sm font-semibold transition-colors sm:py-1 ${
               card.is_learned
-                ? 'bg-secondary-container text-on-secondary-container'
-                : 'bg-surface-card text-body hover:text-secondary'
+                ? 'text-secondary sm:bg-secondary-container sm:text-on-secondary-container'
+                : 'text-muted hover:text-secondary sm:bg-surface-card sm:text-body'
             }`}
           >
             {card.is_learned ? <CheckCircle2 size={16} /> : <Circle size={16} className="text-muted" />}
@@ -58,14 +58,14 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
             type="button"
             onClick={() => onDelete(card.id)}
             title={t('card.row.deleteTitle')}
-            className="rounded-lg p-1.5 text-muted transition-colors hover:text-error"
+            className="rounded-lg p-2 text-muted transition-colors hover:text-error sm:p-1.5"
           >
             <Trash2 size={16} />
           </button>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 items-baseline gap-6 md:grid-cols-12">
+      <div className="mt-4 grid grid-cols-1 items-baseline gap-4 sm:gap-6 md:grid-cols-12">
         <div className="space-y-1 md:col-span-6">
           <span className="text-[11px] uppercase tracking-wider text-muted">
             {isCollocation ? t('card.row.collocationPhrase') : t('card.row.front')}
@@ -95,7 +95,7 @@ export default function CardRow({ card, index, selected, onToggleSelect, onToggl
           )}
         </div>
 
-        <div className="space-y-1 md:col-span-6">
+        <div className="space-y-1 md:col-span-6 max-sm:border-t max-sm:border-hairline max-sm:pt-4">
           <span className="text-[11px] uppercase tracking-wider text-muted">
             {isCollocation ? t('card.row.vietnameseDefinition') : t('card.row.back')}
           </span>

@@ -42,7 +42,7 @@ export default function CardsToolbar({
         />
       </div>
 
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <div className="no-scrollbar -mx-4 flex items-center gap-1.5 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 md:pb-0">
         {FILTERS.map((key) => (
           <button
             key={key}
@@ -59,14 +59,14 @@ export default function CardsToolbar({
         ))}
       </div>
 
-      <div className="flex items-center gap-2 self-end md:self-auto">
-        <div className="flex h-10 items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 text-body-sm text-ink">
+      <div className="flex w-full items-center gap-2 sm:w-auto sm:self-end md:self-auto">
+        <div className="flex h-10 w-full items-center gap-1.5 rounded-lg border border-hairline bg-surface-card px-3 text-body-sm text-ink sm:w-auto">
           <SlidersHorizontal size={16} className="text-muted" />
           <span className="text-muted">{t('toolbar.sortLabel')}</span>
           <select
             value={sort}
             onChange={(event) => onSortChange(event.target.value as SortKey)}
-            className="cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none"
+            className="flex-1 cursor-pointer bg-transparent pr-1 font-medium text-ink outline-none sm:flex-initial"
           >
             {SORT_OPTIONS.map((key) => (
               <option key={key} value={key}>

@@ -214,7 +214,7 @@ export default function SessionDetailPage() {
       </div>
 
       <main className="page-container compact">
-        <section className="rounded-xl border border-hairline bg-surface-card p-6 sm:p-8">
+        <section className="rounded-xl border border-hairline bg-surface-card p-4 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl space-y-4">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -224,7 +224,7 @@ export default function SessionDetailPage() {
                 {detail && <span className="font-mono text-code-sm text-muted">{t('detail.createdLabel', { date: createdLabel })}</span>}
               </div>
 
-              <h1 className="m-0 text-headline-lg font-medium tracking-tight text-ink">
+              <h1 className="m-0 text-headline-md font-medium tracking-tight text-ink sm:text-headline-lg sm:font-medium sm:tracking-tight">
                 {detail?.session.title || t('detail.titleFallback')}
               </h1>
 
@@ -252,11 +252,11 @@ export default function SessionDetailPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5 self-start pt-2 lg:pt-0">
+            <div className="grid w-full grid-cols-2 gap-2.5 pt-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:self-start lg:pt-0">
               {cards.length > 0 && (
                 <Link
                   to={`/sessions/${id}/study`}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
+                  className="col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active sm:col-auto"
                 >
                   <BookOpen size={18} />
                   {t('detail.studyDeck')}
@@ -266,7 +266,7 @@ export default function SessionDetailPage() {
                 <button
                   type="button"
                   onClick={() => setShowPractice(true)}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
                 >
                   <Zap size={18} className="text-secondary" />
                   {t('detail.quickPractice')}
@@ -275,7 +275,7 @@ export default function SessionDetailPage() {
               <button
                 type="button"
                 onClick={() => setShowImport(true)}
-                className="inline-flex h-10 items-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-card px-3.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
               >
                 <Upload size={18} className="text-muted" />
                 {t('detail.import')}
@@ -283,7 +283,9 @@ export default function SessionDetailPage() {
               <button
                 type="button"
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex h-10 items-center gap-2 rounded-lg bg-ink px-3.5 text-body-sm font-medium text-surface-card transition-colors hover:bg-ink/85"
+                className={`inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-ink px-3.5 text-body-sm font-medium text-surface-card transition-colors hover:bg-ink/85 ${
+                  cards.length >= 4 ? 'col-span-2 sm:col-auto' : ''
+                }`}
               >
                 <Plus size={18} />
                 {t('detail.addCard')}
@@ -344,7 +346,7 @@ export default function SessionDetailPage() {
           )}
         </section>
 
-        <aside className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-surface-container p-4 sm:p-5">
+        <aside className="flex flex-col items-start gap-4 rounded-xl bg-surface-container p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:p-5">
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-card text-primary">
               <Table size={22} />
@@ -357,10 +359,10 @@ export default function SessionDetailPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:w-auto">
             <a
               href="/api/cards/template/download"
-              className="inline-flex items-center gap-1.5 text-body-sm font-medium text-ink transition-colors hover:text-primary"
+              className="inline-flex items-center gap-1.5 py-2.5 text-body-sm font-medium text-ink transition-colors hover:text-primary sm:py-0"
             >
               <Download size={16} />
               {t('detail.downloadTemplate')}
@@ -369,7 +371,7 @@ export default function SessionDetailPage() {
             <button
               type="button"
               onClick={() => setShowImport(true)}
-              className="rounded-lg bg-surface-card px-3 py-1.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft"
+              className="rounded-lg bg-surface-card px-3 py-2.5 text-body-sm font-medium text-ink transition-colors hover:bg-canvas-soft sm:py-1.5"
             >
               {t('detail.openImporter')}
             </button>

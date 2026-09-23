@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Flame } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useHideOnScroll } from '../hooks/useHideOnScroll';
 import type { User } from '../types';
 import UserMenu from './UserMenu';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -21,12 +22,17 @@ export default function PageHeader({ user, onLogout, streakDays }: PageHeaderPro
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { t } = useTranslation('nav');
+  const hidden = useHideOnScroll();
 
   const isActive = (path: string) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-hairline bg-canvas/95 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 w-full border-b border-hairline bg-canvas/95 backdrop-blur-md transition-transform duration-300 sm:translate-y-0 ${
+        hidden ? '-translate-y-full' : 'translate-y-0'
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-space-md px-margin max-sm:px-space-md">
         <div className="flex items-center gap-space-lg">
           <button
