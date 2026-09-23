@@ -121,10 +121,10 @@ export default function DashboardPage() {
               {resumeTarget ? (
                 <Link
                   to={`/sessions/${resumeTarget.id}/study`}
-                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
+                  className="inline-flex h-10 min-w-0 max-w-[160px] items-center gap-2 rounded-lg bg-primary px-5 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active sm:max-w-[240px] lg:max-w-xs"
                 >
-                  <Play size={18} />
-                  {t('greeting.continueSession', { title: resumeTarget.title })}
+                  <Play size={18} className="shrink-0" />
+                  <span className="truncate">{t('greeting.continueSession', { title: resumeTarget.title })}</span>
                 </Link>
               ) : (
                 <button
