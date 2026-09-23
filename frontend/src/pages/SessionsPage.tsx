@@ -77,8 +77,8 @@ export default function SessionsPage() {
             </h1>
           </div>
 
-          <div className="flex flex-wrap items-center gap-space-sm">
-            <div className="relative flex items-center">
+          <div className="flex w-full items-center gap-space-sm sm:w-auto">
+            <div className="relative flex flex-1 items-center sm:flex-none">
               <Search size={18} className="absolute left-3 text-muted" />
               <input
                 type="text"
@@ -86,14 +86,14 @@ export default function SessionsPage() {
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('list.searchPlaceholder')}
                 aria-label={t('list.searchAriaLabel')}
-                className="h-10 w-44 rounded-lg border border-hairline bg-surface-card pl-9 pr-3 text-body-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-ink sm:w-56"
+                className="h-10 w-full rounded-lg border border-hairline bg-surface-card pl-9 pr-3 text-body-sm text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-ink sm:w-56"
               />
             </div>
 
             <button
               type="button"
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
+              className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-lg bg-primary px-4 text-body-sm font-medium text-on-primary transition-colors hover:bg-primary-active"
             >
               <Plus size={18} />
               {t('list.addSession')}
